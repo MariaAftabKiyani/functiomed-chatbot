@@ -6,3 +6,4 @@ python-dotenv
 pymupdf
 requests
 beautifulsoup4
+langchain
