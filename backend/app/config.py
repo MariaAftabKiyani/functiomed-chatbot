@@ -1,6 +1,7 @@
 import os
 from typing import Optional, List
 from pydantic_settings import BaseSettings
+from pydantic import Field
 import logging
 
 class Settings(BaseSettings):
@@ -49,6 +50,27 @@ class Settings(BaseSettings):
     # Data Paths
     DOCUMENTS_DIR: str = os.path.abspath(
         os.path.join(os.path.dirname(__file__), "..", "..", "data", "documents")
+    )
+
+    # ============================================================================
+    # Retrieval Settings
+    # ============================================================================
+    RETRIEVAL_TOP_K: int = Field(
+        default=5,
+        env="RETRIEVAL_TOP_K",
+        description="Default number of chunks to retrieve"
+    )
+
+    RETRIEVAL_MIN_SCORE: float = Field(
+        default=0.5,
+        env="RETRIEVAL_MIN_SCORE",
+        description="Minimum similarity score threshold (0-1)"
+    )
+
+    RETRIEVAL_MAX_QUERY_LENGTH: int = Field(
+        default=512,
+        env="RETRIEVAL_MAX_QUERY_LENGTH",
+        description="Maximum query length in characters"
     )
 
 

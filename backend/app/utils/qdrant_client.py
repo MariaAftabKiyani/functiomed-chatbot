@@ -7,7 +7,8 @@ import time
 from typing import List
 import numpy as np
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct
+from qdrant_client.models import Distance, QueryRequest, VectorParams, PointStruct, Filter, FieldCondition, MatchAny, MatchValue
+from typing import List, Optional, Dict, Any
 import sys
 from pathlib import Path
 
@@ -222,6 +223,142 @@ class QdrantService:
             logger.error(f"Failed to get collection info: {e}")
             return {"exists": True, "name": settings.QDRANT_COLLECTION, "error": str(e)}
 
+    def search(
+        self,
+        query_vector: np.ndarray,
+        top_k: int = 5,
+        filters: Optional[Dict[str, Any]] = None,
+        score_threshold: Optional[float] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Search for similar vectors in Qdrant with optional filtering.
+        
+        Args:
+            query_vector: Query embedding vector (1024-dim)
+            top_k: Number of results to return
+            filters: Metadata filters in format:
+                    {
+                        "must": [
+                            {"key": "category", "match": {"any": ["angebote", "therapy"]}},
+                            {"key": "language", "match": {"value": "DE"}}
+                        ]
+                    }
+            score_threshold: Minimum similarity score (0-1)
+            
+        Returns:
+            List of search results with payloads and scores
+            
+        Raises:
+            ValueError: If inputs are invalid
+            RuntimeError: If search fails
+        """
+        # Validate inputs
+        if query_vector is None or len(query_vector) == 0:
+            raise ValueError("Query vector cannot be empty")
+        
+        if query_vector.shape[0] != settings.QDRANT_VECTOR_SIZE:
+            raise ValueError(
+                f"Query vector dimension mismatch: "
+                f"{query_vector.shape[0]} != {settings.QDRANT_VECTOR_SIZE}"
+            )
+        
+        if top_k < 1 or top_k > 100:
+            raise ValueError(f"top_k must be between 1-100, got {top_k}")
+        
+        if not self.collection_exists():
+            logger.warning(f"Collection '{settings.QDRANT_COLLECTION}' does not exist")
+            return []
+        
+        # Build Qdrant filter
+        qdrant_filter = None
+        if filters:
+            qdrant_filter = self._build_qdrant_filter(filters)
+        
+        logger.debug(
+            f"Searching with top_k={top_k}, "
+            f"filters={'yes' if qdrant_filter else 'no'}, "
+            f"score_threshold={score_threshold}"
+        )
+        
+        # Perform search with retry logic
+        for attempt in range(settings.MAX_RETRIES):
+            try:
+                # Use query_points for Qdrant search
+                search_result = self.client.query_points(
+                    collection_name=settings.QDRANT_COLLECTION,
+                    query=query_vector.tolist(),
+                    limit=top_k,
+                    query_filter=qdrant_filter,
+                    score_threshold=score_threshold,
+                    with_payload=True,
+                    with_vectors=False  # Don't return vectors to save bandwidth
+                )
+                
+                # Format results - query_points returns QueryResponse with .points attribute
+                results = []
+                for point in search_result.points:
+                    result = {
+                        "id": point.id,
+                        "score": point.score,
+                        "payload": point.payload
+                    }
+                    results.append(result)
+                
+                logger.info(f"✓ Found {len(results)} results (requested top_k={top_k})")
+                return results
+                
+            except Exception as e:
+                if attempt < settings.MAX_RETRIES - 1:
+                    wait_time = settings.RETRY_DELAY * (attempt + 1)
+                    logger.warning(
+                        f"Search attempt {attempt + 1} failed: {e}. "
+                        f"Retrying in {wait_time}s..."
+                    )
+                    time.sleep(wait_time)
+                else:
+                    logger.error(f"Search failed after {settings.MAX_RETRIES} attempts")
+                    raise RuntimeError(f"Qdrant search failed: {e}")
+
+    def _build_qdrant_filter(self, filters: Dict[str, Any]) -> Filter:
+        """
+        Build Qdrant Filter object from filter dict.
+        
+        Args:
+            filters: Filter specification with 'must' conditions
+            
+        Returns:
+            Qdrant Filter object
+        """
+        if not filters or "must" not in filters:
+            return None
+        
+        conditions = []
+        
+        for condition in filters["must"]:
+            key = condition["key"]
+            match = condition["match"]
+            
+            if "any" in match:
+                # OR logic for multiple values (e.g., categories)
+                conditions.append(
+                    FieldCondition(
+                        key=key,
+                        match=MatchAny(any=match["any"])
+                    )
+                )
+            elif "value" in match:
+                # Exact match for single value
+                conditions.append(
+                    FieldCondition(
+                        key=key,
+                        match=MatchValue(value=match["value"])
+                    )
+                )
+        
+        if not conditions:
+            return None
+        
+        return Filter(must=conditions)
 
 if __name__ == "__main__":
     # Test
