@@ -1,9 +1,7 @@
-fastapi
-uvicorn[standard]
-pydantic
+sentence-transformers
+qdrant-client
+torch
+numpy
 pydantic-settings
 python-dotenv
-pymupdf
-requests
-beautifulsoup4
-langchain
+tqdm
