@@ -3,6 +3,7 @@ from typing import Optional, List
 from pydantic_settings import BaseSettings
 from pydantic import Field
 import logging
+import torch
 
 class Settings(BaseSettings):
     """Application settings with environment variable support"""
@@ -12,8 +13,14 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
 
-    # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8000"]
+    # CORS settings
+    ALLOWED_ORIGINS = [
+        "http://localhost",
+        "http://localhost:3000",
+        "http://127.0.0.1",
+        # "https://wordpress-site.com",  
+        "*"  # For development only - remove in production
+    ]
 
     # Qdrant Vector Database
     QDRANT_URL: str = os.getenv("QDRANT_URL", "http://localhost:6333")
@@ -72,6 +79,60 @@ class Settings(BaseSettings):
         env="RETRIEVAL_MAX_QUERY_LENGTH",
         description="Maximum query length in characters"
     )
+
+    # ============================================================================
+    # LLM Configuration (Llama 3.1 8B Instruct)
+    # ============================================================================
+
+    # Model settings
+    LLM_MODEL_NAME: str = os.getenv("LLM_MODEL_NAME", "meta-llama/Llama-3.2-1B-Instruct")
+    LLM_DEVICE: str = os.getenv("LLM_DEVICE", "cuda" if torch.cuda.is_available() else "cpu")
+
+    # Quantization for memory efficiency
+    LLM_USE_QUANTIZATION: bool = os.getenv("LLM_USE_QUANTIZATION", "false").lower() == "true"
+    LLM_LOAD_IN_4BIT: bool = os.getenv("LLM_LOAD_IN_4BIT", "false").lower() == "true"
+    LLM_LOAD_IN_8BIT: bool = os.getenv("LLM_LOAD_IN_8BIT", "false").lower() == "true"
+
+
+    # Generation settings
+    LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS", "512"))  # Max tokens in response
+    LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.7"))  # Lower = more factual
+    LLM_TOP_P: float = float(os.getenv("LLM_TOP_P", "0.9"))
+    LLM_CONTEXT_WINDOW: int = int(os.getenv("LLM_CONTEXT_WINDOW", "8192"))  # Llama 3.1 context
+
+    # ============================================================================
+    # RAG (Retrieval-Augmented Generation) Configuration
+    # ============================================================================
+
+    # Context settings
+    RAG_MAX_CONTEXT_TOKENS: int = int(os.getenv("RAG_MAX_CONTEXT_TOKENS", "4096"))  # Reserve space for response
+    RAG_MAX_CHUNKS: int = int(os.getenv("RAG_MAX_CHUNKS", "5"))  # Number of chunks to retrieve
+    RAG_MIN_CHUNK_SCORE: float = float(os.getenv("RAG_MIN_CHUNK_SCORE", "0.5"))  # Minimum similarity
+
+    # Response settings
+    RAG_ENABLE_CITATIONS: bool = os.getenv("RAG_ENABLE_CITATIONS", "true").lower() == "true"
+    RAG_FALLBACK_RESPONSE_DE: str = os.getenv(
+        "RAG_FALLBACK_RESPONSE_DE",
+        "Entschuldigung, ich konnte keine relevanten Informationen zu Ihrer Frage in unseren Unterlagen finden. "
+        "Bitte kontaktieren Sie uns direkt für weitere Informationen."
+    )
+    RAG_FALLBACK_RESPONSE_EN: str = os.getenv(
+        "RAG_FALLBACK_RESPONSE_EN",
+        "I apologize, but I could not find relevant information about your question in our records. "
+        "Please contact us directly for more information."
+    )
+
+    # ============================================================================
+    # HuggingFace Settings
+    # ============================================================================
+
+    # Authentication and caching
+    HF_HUB_TOKEN: str = os.getenv("HF_HUB_TOKEN", "")  # Required for Llama models
+    HF_HOME: str = os.getenv("HF_HOME", "./models/huggingface")  # Model cache directory
+
+    # Note: Add these imports at the top of config.py if not present:
+    # import torch
+    # from pathlib import Path
 
 
     class Config:

@@ -18,6 +18,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include routers
+from app.api.v1 import chat
+app.include_router(chat.router)
+
 @app.get("/")
 async def root():
     """Root endpoint"""

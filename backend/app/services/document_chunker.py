@@ -3,10 +3,10 @@ Document Chunker for RAG Pipeline
 Hybrid semantic + recursive chunking approach for medical documents.
 Optimized for German language with metadata preservation and quality enforcement.
 """
+import re
+import logging
 from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass
-import logging
-import re
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 logger = logging.getLogger(__name__)
@@ -22,6 +22,40 @@ class Chunk:
     
     def __repr__(self):
         return f"Chunk(id={self.chunk_id}, index={self.chunk_index}, length={len(self.text)})"
+
+
+# -----------------------------
+# Text Cleaning / Normalization
+# -----------------------------
+def remove_boilerplate(text: str) -> str:
+    text = re.sub(r'Page \d+ of \d+', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'©.*', '', text)
+    text = re.sub(r'Read more at.*', '', text)
+    return text
+
+def fix_line_breaks(text: str) -> str:
+    text = re.sub(r'(?<!\n)\n(?!\n)', ' ', text)  # merge broken lines
+    text = re.sub(r'\n{2,}', '\n\n', text)        # keep paragraph breaks
+    return text
+
+def normalize_whitespace(text: str) -> str:
+    text = re.sub(r'\s+', ' ', text)
+    return text.strip()
+
+def remove_non_printable(text: str) -> str:
+    return ''.join(c for c in text if c.isprintable())
+
+import unicodedata
+def normalize_unicode(text: str) -> str:
+    return unicodedata.normalize("NFKC", text)
+
+def clean_text(text: str) -> str:
+    text = remove_boilerplate(text)
+    text = fix_line_breaks(text)
+    text = normalize_whitespace(text)
+    text = remove_non_printable(text)
+    text = normalize_unicode(text)
+    return text
 
 
 class SemanticSplitter:
@@ -241,7 +275,8 @@ class DocumentChunker:
         
         try:
             # Step 1: Split by semantic sections
-            sections = self.semantic_splitter.split_by_sections(document.text)
+            doc_text = clean_text(document.text)
+            sections = self.semantic_splitter.split_by_sections(doc_text)
             logger.debug(f"'{document.filename}': split into {len(sections)} semantic sections")
             
             # Step 2: Chunk each section (respecting semantic boundaries)
