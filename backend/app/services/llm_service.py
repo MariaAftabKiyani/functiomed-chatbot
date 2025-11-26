@@ -9,7 +9,6 @@ import torch
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
-    BitsAndBytesConfig,
     pipeline
 )
 import sys
@@ -24,26 +23,25 @@ logger = logging.getLogger(__name__)
 
 class LLMService:
     """
-    Llama 3.1 8B Instruct service with:
-    - 4-bit quantization for memory efficiency
+    Llama 3.2 1B Instruct service with:
+    - CPU-only inference
     - Robust error handling
     - Token management
     - Response validation
     """
-    
+
     def __init__(self):
-        """Initialize Llama 3.1 model"""
+        """Initialize Llama 3.2 1B model for CPU"""
         self.model = None
         self.tokenizer = None
         self.pipeline = None
         self._initialize()
     
     def _initialize(self):
-        """Load model with quantization and error handling"""
+        """Load model for CPU inference"""
         logger.info(f"Loading {settings.LLM_MODEL_NAME}...")
-        logger.info(f"  Device: {settings.LLM_DEVICE}")
-        logger.info(f"  Quantization: {settings.LLM_USE_QUANTIZATION}")
-        logger.info(f"  Load in 8-bit: {settings.LLM_LOAD_IN_8BIT}")
+        logger.info(f"  Device: CPU")
+        logger.info(f"  Mode: Full precision (FP32)")
 
         try:
             # Load tokenizer
@@ -60,38 +58,18 @@ class LLMService:
 
             logger.info("✓ Tokenizer loaded")
 
-            # Configure quantization if enabled
-            quantization_config = None
-            if settings.LLM_USE_QUANTIZATION and settings.LLM_LOAD_IN_8BIT:
-                logger.info("Configuring 8-bit quantization (reduces RAM to ~8GB)...")
-                quantization_config = BitsAndBytesConfig(
-                    load_in_8bit=True,
-                    llm_int8_threshold=6.0
-                )
-            elif settings.LLM_USE_QUANTIZATION and settings.LLM_LOAD_IN_4BIT:
-                logger.info("Configuring 4-bit quantization (reduces RAM to ~4GB)...")
-                quantization_config = BitsAndBytesConfig(
-                    load_in_4bit=True,
-                    bnb_4bit_compute_dtype=torch.float16,
-                    bnb_4bit_use_double_quant=True,
-                    bnb_4bit_quant_type="nf4"
-                )
-
-            # Load model
+            # Load model for CPU
             logger.info("Loading model (this may take a few minutes)...")
             self.model = AutoModelForCausalLM.from_pretrained(
                 settings.LLM_MODEL_NAME,
-                quantization_config=quantization_config,
-                device_map="auto" if quantization_config else None,
-                dtype=torch.float16 if settings.LLM_DEVICE == "cuda" else torch.float32,  # Changed from torch_dtype to dtype
+                torch_dtype=torch.float32,  # FP32 for CPU
                 trust_remote_code=True,
                 cache_dir=settings.HF_HOME,
                 low_cpu_mem_usage=True
             )
 
-            # Move to device if CPU and no quantization
-            if settings.LLM_DEVICE == "cpu" and not quantization_config:
-                self.model = self.model.to(settings.LLM_DEVICE)
+            # Move to CPU
+            self.model = self.model.to("cpu")
             
             logger.info("✓ Model loaded")
             
@@ -109,17 +87,32 @@ class LLMService:
             )
             
             logger.info("✓ Pipeline created")
-            
+
             # Warmup
             logger.info("Warming up model...")
             _ = self._generate_internal("Hello")
-            
+
             logger.info("✓ LLM Service ready")
             
         except Exception as e:
             logger.error(f"Failed to initialize LLM: {e}")
             raise RuntimeError(f"LLM initialization failed: {e}")
-    
+
+    def count_tokens(self, text: str) -> int:
+        """
+        Count tokens in text.
+
+        Args:
+            text: Text to count tokens for
+
+        Returns:
+            Number of tokens
+        """
+        if not text:
+            return 0
+
+        return len(self.tokenizer.encode(text, add_special_tokens=False))
+
     def generate(
         self,
         prompt: str,
@@ -146,7 +139,7 @@ class LLMService:
         # Validate input
         if not prompt or not prompt.strip():
             raise ValueError("Prompt cannot be empty")
-        
+
         # Check token count
         prompt_tokens = self.count_tokens(prompt)
         if prompt_tokens > settings.LLM_CONTEXT_WINDOW:
@@ -154,11 +147,11 @@ class LLMService:
                 f"Prompt too long: {prompt_tokens} tokens "
                 f"(max: {settings.LLM_CONTEXT_WINDOW})"
             )
-        
+
         logger.info(f"Generating response (prompt tokens: {prompt_tokens})...")
-        
+
         start_time = time.time()
-        
+
         try:
             # Generate response
             response_text = self._generate_internal(
@@ -167,17 +160,17 @@ class LLMService:
                 temperature=temperature or settings.LLM_TEMPERATURE,
                 stop_sequences=stop_sequences
             )
-            
+
             # Calculate metrics
             generation_time_ms = (time.time() - start_time) * 1000
             response_tokens = self.count_tokens(response_text)
             total_tokens = prompt_tokens + response_tokens
-            
+
             logger.info(
                 f"✓ Generated {response_tokens} tokens in {generation_time_ms:.0f}ms "
                 f"(total: {total_tokens})"
             )
-            
+
             return {
                 "text": response_text.strip(),
                 "prompt_tokens": prompt_tokens,
@@ -185,7 +178,7 @@ class LLMService:
                 "total_tokens": total_tokens,
                 "generation_time_ms": round(generation_time_ms, 2)
             }
-            
+
         except Exception as e:
             logger.error(f"Generation failed: {type(e).__name__}: {e}")
             raise RuntimeError(f"Failed to generate response: {e}")
@@ -197,53 +190,83 @@ class LLMService:
         temperature: float = 0.7,
         stop_sequences: Optional[List[str]] = None
     ) -> str:
-        """Internal generation method"""
+        """Internal generation method with detailed error handling"""
         try:
-            # Generate
-            outputs = self.pipeline(
-                prompt,
-                max_new_tokens=max_tokens,
-                temperature=temperature,
-                do_sample=temperature > 0,
-                return_full_text=False,  # Only return generated text
-                pad_token_id=self.tokenizer.eos_token_id
-            )
-            
+            # Validate pipeline exists
+            if self.pipeline is None:
+                logger.error("Pipeline is not initialized!")
+                raise RuntimeError("Text generation pipeline not initialized")
+
+            if self.model is None:
+                logger.error("Model is not loaded!")
+                raise RuntimeError("Model not loaded")
+
+            if self.tokenizer is None:
+                logger.error("Tokenizer is not loaded!")
+                raise RuntimeError("Tokenizer not loaded")
+
+            logger.debug(f"Pipeline parameters:")
+            logger.debug(f"  max_new_tokens: {max_tokens}")
+            logger.debug(f"  temperature: {temperature}")
+            logger.debug(f"  do_sample: {temperature > 0}")
+            logger.debug(f"  return_full_text: False")
+
+            # Generate with explicit error handling
+            logger.debug("Calling pipeline...")
+            try:
+                outputs = self.pipeline(
+                    prompt,
+                    max_new_tokens=max_tokens,
+                    temperature=temperature,
+                    do_sample=temperature > 0,
+                    return_full_text=False,  # Only return generated text
+                    pad_token_id=self.tokenizer.eos_token_id
+                )
+            except Exception as pipe_error:
+                logger.error(f"Pipeline execution failed: {type(pipe_error).__name__}")
+                logger.error(f"  Error details: {str(pipe_error)}")
+                import traceback
+                logger.error(f"  Traceback:\n{traceback.format_exc()}")
+                raise RuntimeError(f"Pipeline execution failed: {str(pipe_error)}") from pipe_error
+
+            logger.debug(f"Pipeline returned {len(outputs)} outputs")
+
+            # Validate outputs
+            if not outputs or len(outputs) == 0:
+                logger.error("Pipeline returned empty outputs!")
+                return ""
+
             # Extract generated text
-            generated_text = outputs[0]["generated_text"]
-            
+            try:
+                generated_text = outputs[0]["generated_text"]
+                logger.debug(f"Extracted text: '{generated_text[:100]}...'")
+            except (KeyError, IndexError, TypeError) as extract_error:
+                logger.error(f"Failed to extract generated text: {extract_error}")
+                logger.error(f"  Output structure: {outputs}")
+                raise RuntimeError(f"Invalid output structure from pipeline: {extract_error}") from extract_error
+
             # Apply stop sequences
             if stop_sequences:
+                logger.debug(f"Applying stop sequences: {stop_sequences}")
                 for stop_seq in stop_sequences:
                     if stop_seq in generated_text:
+                        logger.debug(f"  Found stop sequence '{stop_seq}', truncating")
                         generated_text = generated_text.split(stop_seq)[0]
-            
-            return generated_text.strip()
-            
-        except Exception as e:
-            logger.error(f"Internal generation error: {e}")
+
+            result = generated_text.strip()
+            logger.debug(f"Final generated text length: {len(result)} characters")
+            return result
+
+        except RuntimeError:
+            # Re-raise RuntimeErrors as-is
             raise
-    
-    def count_tokens(self, text: str) -> int:
-        """
-        Count tokens in text using tokenizer.
-        
-        Args:
-            text: Input text
-            
-        Returns:
-            Number of tokens
-        """
-        if not text:
-            return 0
-        
-        try:
-            tokens = self.tokenizer.encode(text, add_special_tokens=True)
-            return len(tokens)
         except Exception as e:
-            logger.warning(f"Token counting failed: {e}")
-            # Fallback: rough estimate (1 token ≈ 4 chars)
-            return len(text) // 4
+            logger.error(f"Unexpected error in _generate_internal: {type(e).__name__}")
+            logger.error(f"  Error message: {str(e)}")
+            import traceback
+            logger.error(f"  Full traceback:\n{traceback.format_exc()}")
+            raise RuntimeError(f"Internal generation error: {type(e).__name__}: {str(e)}") from e
+    
     
     def health_check(self) -> Dict[str, Any]:
         """Check LLM service health"""
@@ -304,7 +327,7 @@ if __name__ == "__main__":
         result = service.generate(prompt, max_tokens=50)
         print(f"  Prompt: {prompt}")
         print(f"  Response: {result['text']}")
-        print(f"  Tokens: {result['total_tokens']}")
+        print(f"  Tokens: {result['tokens_used']} (prompt: {result['prompt_tokens']}, completion: {result['completion_tokens']})")
         print(f"  Time: {result['generation_time_ms']:.0f}ms")
         
         # Test 2: Token counting

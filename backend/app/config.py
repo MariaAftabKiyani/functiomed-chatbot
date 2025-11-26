@@ -81,33 +81,26 @@ class Settings(BaseSettings):
     )
 
     # ============================================================================
-    # LLM Configuration (Llama 3.1 8B Instruct)
+    # LLM Configuration (CPU-only inference)
     # ============================================================================
 
-    # Model settings - UPGRADED TO 8B FOR GPT-4/CLAUDE-LEVEL VERBOSITY
+    # Model settings
     LLM_MODEL_NAME: str = os.getenv("LLM_MODEL_NAME", "meta-llama/Llama-3.2-1B-Instruct")
-    LLM_DEVICE: str = os.getenv("LLM_DEVICE", "cuda" if torch.cuda.is_available() else "cpu")
-
-    # Quantization for memory efficiency - ENABLED FOR 16GB RAM
-    LLM_USE_QUANTIZATION: bool = os.getenv("LLM_USE_QUANTIZATION", "true").lower() == "true"
-    LLM_LOAD_IN_4BIT: bool = os.getenv("LLM_LOAD_IN_4BIT", "false").lower() == "true"
-    LLM_LOAD_IN_8BIT: bool = os.getenv("LLM_LOAD_IN_8BIT", "true").lower() == "true"  # Use 8-bit for 16GB RAM
-
 
     # Generation settings
-    LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS", "2048"))  # Max tokens for VERY verbose, detailed responses
-    LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.8"))  # Slightly higher for more detailed responses
+    LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS", "512"))  # Max tokens for responses
+    LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.8"))  # Sampling temperature
     LLM_TOP_P: float = float(os.getenv("LLM_TOP_P", "0.9"))
-    LLM_CONTEXT_WINDOW: int = int(os.getenv("LLM_CONTEXT_WINDOW", "8192"))  # Llama 3.1 context
+    LLM_CONTEXT_WINDOW: int = int(os.getenv("LLM_CONTEXT_WINDOW", "4096"))  # Context window size 
 
     # ============================================================================
     # RAG (Retrieval-Augmented Generation) Configuration
     # ============================================================================
 
     # Context settings
-    RAG_MAX_CONTEXT_TOKENS: int = int(os.getenv("RAG_MAX_CONTEXT_TOKENS", "4096"))  # Reserve space for response
+    RAG_MAX_CONTEXT_TOKENS: int = int(os.getenv("RAG_MAX_CONTEXT_TOKENS", "1536"))  # Reserve space for response (prompt + context)
     RAG_MAX_CHUNKS: int = int(os.getenv("RAG_MAX_CHUNKS", "5"))  # Number of chunks to retrieve
-    RAG_MIN_CHUNK_SCORE: float = float(os.getenv("RAG_MIN_CHUNK_SCORE", "0.3"))  # Minimum similarity
+    RAG_MIN_CHUNK_SCORE: float = float(os.getenv("RAG_MIN_CHUNK_SCORE", "0.5"))  # Minimum similarity
 
     # Response settings
     RAG_ENABLE_CITATIONS: bool = os.getenv("RAG_ENABLE_CITATIONS", "true").lower() == "true"

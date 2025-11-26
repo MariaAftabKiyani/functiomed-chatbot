@@ -4,9 +4,11 @@ Windows-compatible, no build dependencies required.
 """
 import logging
 import time
-from typing import List
+from typing import List, Dict, Tuple
 import numpy as np
 from sentence_transformers import SentenceTransformer
+from functools import lru_cache
+import hashlib
 import sys
 from pathlib import Path
 
@@ -29,6 +31,9 @@ class EmbeddingService:
     def __init__(self):
         """Initialize BGE-M3 model"""
         self.model = None
+        self._embedding_cache: Dict[str, np.ndarray] = {}
+        self._cache_hits = 0
+        self._cache_misses = 0
         self._initialize()
     
     def _initialize(self):
@@ -119,6 +124,71 @@ class EmbeddingService:
             normalize_embeddings=settings.EMBEDDING_NORMALIZE
         )
         return embeddings
+
+    def embed_query(self, query: str) -> np.ndarray:
+        """
+        Embed a single query with caching for FAQ queries.
+
+        Args:
+            query: Query text to embed
+
+        Returns:
+            numpy array of shape (1024,)
+
+        Raises:
+            ValueError: If input is invalid
+            RuntimeError: If embedding fails
+        """
+        # Validate input
+        if not query or not query.strip():
+            raise ValueError("Query cannot be empty")
+
+        # Normalize query for cache key (lowercase, strip whitespace)
+        cache_key = self._get_cache_key(query.strip().lower())
+
+        # Check cache
+        if cache_key in self._embedding_cache:
+            self._cache_hits += 1
+            logger.debug(f"Cache hit for query (hits: {self._cache_hits}, misses: {self._cache_misses})")
+            return self._embedding_cache[cache_key]
+
+        # Cache miss - generate embedding
+        self._cache_misses += 1
+        logger.debug(f"Cache miss for query (hits: {self._cache_hits}, misses: {self._cache_misses})")
+
+        # Use embed_documents for single query
+        embedding = self.embed_documents([query])[0]
+
+        # Store in cache (limit cache size to 1000 entries)
+        if len(self._embedding_cache) >= 1000:
+            # Remove oldest entry (simple FIFO)
+            first_key = next(iter(self._embedding_cache))
+            del self._embedding_cache[first_key]
+            logger.debug("Cache full, removed oldest entry")
+
+        self._embedding_cache[cache_key] = embedding
+
+        return embedding
+
+    def _get_cache_key(self, text: str) -> str:
+        """Generate cache key from text using hash"""
+        return hashlib.md5(text.encode('utf-8')).hexdigest()
+
+    def get_cache_stats(self) -> Dict[str, int]:
+        """Get cache statistics"""
+        return {
+            "cache_size": len(self._embedding_cache),
+            "cache_hits": self._cache_hits,
+            "cache_misses": self._cache_misses,
+            "hit_rate": self._cache_hits / (self._cache_hits + self._cache_misses) if (self._cache_hits + self._cache_misses) > 0 else 0.0
+        }
+
+    def clear_cache(self):
+        """Clear the embedding cache"""
+        self._embedding_cache.clear()
+        self._cache_hits = 0
+        self._cache_misses = 0
+        logger.info("Embedding cache cleared")
     
     def _validate_embeddings(self, embeddings: np.ndarray, expected_count: int):
         """Validate embedding output"""

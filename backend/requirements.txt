@@ -33,6 +33,7 @@ httpx>=0.25.1
 transformers>=4.36.0
 torch>=2.1.0  # CPU version, use torch+cu118 for CUDA 11.8
 accelerate>=0.25.0
+# bitsandbytes>=0.41.0  # For 4-bit/8-bit quantization (GPU only, commented out for CPU)
 sentencepiece>=0.1.99
 protobuf>=3.20.0
 

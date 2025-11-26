@@ -4,11 +4,15 @@ let conversationHistory = [];
 let currentLanguage = 'DE'; // Default language
 let faqCache = {}; // Cache for FAQ responses
 let faqsHidden = false; // Track if FAQs are hidden
+let currentAbortController = null; // For cancelling requests
+let currentStreamingMessage = null; // Reference to the message being streamed
 
 // Configuration
 const API_BASE_URL = 'http://localhost:8000';  // Change to your backend URL
 const API_ENDPOINT = '/api/v1/chat/';
+const STREAM_ENDPOINT = '/api/v1/chat/stream';
 const FAQ_ENDPOINT = '/api/v1/faqs/';
+const USE_STREAMING = true; // Toggle streaming vs regular
 
 // Language-specific messages
 const MESSAGES = {
@@ -46,6 +50,7 @@ const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const sendButton = document.getElementById('sendButton');
 const typingIndicator = document.getElementById('typingIndicator');
+const stopButton = document.getElementById('stopButton');
 
 // Initialize
 function init() {
@@ -133,6 +138,8 @@ function setupEventListeners() {
     chatButton.addEventListener('click', toggleChat);
     closeButton.addEventListener('click', toggleChat);
     sendButton.addEventListener('click', sendMessage);
+    stopButton.addEventListener('click', stopGeneration);
+
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -161,41 +168,75 @@ function toggleChat() {
 // Send message with API integration
 async function sendMessage() {
     const message = chatInput.value.trim();
-    
+
     if (message === '') return;
 
     // Add user message to chat
     addMessage(message, 'user');
-    
+
     // Clear input
     chatInput.value = '';
     sendButton.disabled = true;
 
-    // Show typing indicator
+    // Use streaming or regular API
+    if (USE_STREAMING) {
+        await sendMessageStreaming(message);
+    } else {
+        await sendMessageRegular(message);
+    }
+}
+
+// Regular non-streaming message
+async function sendMessageRegular(message) {
     showTypingIndicator();
 
     try {
-        // Call backend API
         const response = await fetchBotResponse(message);
-        
+
         hideTypingIndicator();
-        addMessage(response.answer, 'bot', response.sources, response.confidence_score);
-        
+        addMessage(response.answer, 'bot');
+
     } catch (error) {
         console.error('Error fetching response:', error);
         hideTypingIndicator();
-        
+
         const messages = MESSAGES[currentLanguage];
         addMessage(messages.errorMessage, 'bot');
     }
 }
 
-// Fetch response from backend API
+// Streaming message with stop capability
+async function sendMessageStreaming(message) {
+    // Create abort controller for this request
+    currentAbortController = new AbortController();
+
+    // Show stop button
+    showStopButton();
+
+    try {
+        const response = await fetchBotResponseStreaming(message, currentAbortController.signal);
+
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            console.log('Request was cancelled by user');
+        } else {
+            console.error('Error fetching response:', error);
+            const messages = MESSAGES[currentLanguage];
+            addMessage(messages.errorMessage, 'bot');
+        }
+    } finally {
+        hideStopButton();
+        currentAbortController = null;
+        currentStreamingMessage = null;
+    }
+}
+
+// Fetch response from backend API (regular, non-streaming)
 async function fetchBotResponse(query) {
-    const apiUrl = (typeof chatbotConfig !== 'undefined' && chatbotConfig.apiUrl) 
-        ? chatbotConfig.apiUrl 
+    const apiUrl = (typeof chatbotConfig !== 'undefined' && chatbotConfig.apiUrl)
+        ? chatbotConfig.apiUrl
         : API_BASE_URL;
-    
+
     try {
         const response = await fetch(`${apiUrl}${API_ENDPOINT}`, {
             method: 'POST',
@@ -217,9 +258,94 @@ async function fetchBotResponse(query) {
 
         const data = await response.json();
         return data;
-        
+
     } catch (error) {
         console.error('API call failed:', error);
+        throw error;
+    }
+}
+
+// Fetch streaming response from backend API
+async function fetchBotResponseStreaming(query, signal) {
+    const apiUrl = (typeof chatbotConfig !== 'undefined' && chatbotConfig.apiUrl)
+        ? chatbotConfig.apiUrl
+        : API_BASE_URL;
+
+    try {
+        const response = await fetch(`${apiUrl}${STREAM_ENDPOINT}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                query: query,
+                language: currentLanguage,
+                top_k: 5,
+                min_score: 0.3,
+                style: 'standard'
+            }),
+            signal: signal  // Pass abort signal
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Create a streaming message container
+        const messageDiv = createStreamingMessage();
+        currentStreamingMessage = messageDiv;
+
+        // Process the stream
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let fullText = '';
+
+        while (true) {
+            const { done, value } = await reader.read();
+
+            if (done) {
+                break;
+            }
+
+            // Decode the chunk
+            buffer += decoder.decode(value, { stream: true });
+
+            // Process complete SSE messages
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    const data = JSON.parse(line.slice(6));
+
+                    if (data.type === 'metadata') {
+                        // Store metadata (sources, confidence, etc.)
+                        console.log('Metadata:', data);
+                    } else if (data.type === 'chunk') {
+                        // Append text chunk
+                        fullText += data.text;
+                        updateStreamingMessage(messageDiv, fullText);
+                    } else if (data.type === 'done') {
+                        // Stream complete
+                        finalizeStreamingMessage(messageDiv, data.full_text);
+                        console.log('Stream complete. Metrics:', data.metrics);
+                    } else if (data.type === 'cancelled') {
+                        // Stream was cancelled
+                        finalizeStreamingMessage(messageDiv, data.partial_text || fullText, true);
+                        console.log('Stream cancelled');
+                    } else if (data.type === 'error') {
+                        // Error occurred
+                        throw new Error(data.error);
+                    }
+                }
+            }
+        }
+
+    } catch (error) {
+        if (currentStreamingMessage) {
+            finalizeStreamingMessage(currentStreamingMessage, '', false, true);
+        }
         throw error;
     }
 }
@@ -363,6 +489,108 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// ============================================================================
+// Streaming Message Functions
+// ============================================================================
+
+// Create a new streaming message container
+function createStreamingMessage() {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message bot streaming';
+
+    const time = getCurrentTime();
+
+    messageDiv.innerHTML = `
+        <div>
+            <div class="message-content"></div>
+            <div class="message-time">${time}</div>
+        </div>
+    `;
+
+    chatMessages.appendChild(messageDiv);
+    scrollToBottom();
+
+    return messageDiv;
+}
+
+// Update streaming message with new text
+function updateStreamingMessage(messageDiv, text) {
+    const contentDiv = messageDiv.querySelector('.message-content');
+    if (contentDiv) {
+        const formattedText = markdownToHtml(text);
+        contentDiv.innerHTML = formattedText;
+        scrollToBottom();
+    }
+}
+
+// Finalize streaming message (remove streaming class)
+function finalizeStreamingMessage(messageDiv, text, wasCancelled = false, hasError = false) {
+    messageDiv.classList.remove('streaming');
+
+    const contentDiv = messageDiv.querySelector('.message-content');
+    if (contentDiv) {
+        if (hasError) {
+            const messages = MESSAGES[currentLanguage];
+            contentDiv.innerHTML = messages.errorMessage;
+        } else if (text) {
+            const formattedText = markdownToHtml(text);
+            contentDiv.innerHTML = formattedText;
+
+            // Add cancelled indicator if needed
+            if (wasCancelled) {
+                const cancelledNote = document.createElement('div');
+                cancelledNote.style.cssText = 'font-size: 11px; color: #999; margin-top: 8px; font-style: italic;';
+                cancelledNote.textContent = currentLanguage === 'DE' ? '(Abgebrochen)' :
+                                           currentLanguage === 'FR' ? '(Annulé)' :
+                                           '(Stopped)';
+                contentDiv.appendChild(cancelledNote);
+            }
+        }
+    }
+
+    scrollToBottom();
+
+    // Store in conversation history
+    conversationHistory.push({
+        text: text,
+        sender: 'bot',
+        timestamp: new Date().toISOString(),
+        wasCancelled: wasCancelled
+    });
+}
+
+// ============================================================================
+// Stop Button Functions
+// ============================================================================
+
+// Show stop button
+function showStopButton() {
+    if (stopButton) {
+        console.log('Showing stop button');
+        stopButton.classList.add('visible');
+        sendButton.classList.add('hidden');
+    } else {
+        console.error('Stop button element not found!');
+    }
+}
+
+// Hide stop button
+function hideStopButton() {
+    if (stopButton) {
+        stopButton.classList.remove('visible');
+        sendButton.classList.remove('hidden');
+    }
+}
+
+// Stop the current generation
+function stopGeneration() {
+    if (currentAbortController) {
+        console.log('Stopping generation...');
+        currentAbortController.abort();
+        hideStopButton();
+    }
 }
 
 // ============================================================================

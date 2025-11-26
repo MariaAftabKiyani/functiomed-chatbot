@@ -173,11 +173,11 @@ class RetrievalService:
             raise ValueError(f"Invalid query: {e}")
     
     def _embed_query(self, query: str) -> np.ndarray:
-        """Generate embedding for normalized query"""
+        """Generate embedding for normalized query with caching"""
         try:
-            # Embed single query (returns shape: (1, 1024))
-            embedding = self.embedding_service.embed_documents([query])
-            return embedding[0]  # Return single vector
+            # Use embed_query for single query with caching support
+            embedding = self.embedding_service.embed_query(query)
+            return embedding
         except Exception as e:
             logger.error(f"Query embedding failed: {e}")
             raise RuntimeError(f"Failed to embed query: {e}")

@@ -290,26 +290,26 @@ class PromptBuilder:
     ) -> str:
         """
         Build prompt with token limit enforcement.
-        
+
         Args:
             context: Retrieved chunks
             query: User question
             language: DE or EN
             token_counter: Optional function to count tokens
-            
+
         Returns:
             Formatted prompt string
         """
         # Select template if language different
         template = get_template(language=language, style="standard")
-        
+
         # Truncate context if needed
         if token_counter:
             context = self._truncate_context(context, token_counter)
-        
+
         # Build prompt
         return template.build(context=context, query=query, language=language)
-    
+
     def _truncate_context(
         self,
         context: List[Dict[str, Any]],
@@ -317,29 +317,29 @@ class PromptBuilder:
     ) -> List[Dict[str, Any]]:
         """
         Truncate context to fit within token limit.
-        
+
         Args:
             context: List of chunks
             token_counter: Function to count tokens
-            
+
         Returns:
             Truncated context list
         """
         truncated = []
         total_tokens = 0
-        
+
         for chunk in context:
             # Estimate chunk tokens
             chunk_text = chunk.get('text', '')
             chunk_tokens = token_counter(chunk_text)
-            
+
             # Check if adding this chunk exceeds limit
             if total_tokens + chunk_tokens > self.max_context_tokens:
                 break
-            
+
             truncated.append(chunk)
             total_tokens += chunk_tokens
-        
+
         return truncated
 
 

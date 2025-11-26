@@ -153,13 +153,19 @@
         <!-- Chat Input -->
         <div class="chat-input-container">
             <div class="chat-input-wrapper">
-                <input 
-                    type="text" 
-                    class="chat-input" 
-                    id="chatInput" 
+                <input
+                    type="text"
+                    class="chat-input"
+                    id="chatInput"
                     placeholder="Geben Sie Ihre Nachricht ein..."
                     autocomplete="off"
                 >
+                <!-- Stop Button - replaces send button during generation -->
+                <button class="stop-button" id="stopButton" title="Stop generating">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="4" y="4" width="16" height="16" rx="1"/>
+                    </svg>
+                </button>
                 <button class="send-button" id="sendButton" disabled>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>

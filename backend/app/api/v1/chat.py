@@ -165,33 +165,133 @@ async def health() -> HealthResponse:
 async def quick_chat(query: str) -> dict:
     """
     Quick chat endpoint with minimal parameters.
-    
+
     Simplified endpoint for basic questions without filtering.
     """
     try:
         logger.info(f"Quick chat: '{query[:50]}...'")
-        
+
         rag_service: RAGService = get_rag_service()
-        
+
         response = rag_service.generate_answer(
             query=query,
             top_k=3,
             style="concise"
         )
-        
+
         # Return simplified response
         return {
             "answer": response.answer,
             "confidence": response.confidence_score,
             "sources": len(response.sources)
         }
-        
+
     except Exception as e:
         logger.error(f"Quick chat failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred. Please try again."
         )
+
+
+@router.post("/stream")
+async def chat_stream(request_body: ChatRequest, request: Request):
+    """
+    Streaming chat endpoint - allows real-time response generation with ability to stop.
+
+    This endpoint streams the response word-by-word and can be cancelled mid-generation
+    by the client closing the connection.
+
+    Returns: Server-Sent Events (SSE) stream with JSON chunks
+    """
+
+    async def generate_stream() -> AsyncGenerator[str, None]:
+        """Generate streaming response with cancellation support"""
+        try:
+            logger.info(f"Streaming chat request: '{request_body.query[:50]}...'")
+
+            # Get RAG service
+            rag_service: RAGService = get_rag_service()
+
+            # Generate answer (non-streaming for now, we'll chunk it)
+            # In a production system, you'd modify RAG service to support true streaming
+            response = rag_service.generate_answer(
+                query=request_body.query,
+                top_k=request_body.top_k or 5,
+                category=request_body.category,
+                language=request_body.language,
+                source_type=request_body.source_type,
+                min_score=request_body.min_score or 0.5,
+                response_style=request_body.style or "standard"
+            )
+
+            # Send metadata first
+            metadata = {
+                "type": "metadata",
+                "query": response.query,
+                "sources": response.sources,  # sources are already dictionaries
+                "confidence_score": response.confidence_score,
+                "detected_language": response.detected_language
+            }
+            yield f"data: {json.dumps(metadata)}\n\n"
+
+            # Check if client disconnected
+            if await request.is_disconnected():
+                logger.info("Client disconnected before streaming answer")
+                return
+
+            # Stream the answer word by word
+            words = response.answer.split()
+            for i, word in enumerate(words):
+                # Check for client disconnect
+                if await request.is_disconnected():
+                    logger.info(f"Client disconnected at word {i}/{len(words)}")
+                    yield f"data: {json.dumps({'type': 'cancelled', 'partial_text': ' '.join(words[:i])})}\n\n"
+                    return
+
+                # Send word chunk
+                chunk = {
+                    "type": "chunk",
+                    "text": word + (" " if i < len(words) - 1 else ""),
+                    "index": i,
+                    "total": len(words)
+                }
+                yield f"data: {json.dumps(chunk)}\n\n"
+
+                # Small delay to simulate streaming (adjust as needed)
+                await asyncio.sleep(0.03)
+
+            # Send completion signal
+            completion = {
+                "type": "done",
+                "full_text": response.answer,
+                "metrics": response.to_dict()["metrics"]
+            }
+            yield f"data: {json.dumps(completion)}\n\n"
+
+            logger.info("Streaming completed successfully")
+
+        except asyncio.CancelledError:
+            logger.info("Stream cancelled by client")
+            yield f"data: {json.dumps({'type': 'cancelled'})}\n\n"
+
+        except Exception as e:
+            logger.error(f"Streaming failed: {type(e).__name__}: {e}")
+            error_msg = {
+                "type": "error",
+                "error": str(e)
+            }
+            yield f"data: {json.dumps(error_msg)}\n\n"
+
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"  # Disable nginx buffering
+        }
+    )
 
 
 # ============================================================================

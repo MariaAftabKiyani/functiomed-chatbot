@@ -285,6 +285,7 @@
     padding: 16px 20px;
     background: white;
     border-top: 1px solid #e2e8f0;
+    position: relative;
 }
 
 .chat-input-wrapper {
@@ -318,7 +319,8 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
 .send-button:hover:not(:disabled) {
@@ -328,6 +330,10 @@
 .send-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.send-button.hidden {
+    display: none;
 }
 
 .send-button svg {
@@ -450,5 +456,61 @@
     }
     50% {
         opacity: 0.5;
+    }
+}
+
+/* Stop Button - Minimal style that replaces send button */
+.stop-button {
+    width: 44px;
+    height: 44px;
+    background: #808080;
+    border: none;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.stop-button.visible {
+    display: flex;
+    animation: fadeIn 0.2s ease;
+}
+
+.stop-button:hover {
+    background: #2d3748;
+    transform: scale(1.05);
+}
+
+.stop-button:active {
+    transform: scale(0.95);
+}
+
+.stop-button svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+}
+
+/* Streaming message indicator */
+.message.streaming .message-content {
+    position: relative;
+}
+
+.message.streaming .message-content::after {
+    content: "▋";
+    animation: blink 1s infinite;
+    margin-left: 2px;
+}
+
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0;
     }
 }
