@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functiomed Chatbot - Multi-Language Test</title>
+    <link rel="stylesheet" href="chatbot-style.css">
+    <style>
+        /* Demo page styles only */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .demo-content {
+            text-align: center;
+            color: white;
+            margin-bottom: 100px;
+            max-width: 600px;
+        }
+
+        .demo-content h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .demo-content p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .demo-features {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .demo-features h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .demo-features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .demo-features li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .demo-features li:before {
+            content: "✓";
+            margin-right: 10px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .language-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            font-size: 0.9em;
+            margin: 0 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Demo Content -->
+    <div class="demo-content">
+        <h1>Functiomed RAG Chatbot</h1>
+        <p>Multi-language medical assistant with AI-powered responses</p>
+    </div>
+
+    <!-- Chat Button -->
+    <div class="chat-button" id="chatButton">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+        </svg>
+    </div>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget" id="chatWidget">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="chat-header-content">
+                <div class="chat-avatar">🤖</div>
+                <div class="chat-header-text">
+                    <h3>Support Assistant</h3>
+                    <p>Online • We typically reply instantly</p>
+                </div>
+            </div>
+            <button class="close-button" id="closeButton">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                <div>
+                    <div class="message-content">
+                        Hallo! Willkommen bei functiomed. Wie kann ich Ihnen heute helfen?
+                    </div>
+                    <div class="message-time" id="initialTime"></div>
+                </div>
+            </div>
+
+            <!-- FAQ Quick Buttons -->
+            <div class="faq-container" id="faqContainer">
+                <div class="faq-title">Häufig gestellte Fragen:</div>
+                <button class="faq-button" data-faq-id="services">
+                    <span class="faq-icon">💼</span>
+                    <span class="faq-text">Welche Leistungen bieten Sie an?</span>
+                </button>
+                <button class="faq-button" data-faq-id="pricing">
+                    <span class="faq-icon">💰</span>
+                    <span class="faq-text">Was sind Ihre Preispläne?</span>
+                </button>
+                <button class="faq-button" data-faq-id="appointment">
+                    <span class="faq-icon">📅</span>
+                    <span class="faq-text">Wie kann ich einen Termin vereinbaren?</span>
+                </button>
+                <button class="faq-button" data-faq-id="location">
+                    <span class="faq-icon">📍</span>
+                    <span class="faq-text">Wo befinden Sie sich?</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input
+                    type="text"
+                    class="chat-input"
+                    id="chatInput"
+                    placeholder="Geben Sie Ihre Nachricht ein..."
+                    autocomplete="off"
+                >
+                <!-- Stop Button - replaces send button during generation -->
+                <button class="stop-button" id="stopButton" title="Stop generating">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="4" y="4" width="16" height="16" rx="1"/>
+                    </svg>
+                </button>
+                <button class="send-button" id="sendButton" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="chatbot-script.js"></script>
+</body>
+</html>
