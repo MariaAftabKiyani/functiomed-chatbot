@@ -2,10 +2,13 @@
 Chat API endpoint with RAG integration.
 Add this to your existing chat.py or create new endpoint.
 """
-from fastapi import APIRouter, HTTPException, status
-from typing import Optional, List
+from fastapi import APIRouter, HTTPException, status, Request
+from fastapi.responses import StreamingResponse
+from typing import Optional, List, AsyncGenerator
 from pydantic import BaseModel, Field
 import logging
+import json
+import asyncio
 
 from app.services.rag_service import get_rag_service, RAGService
 

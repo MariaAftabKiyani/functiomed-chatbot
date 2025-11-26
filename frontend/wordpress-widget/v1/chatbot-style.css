@@ -179,6 +179,52 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
+/* Formatted content styles for bot messages */
+.message.bot .message-content p {
+    margin: 0 0 12px 0;
+}
+
+.message.bot .message-content p:last-child {
+    margin-bottom: 0;
+}
+
+.message.bot .message-content strong {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.message.bot .message-content em {
+    font-style: italic;
+    color: #4a5568;
+}
+
+.message.bot .message-content ul {
+    margin: 8px 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.message.bot .message-content li {
+    margin: 6px 0;
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.6;
+}
+
+.message.bot .message-content li::before {
+    content: "•";
+    position: absolute;
+    left: 6px;
+    color: #667eea;
+    font-weight: bold;
+}
+
+.message.bot .message-content br {
+    display: block;
+    content: "";
+    margin: 4px 0;
+}
+
 .message.user .message-content {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -301,5 +347,108 @@
     .chat-button {
         right: 15px;
         bottom: 15px;
+    }
+}
+
+/* Language selector in header */
+.language-selector {
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+.language-select {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.language-select:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.language-select option {
+    background: #667eea;
+    color: white;
+}
+
+/* FAQ Container and Buttons */
+.faq-container {
+    margin-top: 16px;
+    padding: 12px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 0.5s ease;
+}
+
+.faq-container.hidden {
+    display: none;
+}
+
+.faq-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 10px;
+    padding: 0 4px;
+}
+
+.faq-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    margin: 6px 0;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 13px;
+    color: #2d3748;
+    text-align: left;
+    font-family: inherit;
+}
+
+.faq-button:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.faq-button:active {
+    transform: translateX(2px);
+}
+
+.faq-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.faq-text {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.faq-button.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
     }
 }

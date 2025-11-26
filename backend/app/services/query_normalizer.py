@@ -49,11 +49,18 @@ class QueryNormalizer:
             'eine', 'einem', 'einen', 'welche', 'welcher', 'welches',
             'funktioniert', 'bietet', 'kostet', 'können', 'möchte'
         }
-        
+
         # English-specific words
         self.english_indicators = {
             'the', 'and', 'is', 'for', 'with', 'what', 'how', 'can', 'does',
             'which', 'where', 'when', 'why', 'offer', 'cost', 'provide'
+        }
+
+        # French-specific words
+        self.french_indicators = {
+            'le', 'la', 'les', 'un', 'une', 'des', 'et', 'est', 'de', 'pour',
+            'avec', 'que', 'qui', 'quoi', 'comment', 'quand', 'où', 'pourquoi',
+            'offre', 'coût', 'fournir', 'quel', 'quelle'
         }
         
         logger.info(f"QueryNormalizer initialized (max_length={max_length})")
@@ -125,29 +132,40 @@ class QueryNormalizer:
     
     def _detect_language(self, text: str) -> Optional[str]:
         """
-        Detect query language (DE or EN).
-        
+        Detect query language (DE, EN, or FR).
+
         Simple heuristic: count language-specific indicator words.
         Returns None if uncertain.
         """
         # Convert to lowercase for detection
         text_lower = text.lower()
         words = set(re.findall(r'\b\w+\b', text_lower))
-        
+
         # Count indicators
         german_count = len(words & self.german_indicators)
         english_count = len(words & self.english_indicators)
-        
-        # Decision logic
-        if german_count > english_count:
-            return "DE"
-        elif english_count > german_count:
-            return "EN"
-        else:
+        french_count = len(words & self.french_indicators)
+
+        # Decision logic - highest score wins
+        max_count = max(german_count, english_count, french_count)
+
+        if max_count == 0:
             # Check for umlauts (strong German indicator)
             if re.search(r'[äöüÄÖÜß]', text):
                 return "DE"
+            # Check for French accents
+            if re.search(r'[àâäéèêëïîôùûüÿçÀÂÄÉÈÊËÏÎÔÙÛÜŸÇ]', text):
+                return "FR"
             return None  # Uncertain
+
+        if german_count == max_count:
+            return "DE"
+        elif english_count == max_count:
+            return "EN"
+        elif french_count == max_count:
+            return "FR"
+
+        return None
     
     def validate_length(self, query: str) -> bool:
         """Check if query length is acceptable"""

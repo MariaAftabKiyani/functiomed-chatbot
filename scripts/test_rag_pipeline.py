@@ -13,15 +13,15 @@ from app.config import setup_logging
 from app.services.rag_service import get_rag_service
 
 # Visana Document QA Test Cases
-# VISANA_QA_TESTS = [
-#     {
-#         "question": "Was beinhaltet die Komplementärmedizin bei functiomed?",
-#         "answer": "Unsere Komplementärmedizin umfasst Akupunktur, Homöopathie, medizinische Massagen und weitere alternative Heilmethoden. "
-#     },
-#     {
-#         "question": "What are prices of functiomed?",
-#         "answer": "30min Fr. 108.- 45min Fr. 159.- First consultation additional Fr. 20.- Emergency surcharge additional Fr. 40.-"
-#     },
+VISANA_QA_TESTS = [
+    {
+        "question": "Was beinhaltet die Komplementärmedizin bei functiomed?",
+        "answer": "Unsere Komplementärmedizin umfasst Akupunktur, Homöopathie, medizinische Massagen und weitere alternative Heilmethoden. "
+    },
+    {
+        "question": "What are prices of functiomed?",
+        "answer": "30min Fr. 108.- 45min Fr. 159.- First consultation additional Fr. 20.- Emergency surcharge additional Fr. 40.-"
+    }
 #     {
 #         "question": "Was sind Stammzellen aus Fettgewebe?",
 #         "answer": "Stammzellen aus Fettgewebe – sogenannte mesenchymale Stammzellen – sind Zellen mit einem hohen regenerativen Potenzial. Sie können Gewebe reparieren, Entzündungen hemmen und Heilungsprozesse fördern."
@@ -76,21 +76,6 @@ from app.services.rag_service import get_rag_service
 
 #         Each massage at functiomed is designed to improve well-being, relieve tension, and support the body’s natural healing processes."""
 #     }
-# ]
-
-VISANA_QA_TESTS = [
-    {
-        "question": "Was beinhaltet die Komplementärmedizin bei functiomed?",
-        "answer": "Unsere Komplementärmedizin umfasst Akupunktur, Homöopathie, medizinische Massagen und weitere alternative Heilmethoden. "
-    },
-    {
-        "question": "What are prices of functiomed?",
-        "answer": "30min Fr. 108.- 45min Fr. 159.- First consultation additional Fr. 20.- Emergency surcharge additional Fr. 40.-"
-    },
-    {
-        "question": "Wie checken sich die Patienten ein und aus?",
-        "answer": "By holding their wrist badge or phone sticker to the reader at the entrance of the training area."
-    }
 ]
 
 def test_visana_qa():

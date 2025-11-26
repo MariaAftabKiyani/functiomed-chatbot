@@ -391,8 +391,13 @@ class RAGService:
         retrieval_time_ms: float
     ) -> RAGResponse:
         """Create fallback response when no context is found"""
-        if language.upper() == "EN":
+        # Normalize language to uppercase for comparison
+        lang_upper = language.upper() if language else "DE"
+
+        if lang_upper == "EN":
             answer = settings.RAG_FALLBACK_RESPONSE_EN
+        elif lang_upper == "FR":
+            answer = settings.RAG_FALLBACK_RESPONSE_FR
         else:
             answer = settings.RAG_FALLBACK_RESPONSE_DE
         

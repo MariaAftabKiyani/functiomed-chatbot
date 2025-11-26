@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Functiomed Chatbot - Multi-Language Test</title>
+    <title>Chatbot Widget Test</title>
     <link rel="stylesheet" href="chatbot-style.css">
     <style>
         /* Demo page styles only */
@@ -22,7 +22,6 @@
             text-align: center;
             color: white;
             margin-bottom: 100px;
-            max-width: 600px;
         }
 
         .demo-content h1 {
@@ -33,55 +32,14 @@
         .demo-content p {
             font-size: 1.2em;
             opacity: 0.9;
-            margin-bottom: 30px;
-        }
-
-        .demo-features {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .demo-features h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        .demo-features ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .demo-features li {
-            padding: 8px 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .demo-features li:before {
-            content: "✓";
-            margin-right: 10px;
-            font-weight: bold;
-            color: #4CAF50;
-        }
-
-        .language-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            font-size: 0.9em;
-            margin: 0 4px;
         }
     </style>
 </head>
 <body>
     <!-- Demo Content -->
     <div class="demo-content">
-        <h1>Functiomed RAG Chatbot</h1>
-        <p>Multi-language medical assistant with AI-powered responses</p>
+        <h1>WordPress Chatbot Widget</h1>
+        <p>Click the chat button in the bottom right to test the widget</p>
     </div>
 
     <!-- Chat Button -->
@@ -115,31 +73,10 @@
             <div class="message bot">
                 <div>
                     <div class="message-content">
-                        Hallo! Willkommen bei functiomed. Wie kann ich Ihnen heute helfen?
+                        Hello! 👋 Welcome to our website. How can I help you today?
                     </div>
                     <div class="message-time" id="initialTime"></div>
                 </div>
-            </div>
-
-            <!-- FAQ Quick Buttons -->
-            <div class="faq-container" id="faqContainer">
-                <div class="faq-title">Häufig gestellte Fragen:</div>
-                <button class="faq-button" data-faq-id="services">
-                    <span class="faq-icon">💼</span>
-                    <span class="faq-text">Welche Leistungen bieten Sie an?</span>
-                </button>
-                <button class="faq-button" data-faq-id="pricing">
-                    <span class="faq-icon">💰</span>
-                    <span class="faq-text">Was sind Ihre Preispläne?</span>
-                </button>
-                <button class="faq-button" data-faq-id="appointment">
-                    <span class="faq-icon">📅</span>
-                    <span class="faq-text">Wie kann ich einen Termin vereinbaren?</span>
-                </button>
-                <button class="faq-button" data-faq-id="location">
-                    <span class="faq-icon">📍</span>
-                    <span class="faq-text">Wo befinden Sie sich?</span>
-                </button>
             </div>
         </div>
 
@@ -157,10 +94,10 @@
                     type="text" 
                     class="chat-input" 
                     id="chatInput" 
-                    placeholder="Geben Sie Ihre Nachricht ein..."
+                    placeholder="Type your message..."
                     autocomplete="off"
                 >
-                <button class="send-button" id="sendButton" disabled>
+                <button class="send-button" id="sendButton">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
                     </svg>

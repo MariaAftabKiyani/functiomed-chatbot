@@ -43,7 +43,8 @@ class LLMService:
         logger.info(f"Loading {settings.LLM_MODEL_NAME}...")
         logger.info(f"  Device: {settings.LLM_DEVICE}")
         logger.info(f"  Quantization: {settings.LLM_USE_QUANTIZATION}")
-        
+        logger.info(f"  Load in 8-bit: {settings.LLM_LOAD_IN_8BIT}")
+
         try:
             # Load tokenizer
             logger.info("Loading tokenizer...")
@@ -52,29 +53,44 @@ class LLMService:
                 trust_remote_code=True,
                 cache_dir=settings.HF_HOME
             )
-            
+
             # Set padding token if not exists
             if self.tokenizer.pad_token is None:
                 self.tokenizer.pad_token = self.tokenizer.eos_token
-            
+
             logger.info("✓ Tokenizer loaded")
-            
+
+            # Configure quantization if enabled
+            quantization_config = None
+            if settings.LLM_USE_QUANTIZATION and settings.LLM_LOAD_IN_8BIT:
+                logger.info("Configuring 8-bit quantization (reduces RAM to ~8GB)...")
+                quantization_config = BitsAndBytesConfig(
+                    load_in_8bit=True,
+                    llm_int8_threshold=6.0
+                )
+            elif settings.LLM_USE_QUANTIZATION and settings.LLM_LOAD_IN_4BIT:
+                logger.info("Configuring 4-bit quantization (reduces RAM to ~4GB)...")
+                quantization_config = BitsAndBytesConfig(
+                    load_in_4bit=True,
+                    bnb_4bit_compute_dtype=torch.float16,
+                    bnb_4bit_use_double_quant=True,
+                    bnb_4bit_quant_type="nf4"
+                )
+
             # Load model
             logger.info("Loading model (this may take a few minutes)...")
             self.model = AutoModelForCausalLM.from_pretrained(
                 settings.LLM_MODEL_NAME,
-                # quantization_config=quantization_config,
-                # device_map="auto" if settings.LLM_DEVICE == "cuda" else None,
-                device_map=None,
-                # torch_dtype=torch.float16 if settings.LLM_DEVICE == "cuda" else torch.float32,
-                torch_dtype=torch.float32,
+                quantization_config=quantization_config,
+                device_map="auto" if quantization_config else None,
+                dtype=torch.float16 if settings.LLM_DEVICE == "cuda" else torch.float32,  # Changed from torch_dtype to dtype
                 trust_remote_code=True,
                 cache_dir=settings.HF_HOME,
                 low_cpu_mem_usage=True
             )
-            
-            # Move to device if CPU
-            if settings.LLM_DEVICE == "cpu":
+
+            # Move to device if CPU and no quantization
+            if settings.LLM_DEVICE == "cpu" and not quantization_config:
                 self.model = self.model.to(settings.LLM_DEVICE)
             
             logger.info("✓ Model loaded")

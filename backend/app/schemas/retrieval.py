@@ -15,7 +15,7 @@ class RetrievalRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=512, description="User query text")
     top_k: int = Field(default=5, ge=1, le=20, description="Number of results to return")
     category: Optional[List[str]] = Field(default=None, description="Filter by categories")
-    language: Optional[str] = Field(default=None, pattern="^(DE|EN)$", description="Filter by language")
+    language: Optional[str] = Field(default=None, pattern="^(DE|EN|FR)$", description="Filter by language")
     source_type: Optional[str] = Field(default=None, pattern="^(pdf|text)$", description="Filter by source type")
     min_score: Optional[float] = Field(default=0.0, ge=0.0, le=1.0, description="Minimum similarity score")
     
