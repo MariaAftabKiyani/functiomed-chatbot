@@ -6,28 +6,34 @@ Medical chatbot with RAG capabilities using Qdrant vector database.
 
 ### Prerequisites
 - Python 3.8+
-- Qdrant (running on localhost:6333)
+- Docker
 
 ### Installation
 
-1. Clone and navigate to project:
+1. Start Qdrant with Docker:
+```bash
+docker pull qdrant/qdrant
+docker run -p 6333:6333 -p 6334:6334 -v "$(pwd)/qdrant_storage:/qdrant/storage:z" qdrant/qdrant
+```
+
+2. Clone and navigate to project:
 ```bash
 cd functiomed-chatbot
 ```
 
-2. Install backend dependencies:
+3. Install backend dependencies:
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
-3. Configure environment:
+4. Configure environment:
 ```bash
 cp .env.example .env
 ```
 Edit `.env` with your Qdrant configuration.
 
-4. Run backend:
+5. Run backend:
 ```bash
 cd backend
 uvicorn app.main:app --reload
