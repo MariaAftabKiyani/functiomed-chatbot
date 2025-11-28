@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     EMBEDDING_NORMALIZE: bool = os.getenv("EMBEDDING_NORMALIZE", "True").lower() == "true"
 
     # Hugging Face
-    HF_HUB_TOKEN: str = os.getenv("HF_HUB_TOKEN", "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")
+    HF_HUB_TOKEN: str = os.getenv("HF_HUB_TOKEN", "")
     HF_HOME: str = os.getenv(
         "HF_HOME",
         os.path.join(os.path.dirname(__file__), "..", "..", ".hf_cache")
@@ -63,13 +63,13 @@ class Settings(BaseSettings):
     # Retrieval Settings
     # ============================================================================
     RETRIEVAL_TOP_K: int = Field(
-        default=5,
+        default=1,
         env="RETRIEVAL_TOP_K",
         description="Default number of chunks to retrieve"
     )
 
     RETRIEVAL_MIN_SCORE: float = Field(
-        default=0.3,
+        default=0.9,
         env="RETRIEVAL_MIN_SCORE",
         description="Minimum similarity score threshold (0-1)"
     )
@@ -85,10 +85,10 @@ class Settings(BaseSettings):
     # ============================================================================
 
     # Model settings
-    LLM_MODEL_NAME: str = os.getenv("LLM_MODEL_NAME", "meta-llama/Llama-3.2-1B-Instruct")
+    LLM_MODEL_NAME: str = os.getenv("LLM_MODEL_NAME", "openai-community/gpt2-large")
 
     # Generation settings
-    LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS", "512"))  # Max tokens for responses
+    LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS","1024"))  # Max tokens for responses
     LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.8"))  # Sampling temperature
     LLM_TOP_P: float = float(os.getenv("LLM_TOP_P", "0.9"))
     LLM_CONTEXT_WINDOW: int = int(os.getenv("LLM_CONTEXT_WINDOW", "4096"))  # Context window size 
@@ -98,7 +98,7 @@ class Settings(BaseSettings):
     # ============================================================================
 
     # Context settings
-    RAG_MAX_CONTEXT_TOKENS: int = int(os.getenv("RAG_MAX_CONTEXT_TOKENS", "1536"))  # Reserve space for response (prompt + context)
+    RAG_MAX_CONTEXT_TOKENS: int = int(os.getenv("RAG_MAX_CONTEXT_TOKENS", "1024"))  # Reserve space for response (prompt + context)
     RAG_MAX_CHUNKS: int = int(os.getenv("RAG_MAX_CHUNKS", "5"))  # Number of chunks to retrieve
     RAG_MIN_CHUNK_SCORE: float = float(os.getenv("RAG_MIN_CHUNK_SCORE", "0.5"))  # Minimum similarity
 
