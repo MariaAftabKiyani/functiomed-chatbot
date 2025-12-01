@@ -24,7 +24,7 @@
         }
 
         .app-header h1 {
-            color: #2c5f7c;
+            color: #AE8C64;
             font-size: 2.5rem;
             margin: 0 0 0.5rem 0;
             font-weight: 300;
@@ -46,7 +46,7 @@
         }
 
         .welcome-section h2 {
-            color: #2c5f7c;
+            color: #AE8C64;
             margin: 0 0 1rem 0;
             font-weight: 400;
             font-size: 1.5rem;
@@ -101,7 +101,15 @@
                 <h3>Functiomed Assistant</h3>
                 <span class="status-indicator">● Online</span>
             </div>
-            <button class="close-button" id="closeButton">×</button>
+            <div class="chat-header-actions">
+                <button class="voice-toggle" id="voiceToggle" title="Toggle AI Voice">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                    </svg>
+                </button>
+                <button class="close-button" id="closeButton">×</button>
+            </div>
         </div>
 
         <!-- Chat Messages -->
@@ -115,23 +123,11 @@
 
             <!-- FAQ Quick Buttons -->
             <div class="faq-container" id="faqContainer">
-                <div class="faq-title">Häufig gestellte Fragen:</div>
-                <button class="faq-button" data-faq-id="services">
-                    <span class="faq-icon">💼</span>
-                    <span class="faq-text">Welche Leistungen bieten Sie an?</span>
-                </button>
-                <button class="faq-button" data-faq-id="pricing">
-                    <span class="faq-icon">💰</span>
-                    <span class="faq-text">Was sind Ihre Preispläne?</span>
-                </button>
-                <button class="faq-button" data-faq-id="appointment">
-                    <span class="faq-icon">📅</span>
-                    <span class="faq-text">Wie kann ich einen Termin vereinbaren?</span>
-                </button>
-                <button class="faq-button" data-faq-id="location">
-                    <span class="faq-icon">📍</span>
-                    <span class="faq-text">Wo befinden Sie sich?</span>
-                </button>
+                <div class="faq-title">Frequently Asked Questions:</div>
+                <button class="faq-button" data-faq-id="services">What services do you provide?</button>
+                <button class="faq-button" data-faq-id="pricing">What are your pricing plans?</button>
+                <button class="faq-button" data-faq-id="appointment">How can I book an appointment?</button>
+                <button class="faq-button" data-faq-id="location">Where are you located?</button>
             </div>
         </div>
 
@@ -145,11 +141,19 @@
         <!-- Chat Input -->
         <div class="chat-input-container">
             <div class="chat-input-wrapper">
+                <button class="mic-button" id="micButton" title="Voice input">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                        <line x1="12" y1="19" x2="12" y2="23" />
+                        <line x1="8" y1="23" x2="16" y2="23" />
+                    </svg>
+                </button>
                 <input
                     type="text"
                     class="chat-input"
                     id="chatInput"
-                    placeholder="Geben Sie Ihre Nachricht ein..."
+                    placeholder="Type your message or click mic to speak..."
                     autocomplete="off"
                 >
                 <!-- Stop Button - replaces send button during generation -->
@@ -159,8 +163,9 @@
                     </svg>
                 </button>
                 <button class="send-button" id="sendButton" disabled>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13" />
+                        <polygon points="22 2 15 22 11 13 2 9 22 2" />
                     </svg>
                 </button>
             </div>

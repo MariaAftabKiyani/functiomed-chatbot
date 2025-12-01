@@ -1,11 +1,14 @@
 // Chat Widget State
 let isOpen = false;
 let conversationHistory = [];
-let currentLanguage = 'DE'; // Default language
+let currentLanguage = 'EN'; // Default language
 let faqCache = {}; // Cache for FAQ responses
 let faqsHidden = false; // Track if FAQs are hidden
 let currentAbortController = null; // For cancelling requests
 let currentStreamingMessage = null; // Reference to the message being streamed
+let isVoiceEnabled = false; // Voice toggle state
+let recognition = null; // Speech recognition instance
+let isListening = false; // Microphone listening state
 
 // Configuration
 const API_BASE_URL = 'http://localhost:8000';  // Change to your backend URL
@@ -51,6 +54,8 @@ const chatInput = document.getElementById('chatInput');
 const sendButton = document.getElementById('sendButton');
 const typingIndicator = document.getElementById('typingIndicator');
 const stopButton = document.getElementById('stopButton');
+const voiceToggle = document.getElementById('voiceToggle');
+const micButton = document.getElementById('micButton');
 
 // Initialize
 function init() {
@@ -139,6 +144,8 @@ function setupEventListeners() {
     closeButton.addEventListener('click', toggleChat);
     sendButton.addEventListener('click', sendMessage);
     stopButton.addEventListener('click', stopGeneration);
+    voiceToggle.addEventListener('click', toggleVoice);
+    micButton.addEventListener('click', toggleMicrophone);
 
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -151,6 +158,9 @@ function setupEventListeners() {
     chatInput.addEventListener('input', () => {
         sendButton.disabled = chatInput.value.trim() === '';
     });
+
+    // Initialize speech recognition
+    initSpeechRecognition();
 }
 
 // Toggle chat widget
@@ -631,10 +641,7 @@ function updateFAQButtonTexts() {
         const faq = faqCache[faqId];
 
         if (faq && faq.question && faq.question[currentLanguage]) {
-            const textSpan = button.querySelector('.faq-text');
-            if (textSpan) {
-                textSpan.textContent = faq.question[currentLanguage];
-            }
+            button.textContent = faq.question[currentLanguage];
         }
     });
 
@@ -646,7 +653,7 @@ function updateFAQButtonTexts() {
             EN: 'Frequently Asked Questions:',
             FR: 'Questions fréquemment posées:'
         };
-        faqTitle.textContent = titles[currentLanguage] || titles.DE;
+        faqTitle.textContent = titles[currentLanguage] || titles.EN;
     }
 }
 
@@ -740,6 +747,96 @@ function showFAQs() {
     if (faqContainer) {
         faqContainer.classList.remove('hidden');
         faqsHidden = false;
+    }
+}
+
+// ============================================================================
+// Voice and Speech Recognition Functions
+// ============================================================================
+
+// Toggle voice output
+function toggleVoice() {
+    isVoiceEnabled = !isVoiceEnabled;
+
+    if (isVoiceEnabled) {
+        voiceToggle.classList.add('active');
+    } else {
+        voiceToggle.classList.remove('active');
+        voiceToggle.classList.add('muted');
+        setTimeout(() => voiceToggle.classList.remove('muted'), 300);
+    }
+
+    console.log('Voice output:', isVoiceEnabled ? 'enabled' : 'disabled');
+}
+
+// Initialize speech recognition
+function initSpeechRecognition() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        console.log('Speech recognition not supported');
+        micButton.style.display = 'none';
+        return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US'; // Can be changed based on currentLanguage
+
+    recognition.onstart = () => {
+        isListening = true;
+        micButton.classList.add('listening');
+        console.log('Speech recognition started');
+    };
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        chatInput.value = transcript;
+        sendButton.disabled = false;
+
+        // Auto-send after a short delay
+        setTimeout(() => {
+            if (transcript.trim()) {
+                sendMessage();
+            }
+        }, 500);
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        isListening = false;
+        micButton.classList.remove('listening');
+
+        if (event.error === 'no-speech') {
+            alert('No speech detected. Please try again.');
+        } else if (event.error === 'not-allowed') {
+            alert('Microphone permission denied. Please enable it in your browser settings.');
+        }
+    };
+
+    recognition.onend = () => {
+        isListening = false;
+        micButton.classList.remove('listening');
+        console.log('Speech recognition ended');
+    };
+}
+
+// Toggle microphone for speech input
+function toggleMicrophone() {
+    if (!recognition) {
+        alert('Speech recognition is not supported in your browser. Please use Chrome, Edge, or Safari.');
+        return;
+    }
+
+    if (isListening) {
+        recognition.stop();
+    } else {
+        try {
+            recognition.start();
+        } catch (error) {
+            console.error('Error starting speech recognition:', error);
+        }
     }
 }
 

@@ -2,9 +2,9 @@
 
 /* CSS Variables for consistent theming */
 :root {
-    --primary-color: #2c5f7c;
-    --primary-dark: #1e4258;
-    --primary-light: #4a8fb8;
+    --primary-color: #AE8C64;
+    --primary-dark: #8B6F4F;
+    --primary-light: #C9A882;
     --secondary-color: #7cb3a0;
     --background: #f8f9fa;
     --surface: #ffffff;
@@ -122,6 +122,54 @@
     font-size: 0.75rem;
     opacity: 0.9;
     color: #4ade80;
+}
+
+.chat-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.voice-toggle {
+    background: transparent;
+    color: white;
+    border: none;
+    min-width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0 4px;
+    position: relative;
+}
+
+.voice-toggle:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.voice-toggle.active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.voice-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+.voice-toggle.muted svg path:last-child {
+    display: none;
+}
+
+.voice-toggle.muted::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background: white;
+    transform: rotate(-45deg);
 }
 
 .close-button {
@@ -327,6 +375,44 @@
     align-items: center;
 }
 
+.mic-button {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.mic-button:hover {
+    background: var(--border);
+    transform: scale(1.05);
+}
+
+.mic-button.listening {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
 .chat-input {
     flex: 1;
     border: 1px solid var(--border);
@@ -427,12 +513,12 @@
 
 /* FAQ Container and Buttons */
 .faq-container {
-    margin-top: 16px;
-    padding: 12px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    animation: fadeIn 0.5s ease;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    max-height: 120px;
+    overflow-y: auto;
 }
 
 .faq-container.hidden {
@@ -440,29 +526,25 @@
 }
 
 .faq-title {
-    font-size: 13px;
+    width: 100%;
+    font-size: 0.75rem;
     font-weight: 600;
-    color: #4a5568;
-    margin-bottom: 10px;
-    padding: 0 4px;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
 }
 
 .faq-button {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0.75rem 1rem;
-    margin: 6px 0;
+    padding: 0.5rem 0.75rem;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    border-radius: 16px;
     font-size: 0.85rem;
     color: var(--text-primary);
-    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
     font-family: inherit;
+    text-align: center;
 }
 
 .faq-button:hover {
@@ -470,21 +552,10 @@
     color: white;
     border-color: var(--primary-color);
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(44, 95, 124, 0.2);
 }
 
 .faq-button:active {
     transform: translateY(0);
-}
-
-.faq-icon {
-    font-size: 18px;
-    flex-shrink: 0;
-}
-
-.faq-text {
-    flex: 1;
-    line-height: 1.4;
 }
 
 .faq-button.loading {
