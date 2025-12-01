@@ -9,80 +9,82 @@
         /* Demo page styles only */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f8f9fa;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
             margin: 0;
-        }
-
-        .demo-content {
-            text-align: center;
-            color: white;
-            margin-bottom: 100px;
-            max-width: 600px;
-        }
-
-        .demo-content h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-
-        .demo-content p {
-            font-size: 1.2em;
-            opacity: 0.9;
-            margin-bottom: 30px;
-        }
-
-        .demo-features {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .demo-features h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        .demo-features ul {
-            list-style: none;
             padding: 0;
         }
 
-        .demo-features li {
-            padding: 8px 0;
-            display: flex;
-            align-items: center;
+        .app-header {
+            background: #ffffff;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e0e0e0;
         }
 
-        .demo-features li:before {
-            content: "✓";
-            margin-right: 10px;
-            font-weight: bold;
-            color: #4CAF50;
+        .app-header h1 {
+            color: #2c5f7c;
+            font-size: 2.5rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 300;
         }
 
-        .language-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            font-size: 0.9em;
-            margin: 0 4px;
+        .app-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .welcome-section {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-section h2 {
+            color: #2c5f7c;
+            margin: 0 0 1rem 0;
+            font-weight: 400;
+            font-size: 1.5rem;
+        }
+
+        .welcome-section p {
+            color: #6c757d;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .app-header h1 {
+                font-size: 2rem;
+            }
+
+            .welcome-section {
+                margin: 2rem 1rem;
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Demo Content -->
-    <div class="demo-content">
-        <h1>Functiomed RAG Chatbot</h1>
-        <p>Multi-language medical assistant with AI-powered responses</p>
-    </div>
+    <!-- App Header -->
+    <header class="app-header">
+        <h1>Functiomed.ch</h1>
+        <p>Your Health & Wellness Partner</p>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="welcome-section">
+            <h2>Welcome</h2>
+            <p>Ask me anything about our services, book an appointment, or reserve parking.</p>
+        </div>
+    </main>
 
     <!-- Chat Button -->
     <div class="chat-button" id="chatButton">
@@ -96,29 +98,19 @@
         <!-- Chat Header -->
         <div class="chat-header">
             <div class="chat-header-content">
-                <div class="chat-avatar">🤖</div>
-                <div class="chat-header-text">
-                    <h3>Support Assistant</h3>
-                    <p>Online • We typically reply instantly</p>
-                </div>
+                <h3>Functiomed Assistant</h3>
+                <span class="status-indicator">● Online</span>
             </div>
-            <button class="close-button" id="closeButton">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </button>
+            <button class="close-button" id="closeButton">×</button>
         </div>
 
         <!-- Chat Messages -->
         <div class="chat-messages" id="chatMessages">
             <div class="message bot">
-                <div>
-                    <div class="message-content">
-                        Hallo! Willkommen bei functiomed. Wie kann ich Ihnen heute helfen?
-                    </div>
-                    <div class="message-time" id="initialTime"></div>
+                <div class="message-content">
+                    Hi there! 👋 I'm your friendly assistant at Functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?
                 </div>
+                <div class="message-time" id="initialTime"></div>
             </div>
 
             <!-- FAQ Quick Buttons -->

@@ -17,28 +17,28 @@ const USE_STREAMING = true; // Toggle streaming vs regular
 // Language-specific messages
 const MESSAGES = {
     EN: {
-        initialGreeting: "Hello! 👋 Welcome to functiomed. How can I help you today?",
+        initialGreeting: "Hi there! 👋 I'm your friendly assistant at Functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?",
         placeholder: "Type your message...",
         errorMessage: "Sorry, there was an error. Please try again.",
         typingIndicator: "Typing...",
-        headerTitle: "Support Assistant",
-        headerStatus: "Online • We typically reply instantly"
+        headerTitle: "Functiomed Assistant",
+        headerStatus: "● Online"
     },
     DE: {
-        initialGreeting: "Hallo! 👋 Willkommen bei functiomed. Wie kann ich Ihnen heute helfen?",
+        initialGreeting: "Hallo! 👋 Ich bin Ihr freundlicher Assistent bei Functiomed. Ich bin hier, um Ihnen bei allem zu helfen - sei es Informationen über unsere Dienstleistungen, Ärzte oder die Beantwortung Ihrer Fragen. Wie kann ich Ihnen heute helfen?",
         placeholder: "Geben Sie Ihre Nachricht ein...",
         errorMessage: "Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.",
         typingIndicator: "Tippt...",
-        headerTitle: "Support-Assistent",
-        headerStatus: "Online • Wir antworten normalerweise sofort"
+        headerTitle: "Functiomed Assistent",
+        headerStatus: "● Online"
     },
     FR: {
-        initialGreeting: "Bonjour! 👋 Bienvenue chez functiomed. Comment puis-je vous aider aujourd'hui?",
+        initialGreeting: "Bonjour! 👋 Je suis votre assistant amical chez Functiomed. Je suis là pour vous aider avec tout ce dont vous avez besoin - que ce soit pour trouver des informations sur nos services, nos médecins ou pour répondre à vos questions. Comment puis-je vous aider aujourd'hui?",
         placeholder: "Tapez votre message...",
         errorMessage: "Désolé, une erreur s'est produite. Veuillez réessayer.",
         typingIndicator: "Écrit...",
-        headerTitle: "Assistant Support",
-        headerStatus: "En ligne • Nous répondons généralement instantanément"
+        headerTitle: "Assistant Functiomed",
+        headerStatus: "● En ligne"
     }
 };
 
@@ -96,16 +96,16 @@ function addLanguageSelector() {
 // Update UI text based on selected language
 function updateLanguageUI() {
     const messages = MESSAGES[currentLanguage];
-    
+
     // Update placeholder
     chatInput.placeholder = messages.placeholder;
-    
+
     // Update header
-    const headerTitle = document.querySelector('.chat-header-text h3');
-    const headerStatus = document.querySelector('.chat-header-text p');
+    const headerTitle = document.querySelector('.chat-header-content h3');
+    const headerStatus = document.querySelector('.status-indicator');
     if (headerTitle) headerTitle.textContent = messages.headerTitle;
     if (headerStatus) headerStatus.textContent = messages.headerStatus;
-    
+
     // Update initial message if it's the first message
     if (conversationHistory.length === 0) {
         const initialMessage = document.querySelector('.message.bot .message-content');
@@ -445,10 +445,8 @@ function addMessage(text, sender, sources = null, confidence = null) {
     const formattedText = sender === 'bot' ? markdownToHtml(text) : escapeHtml(text);
 
     messageDiv.innerHTML = `
-        <div>
-            <div class="message-content">${formattedText}</div>
-            <div class="message-time">${time}</div>
-        </div>
+        <div class="message-content">${formattedText}</div>
+        <div class="message-time">${time}</div>
     `;
 
     chatMessages.appendChild(messageDiv);
@@ -503,10 +501,8 @@ function createStreamingMessage() {
     const time = getCurrentTime();
 
     messageDiv.innerHTML = `
-        <div>
-            <div class="message-content"></div>
-            <div class="message-time">${time}</div>
-        </div>
+        <div class="message-content"></div>
+        <div class="message-time">${time}</div>
     `;
 
     chatMessages.appendChild(messageDiv);
