@@ -14,8 +14,82 @@ let isListening = false; // Microphone listening state
 const API_BASE_URL = 'http://localhost:8000';  // Change to your backend URL
 const API_ENDPOINT = '/api/v1/chat/';
 const STREAM_ENDPOINT = '/api/v1/chat/stream';
-const FAQ_ENDPOINT = '/api/v1/faqs/';
+// const FAQ_ENDPOINT = '/api/v1/faqs/'; // No longer needed - FAQs are hardcoded
 const USE_STREAMING = true; // Toggle streaming vs regular
+
+// Hardcoded FAQ data - No API calls needed for instant response
+const HARDCODED_FAQS = {
+    services: {
+        id: "services",
+        question: {
+            EN: "What services do you provide?",
+            DE: "Welche Leistungen bieten Sie an?",
+            FR: "Quels services proposez-vous ?"
+        },
+        answer: {
+            EN: "We offer a comprehensive range of medical, therapeutic, and integrative health services designed to support diagnostics, treatment, rehabilitation, and long-term wellbeing. Our core service areas include:\n\n**1. Osteopathy:** Classical osteopathy, pediatric osteopathy, osteopathy for pregnant women, and sports osteopathy to support functional balance, healthy development, relief during pregnancy, and performance enhancement for athletes.\n\n**2. Physiotherapy:** Classic physiotherapy for musculoskeletal conditions, pediatric physiotherapy for motor development, and flexible self-pay physiotherapy to reduce pain, improve mobility, and enhance performance at all ages.\n\n**3. Medicine:** Specialized services in orthopedics & traumatology, rheumatology, internal medicine, occupational therapy, and stem cell therapy for precise diagnostics, targeted treatment, functional rehabilitation, and long-term health support.\n\n**4. Complementary Medicine:** Acupuncture, homeopathy, medical massages, and colon hydrotherapy to promote natural regeneration, relaxation, inner balance, and complement conventional treatments.\n\n**5. Integrative Medicine:** Combines medical diagnostics with therapies such as orthomolecular medicine, phytotherapy, functional myodiagnostics, neural therapy, ozone therapy, and colon hydrotherapy to activate self-healing and support gut health, hormones, detoxification, mitochondria, micronutrients, and mental resilience.\n\n**6. FunctioTraining:** Personalized, structured training programs for rehabilitation, performance, and long-term fitness. Flexible memberships allow independent, professionally guided training, with optional outdoor functiowalks for extra activity and energy.",
+            DE: "Wir bieten ein umfassendes Spektrum an medizinischen, therapeutischen und integrativen Gesundheitsdienstleistungen zur Unterstützung von Diagnostik, Behandlung, Rehabilitation und langfristigem Wohlbefinden. Unsere Kernbereiche umfassen:\n\n**1. Osteopathie:** Klassische Osteopathie, Kinderosteopathie, Osteopathie für Schwangere und Sportosteopathie zur Unterstützung der funktionellen Balance, gesunden Entwicklung, Linderung während der Schwangerschaft und Leistungssteigerung bei Sportlern.\n\n**2. Physiotherapie:** Klassische Physiotherapie für muskuloskelettale Beschwerden, Kinderphysiotherapie zur motorischen Entwicklung und flexible Selbstzahler-Physiotherapie zur Schmerzlinderung, Verbesserung der Beweglichkeit und Leistungssteigerung in jedem Alter.\n\n**3. Medizin:** Spezialisierte Leistungen in Orthopädie & Traumatologie, Rheumatologie, Innere Medizin, Ergotherapie und Stammzelltherapie für präzise Diagnostik, gezielte Behandlung, funktionelle Rehabilitation und langfristige Gesundheitsunterstützung.\n\n**4. Komplementärmedizin:** Akupunktur, Homöopathie, medizinische Massagen und Colon-Hydrotherapie zur Förderung natürlicher Regeneration, Entspannung, innerer Balance und als Ergänzung zur Schulmedizin.\n\n**5. Integrative Medizin:** Kombination aus medizinischer Diagnostik und Therapien wie orthomolekulare Medizin, Phytotherapie, funktionelle Myodiagnostik, Neuraltherapie, Ozontherapie und Colon-Hydrotherapie zur Aktivierung der Selbstheilungskräfte und Unterstützung von Darmgesundheit, Hormonen, Entgiftung, Mitochondrien, Mikronährstoffen und mentaler Resilienz.\n\n**6. FunctioTraining:** Personalisierte, strukturierte Trainingsprogramme für Rehabilitation, Leistungssteigerung und langfristige Fitness. Flexible Mitgliedschaften ermöglichen unabhängiges, professionell begleitetes Training, optional ergänzt durch Functiowalks im Freien für zusätzliche Bewegung und Energie.",
+            FR: "Nous offrons une gamme complète de services médicaux, thérapeutiques et de santé intégrative pour soutenir le diagnostic, le traitement, la rééducation et le bien-être à long terme. Nos principaux domaines de services comprennent :\n\n**1. Ostéopathie :** Ostéopathie classique, ostéopathie pédiatrique, ostéopathie pour femmes enceintes et ostéopathie sportive pour soutenir l'équilibre fonctionnel, le développement sain, le soulagement pendant la grossesse et l'amélioration des performances sportives.\n\n**2. Physiothérapie :** Physiothérapie classique pour les troubles musculo-squelettiques, physiothérapie pédiatrique pour le développement moteur et physiothérapie en paiement libre pour réduire la douleur, améliorer la mobilité et les performances à tous les âges.\n\n**3. Médecine :** Services spécialisés en orthopédie & traumatologie, rhumatologie, médecine interne, ergothérapie et thérapie par cellules souches pour un diagnostic précis, un traitement ciblé, une rééducation fonctionnelle et un soutien à long terme de la santé.\n\n**4. Médecine complémentaire :** Acupuncture, homéopathie, massages médicaux et hydrothérapie colique pour favoriser la régénération naturelle, la relaxation, l'équilibre intérieur et compléter les traitements conventionnels.\n\n**5. Médecine intégrative :** Combine le diagnostic médical avec des thérapies telles que la médecine orthomoléculaire, la phytothérapie, le myodiagnostic fonctionnel, la thérapie neurale, l'ozonothérapie et l'hydrothérapie colique pour activer l'auto-guérison et soutenir la santé intestinale, hormonale, la détoxification, les mitochondries, les micronutriments et la résilience mentale.\n\n**6. FunctioTraining :** Programmes d'entraînement personnalisés et structurés pour la rééducation, l'amélioration des performances et la forme physique à long terme. Les abonnements flexibles permettent un entraînement indépendant mais guidé professionnellement, avec des Functiowalks en extérieur en option pour plus de mouvement et d'énergie."
+        },
+        category: "services"
+    },
+    physiotherapy: {
+        id: "physiotherapy",
+        question: {
+            EN: "Tell me about physiotherapy",
+            DE: "Erzählen Sie mir etwas über Physiotherapie",
+            FR: "Parlez-moi de la physiothérapie"
+        },
+        answer: {
+            EN: "Our physiotherapy services focus on restoring and improving physical function through targeted, evidence-based treatments tailored to your individual needs.\n\n**1. Physiotherapy:** Enhance mobility, strength, and functional capacity while sustainably reducing pain. Treatments are active, personalized, and evidence-based for long-term recovery and improved quality of life.\n\n**2. Child Physiotherapy:** Supports children's physical development through playful exercises, promoting motor skills, movement quality, coordination, and independence during key growth phases.\n\n**3. Self-Pay Physiotherapy:** Offers goal-oriented treatments and precise testing procedures for individualized care, allowing you to actively manage your health and achieve optimal results.",
+            DE: "Unsere Physiotherapie-Dienstleistungen konzentrieren sich darauf, die körperliche Funktion gezielt wiederherzustellen und zu verbessern – durch evidenzbasierte, individuell abgestimmte Behandlungen.\n\n**1. Physiotherapie:** Steigerung von Beweglichkeit, Kraft und Funktionalität bei nachhaltiger Schmerzreduktion. Die Behandlungen sind aktiv, personalisiert und evidenzbasiert für langfristige Genesung und verbesserte Lebensqualität.\n\n**2. Kinderphysiotherapie:** Unterstützt die körperliche Entwicklung von Kindern durch spielerische Übungen, fördert motorische Fähigkeiten, Bewegungsqualität, Koordination und Selbstständigkeit während wichtiger Wachstumsphasen.\n\n**3. Selbstzahler-Physiotherapie:** Bietet zielgerichtete Behandlungen und präzise Testverfahren für eine individuelle Betreuung, damit Sie Ihre Gesundheit aktiv steuern und optimale Ergebnisse erzielen können.",
+            FR: "Nos services de physiothérapie visent à restaurer et améliorer la fonction physique grâce à des traitements ciblés et basés sur des preuves, adaptés à vos besoins individuels.\n\n**1. Physiothérapie :** Améliorer la mobilité, la force et la capacité fonctionnelle tout en réduisant durablement la douleur. Les traitements sont actifs, personnalisés et basés sur les dernières preuves médicales pour une récupération à long terme et une meilleure qualité de vie.\n\n**2. Physiothérapie pour enfants :** Soutient le développement physique des enfants grâce à des exercices ludiques, favorisant les compétences motrices, la qualité du mouvement, la coordination et l'indépendance pendant les phases de croissance clés.\n\n**3. Physiothérapie en paiement libre :** Propose des traitements ciblés et des tests précis pour des soins individualisés, vous permettant de gérer activement votre santé et d'obtenir des résultats optimaux."
+        },
+        category: "services"
+    },
+    appointment: {
+        id: "appointment",
+        question: {
+            EN: "How to book an appointment?",
+            DE: "Wie buche ich einen Termin?",
+            FR: "Comment prendre rendez-vous ?"
+        },
+        answer: {
+            EN: "**Booking link:** [Click here to book online](https://functiomed.thefotoloft.ch/pages/online-termin-buchen/)\n\n**Step-by-Step Guide:**\n**1. Select Treatment & Reason:** Choose your specialty and reason for consultation.\n**2. Choose Practitioner:** Pick your preferred doctor or therapist or view all available appointments.\n**3. Select Time Slot:** Browse the calendar and select a suitable date and time.\n**4. Enter Email:** Provide a valid email to continue and confirm booking.\n**5. Medicosearch Registration:** Enter first name, last name, and password to create an account, and accept Privacy Policy and Terms & Conditions.\n**6. Confirm Booking:** Submit email and account details to finalize your appointment.",
+            DE: "**Buchungslink:** [Hier klicken zum Online-Buchen](https://functiomed.thefotoloft.ch/pages/online-termin-buchen/)\n\n**Schritt-für-Schritt-Anleitung:**\n**1. Behandlung & Grund auswählen:** Wählen Sie Ihre Fachrichtung und den Grund für die Konsultation.\n**2. Behandler wählen:** Wählen Sie Ihren bevorzugten Arzt oder Therapeuten oder zeigen Sie alle verfügbaren Termine an.\n**3. Zeitfenster auswählen:** Durchsuchen Sie den Kalender und wählen Sie ein passendes Datum und Uhrzeit.\n**4. E-Mail eingeben:** Geben Sie eine gültige E-Mail-Adresse ein, um die Buchung fortzusetzen und zu bestätigen.\n**5. Medicosearch-Registrierung:** Geben Sie Vorname, Nachname und Passwort ein, um ein Konto zu erstellen, und akzeptieren Sie Datenschutzbestimmungen und AGB.\n**6. Buchung bestätigen:** Senden Sie Ihre E-Mail und Kontodaten, um den Termin abzuschließen.",
+            FR: "**Lien de réservation :** [Cliquez ici pour réserver en ligne](https://functiomed.thefotoloft.ch/pages/online-termin-buchen/)\n\n**Guide étape par étape :**\n**1. Sélectionner le traitement et le motif :** Choisissez votre spécialité et le motif de la consultation.\n**2. Choisir le praticien :** Sélectionnez votre médecin ou thérapeute préféré ou affichez tous les rendez-vous disponibles.\n**3. Choisir l'horaire :** Parcourez le calendrier et sélectionnez une date et une heure appropriées.\n**4. Saisir l'e-mail :** Fournissez une adresse e-mail valide pour continuer et confirmer la réservation.\n**5. Inscription sur Medicosearch :** Entrez votre prénom, nom et mot de passe pour créer un compte, et acceptez la politique de confidentialité et les conditions générales.\n**6. Confirmer la réservation :** Soumettez vos coordonnées e-mail et de compte pour finaliser votre rendez-vous."
+        },
+        category: "booking"
+    },
+    contact: {
+        id: "contact",
+        question: {
+            EN: "How do I contact you?",
+            DE: "Wie kann ich Sie kontaktieren?",
+            FR: "Comment puis-je vous contacter ?"
+        },
+        answer: {
+            EN: "You can contact us by phone or email:\n\n**Phone:** +41 (0)44 401 15 15\n**Email:** functiomed@hin.ch\n\nWe usually respond to inquiries within **24 hours** on **weekdays**.",
+            DE: "Sie können uns telefonisch oder per E-Mail kontaktieren:\n\n**Telefon:** +41 (0)44 401 15 15\n**E-Mail:** functiomed@hin.ch\n\nWir beantworten Anfragen in der Regel innerhalb von **24 Stunden** an **Werktagen**.",
+            FR: "Vous pouvez nous contacter par téléphone ou par e-mail :\n\n**Téléphone :** +41 (0)44 401 15 15\n**E-mail :** functiomed@hin.ch\n\nNous répondons généralement aux demandes dans les **24 heures** en **semaine**."
+        },
+        category: "contact"
+    },
+    hours: {
+        id: "hours",
+        question: {
+            EN: "What are your hours?",
+            DE: "Wie sind Ihre Öffnungszeiten?",
+            FR: "Quels sont vos horaires ?"
+        },
+        answer: {
+            EN: "We usually respond to inquiries within **24 hours** on **weekdays**.",
+            DE: "Wir beantworten Anfragen in der Regel innerhalb von **24 Stunden** an **Werktagen**.",
+            FR: "Nous répondons généralement aux demandes dans les **24 heures** en **semaine**."
+        },
+        category: "general"
+    }
+};
 
 // Language-specific messages
 const MESSAGES = {
@@ -355,7 +429,10 @@ async function fetchBotResponseStreaming(query, signal) {
 function markdownToHtml(text) {
     if (!text) return '';
 
-    // First pass: Handle bold text **text**
+    // First pass: Handle markdown links [text](url)
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: underline;">$1</a>');
+
+    // Second pass: Handle bold text **text**
     text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 
     // Split into lines for processing
@@ -595,33 +672,15 @@ function stopGeneration() {
 // FAQ Functions
 // ============================================================================
 
-// Load all FAQs and cache them
-async function loadFAQs() {
-    const apiUrl = (typeof chatbotConfig !== 'undefined' && chatbotConfig.apiUrl)
-        ? chatbotConfig.apiUrl
-        : API_BASE_URL;
+// Load all FAQs from hardcoded data (instant, no API call)
+function loadFAQs() {
+    // Copy hardcoded FAQ data to cache
+    faqCache = { ...HARDCODED_FAQS };
 
-    try {
-        const response = await fetch(`${apiUrl}${FAQ_ENDPOINT}?language=${currentLanguage}`);
+    // Update button texts based on current language
+    updateFAQButtonTexts();
 
-        if (!response.ok) {
-            console.error('Failed to load FAQs:', response.status);
-            return;
-        }
-
-        const data = await response.json();
-
-        // Cache all FAQs by ID
-        data.faqs.forEach(faq => {
-            faqCache[faq.id] = faq;
-        });
-
-        console.log(`Loaded ${data.total} FAQs into cache`);
-        updateFAQButtonTexts();
-
-    } catch (error) {
-        console.error('Error loading FAQs:', error);
-    }
+    console.log(`Loaded ${Object.keys(faqCache).length} FAQs (hardcoded, instant)`);
 }
 
 // Update FAQ button texts based on current language
@@ -662,64 +721,38 @@ function setupFAQButtons() {
     });
 }
 
-// Handle FAQ button click - instant response from cache
-async function handleFAQClick(faqId) {
-    // Check cache first for instant response
-    if (faqCache[faqId]) {
-        const faq = faqCache[faqId];
-        const question = faq.question[currentLanguage];
-        const answer = faq.answer[currentLanguage];
+// Handle FAQ button click - instant response from hardcoded data
+function handleFAQClick(faqId) {
+    // Get FAQ from hardcoded cache (always available, instant response)
+    const faq = faqCache[faqId];
 
-        // Add user question
-        addMessage(question, 'user');
-
-        // Add instant cached answer (no API call needed!)
-        setTimeout(() => {
-            addMessage(answer, 'bot');
-            // Don't hide FAQs - keep them visible like inspiration widget
-        }, 100);
-
+    if (!faq) {
+        console.error(`FAQ not found: ${faqId}`);
+        const messages = MESSAGES[currentLanguage];
+        addMessage(messages.errorMessage, 'bot');
         return;
     }
 
-    // Fallback: Fetch from API if not in cache
-    const apiUrl = (typeof chatbotConfig !== 'undefined' && chatbotConfig.apiUrl)
-        ? chatbotConfig.apiUrl
-        : API_BASE_URL;
+    // Get question and answer in current language
+    const question = faq.question[currentLanguage];
+    const answer = faq.answer[currentLanguage];
 
-    try {
-        showTypingIndicator();
-
-        const response = await fetch(`${apiUrl}${FAQ_ENDPOINT}${faqId}?language=${currentLanguage}`);
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const faqData = await response.json();
-
-        // Cache it
-        faqCache[faqId] = {
-            id: faqData.id,
-            question: { [currentLanguage]: faqData.question },
-            answer: { [currentLanguage]: faqData.answer },
-            category: faqData.category
-        };
-
-        // Add question and answer
-        addMessage(faqData.question, 'user');
-        hideTypingIndicator();
-        addMessage(faqData.answer, 'bot');
-
-        // Don't hide FAQs - keep them visible like inspiration widget
-
-    } catch (error) {
-        console.error('Error fetching FAQ:', error);
-        hideTypingIndicator();
-
+    // Validate language-specific content exists
+    if (!question || !answer) {
+        console.error(`FAQ ${faqId} missing translation for ${currentLanguage}`);
         const messages = MESSAGES[currentLanguage];
         addMessage(messages.errorMessage, 'bot');
+        return;
     }
+
+    // Display question as user message
+    addMessage(question, 'user');
+
+    // Display answer as bot message (instant response)
+    setTimeout(() => {
+        addMessage(answer, 'bot');
+        // Don't hide FAQs - keep them visible like inspiration widget
+    }, 100); // Small delay for UX (feels more natural)
 }
 
 // Hide FAQ buttons after first interaction

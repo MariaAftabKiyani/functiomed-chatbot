@@ -1,7 +1,7 @@
 """
-FAQ API endpoint - Provides instant cached responses for common questions
+FAQ API endpoint - Provides instant responses for common questions
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from typing import List, Optional
 from pydantic import BaseModel, Field
 import json
@@ -11,9 +11,6 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/faqs", tags=["faqs"])
-
-# Cache for FAQ data
-_faq_cache = None
 
 
 # ============================================================================
@@ -85,12 +82,7 @@ class FAQListResponse(BaseModel):
 # ============================================================================
 
 def load_faqs() -> dict:
-    """Load FAQs from JSON file (with caching)"""
-    global _faq_cache
-
-    if _faq_cache is not None:
-        return _faq_cache
-
+    """Load FAQs from JSON file"""
     try:
         # Get FAQ file path
         faq_file = Path(__file__).parent.parent.parent / "data" / "faqs.json"
@@ -99,12 +91,12 @@ def load_faqs() -> dict:
             logger.error(f"FAQ file not found: {faq_file}")
             raise FileNotFoundError(f"FAQ file not found: {faq_file}")
 
-        # Load and cache
+        # Load FAQs (no caching - always fresh)
         with open(faq_file, 'r', encoding='utf-8') as f:
-            _faq_cache = json.load(f)
+            data = json.load(f)
 
-        logger.info(f"Loaded {len(_faq_cache.get('faqs', []))} FAQs from file")
-        return _faq_cache
+        logger.debug(f"Loaded {len(data.get('faqs', []))} FAQs from file")
+        return data
 
     except Exception as e:
         logger.error(f"Failed to load FAQs: {e}")
@@ -139,11 +131,11 @@ def get_faq_by_id(faq_id: str, language: str = "DE") -> Optional[FAQResponse]:
 # ============================================================================
 
 @router.get("/", response_model=FAQListResponse)
-async def get_all_faqs(language: Optional[str] = "DE") -> FAQListResponse:
+async def get_all_faqs(response: Response, language: Optional[str] = "DE") -> FAQListResponse:
     """
     Get all FAQs in the specified language.
 
-    This endpoint returns cached FAQ data for instant display.
+    This endpoint returns fresh FAQ data on every request.
     No LLM processing required - responses are pre-generated.
 
     Args:
@@ -152,6 +144,11 @@ async def get_all_faqs(language: Optional[str] = "DE") -> FAQListResponse:
     Returns:
         List of all FAQs with metadata
     """
+    # Prevent browser caching
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+
     try:
         data = load_faqs()
         metadata = data.get("metadata", {})
@@ -177,11 +174,11 @@ async def get_all_faqs(language: Optional[str] = "DE") -> FAQListResponse:
 
 
 @router.get("/{faq_id}", response_model=FAQResponse)
-async def get_faq(faq_id: str, language: Optional[str] = "DE") -> FAQResponse:
+async def get_faq(faq_id: str, response: Response, language: Optional[str] = "DE") -> FAQResponse:
     """
     Get a specific FAQ by ID.
 
-    This provides instant cached responses for common questions.
+    This provides instant fresh responses for common questions.
     Perfect for FAQ buttons/cards on the frontend.
 
     Args:
@@ -191,6 +188,11 @@ async def get_faq(faq_id: str, language: Optional[str] = "DE") -> FAQResponse:
     Returns:
         FAQ question and answer in specified language
     """
+    # Prevent browser caching
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+
     try:
         faq = get_faq_by_id(faq_id, language)
 
@@ -213,7 +215,7 @@ async def get_faq(faq_id: str, language: Optional[str] = "DE") -> FAQResponse:
 
 
 @router.get("/category/{category}", response_model=List[FAQResponse])
-async def get_faqs_by_category(category: str, language: Optional[str] = "DE") -> List[FAQResponse]:
+async def get_faqs_by_category(category: str, response: Response, language: Optional[str] = "DE") -> List[FAQResponse]:
     """
     Get all FAQs in a specific category.
 
@@ -224,6 +226,11 @@ async def get_faqs_by_category(category: str, language: Optional[str] = "DE") ->
     Returns:
         List of FAQs in the specified category
     """
+    # Prevent browser caching
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+
     try:
         data = load_faqs()
         results = []
@@ -260,32 +267,29 @@ async def get_faqs_by_category(category: str, language: Optional[str] = "DE") ->
 @router.post("/reload")
 async def reload_faqs() -> dict:
     """
-    Reload FAQ cache from file.
+    Check FAQ file status.
 
-    Use this endpoint to refresh FAQs after updating the JSON file.
-    Requires authentication in production.
+    Note: FAQs are no longer cached - they are loaded fresh on each request.
+    This endpoint is kept for backward compatibility.
 
     Returns:
-        Status message with number of FAQs loaded
+        Status message with number of FAQs available
     """
-    global _faq_cache
-
     try:
-        _faq_cache = None  # Clear cache
-        data = load_faqs()  # Reload
+        data = load_faqs()
 
         return {
             "status": "success",
-            "message": "FAQs reloaded successfully",
+            "message": "FAQs are loaded fresh on each request (no caching)",
             "total_faqs": len(data.get("faqs", [])),
             "version": data.get("metadata", {}).get("version", "unknown")
         }
 
     except Exception as e:
-        logger.error(f"Failed to reload FAQs: {e}")
+        logger.error(f"Failed to load FAQs: {e}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to reload FAQs: {str(e)}"
+            detail=f"Failed to load FAQs: {str(e)}"
         )
 
 
