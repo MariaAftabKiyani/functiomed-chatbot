@@ -128,6 +128,47 @@ class Settings(BaseSettings):
     HF_HUB_TOKEN: str = os.getenv("HF_HUB_TOKEN", "")  # Required for Llama models
     HF_HOME: str = os.getenv("HF_HOME", "./models/huggingface")  # Model cache directory
 
+    # ============================================================================
+    # TTS Configuration (Fish Speech 1.5)
+    # ============================================================================
+
+    # Model paths
+    TTS_MODEL_PATH: str = os.getenv(
+        "TTS_MODEL_PATH",
+        os.path.join(HF_HOME, "fish-speech-1.5")
+    )
+    TTS_DEVICE: str = os.getenv("TTS_DEVICE", "cpu")  # "cpu" or "cuda"
+
+    # Reference voices directory
+    TTS_REFERENCE_DIR: str = os.getenv(
+        "TTS_REFERENCE_DIR",
+        os.path.join(os.path.dirname(__file__), "..", "..", "data", "reference_voices")
+    )
+
+    # Reference voice texts (for voice cloning context)
+    TTS_REFERENCE_TEXT_DE: str = os.getenv(
+        "TTS_REFERENCE_TEXT_DE",
+        "Guten Tag, wie kann ich Ihnen heute helfen?"
+    )
+    TTS_REFERENCE_TEXT_EN: str = os.getenv(
+        "TTS_REFERENCE_TEXT_EN",
+        "Hello, how can I help you today?"
+    )
+    TTS_REFERENCE_TEXT_FR: str = os.getenv(
+        "TTS_REFERENCE_TEXT_FR",
+        "Bonjour, comment puis-je vous aider aujourd'hui?"
+    )
+
+    # Audio cache directory
+    TTS_CACHE_DIR: str = os.getenv(
+        "TTS_CACHE_DIR",
+        os.path.join(os.path.dirname(__file__), "..", "..", "data", "tts_cache")
+    )
+
+    # Generation settings
+    TTS_MAX_CHARS: int = int(os.getenv("TTS_MAX_CHARS", "2000"))
+    TTS_TIMEOUT: int = int(os.getenv("TTS_TIMEOUT", "30"))  # seconds
+
 
     class Config:
         env_file = ".env"

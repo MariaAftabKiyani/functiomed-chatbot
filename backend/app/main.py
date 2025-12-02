@@ -19,9 +19,10 @@ app.add_middleware(
 )
 
 # Include routers
-from app.api.v1 import chat, faqs
+from app.api.v1 import chat, faqs, tts
 app.include_router(chat.router)
 app.include_router(faqs.router)
+app.include_router(tts.router)
 
 @app.get("/")
 async def root():

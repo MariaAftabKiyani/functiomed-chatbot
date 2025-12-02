@@ -10,6 +10,10 @@ let isVoiceEnabled = false; // Voice toggle state
 let recognition = null; // Speech recognition instance
 let isListening = false; // Microphone listening state
 
+// Audio player state for TTS
+let currentAudio = null;  // HTML5 Audio instance
+let currentAudioBlob = null;  // Blob URL for cleanup
+
 // Configuration
 const API_BASE_URL = 'http://localhost:8000';  // Change to your backend URL
 const API_ENDPOINT = '/api/v1/chat/';
@@ -99,7 +103,8 @@ const MESSAGES = {
         errorMessage: "Sorry, there was an error. Please try again.",
         typingIndicator: "Typing...",
         headerTitle: "FIONA",
-        headerStatus: "● Online"
+        headerStatus: "● Online",
+        ttsError: "Could not play audio. Please try again."
     },
     DE: {
         initialGreeting: "Hallo! 👋 Ich bin FIONA, Ihre freundliche Assistentin bei Functiomed. Ich bin hier, um Ihnen bei allem zu helfen, was Sie brauchen - ob es darum geht, Informationen über unsere Dienstleistungen, Ärzte zu finden oder Ihre Fragen zu beantworten. Womit kann ich Ihnen heute helfen?",
@@ -107,7 +112,8 @@ const MESSAGES = {
         errorMessage: "Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.",
         typingIndicator: "Tippt...",
         headerTitle: "FIONA",
-        headerStatus: "● Online"
+        headerStatus: "● Online",
+        ttsError: "Audio konnte nicht abgespielt werden. Bitte versuchen Sie es erneut."
     },
     FR: {
         initialGreeting: "Bonjour ! 👋 Je suis FIONA, votre assistante amicale chez Functiomed. Je suis là pour vous aider avec tout ce dont vous avez besoin - que ce soit pour trouver des informations sur nos services, nos médecins ou répondre à vos questions. En quoi puis-je vous aider aujourd'hui ?",
@@ -115,7 +121,8 @@ const MESSAGES = {
         errorMessage: "Désolé, une erreur s'est produite. Veuillez réessayer.",
         typingIndicator: "Écrit...",
         headerTitle: "FIONA",
-        headerStatus: "● En ligne"
+        headerStatus: "● En ligne",
+        ttsError: "Impossible de lire l'audio. Veuillez réessayer."
     }
 };
 
@@ -779,13 +786,129 @@ function showFAQs() {
 // Voice and Speech Recognition Functions
 // ============================================================================
 
-// Toggle voice output
-function toggleVoice() {
+// Get last bot message from conversation history
+function getLastBotMessage() {
+    for (let i = conversationHistory.length - 1; i >= 0; i--) {
+        const msg = conversationHistory[i];
+        if (msg.sender === 'bot' && msg.text && !msg.wasCancelled) {
+            return msg.text;
+        }
+    }
+    return null;
+}
+
+// Generate and play TTS audio
+async function speakText(text, language) {
+    try {
+        showSpeakingAnimation();
+
+        // Clean up previous audio
+        stopAudio();
+
+        console.log(`Generating TTS for: "${text.substring(0, 50)}..." (${language})`);
+
+        // Call TTS API
+        const response = await fetch(`${API_BASE_URL}/api/v1/tts/generate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: text,
+                language: language
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`TTS API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('TTS generated:', data);
+
+        // Fetch audio file
+        const audioUrl = `${API_BASE_URL}${data.audio_url}`;
+        const audioResponse = await fetch(audioUrl);
+
+        if (!audioResponse.ok) {
+            throw new Error(`Failed to fetch audio: ${audioResponse.status}`);
+        }
+
+        const audioBlob = await audioResponse.blob();
+        currentAudioBlob = URL.createObjectURL(audioBlob);
+
+        // Create and play audio
+        currentAudio = new Audio(currentAudioBlob);
+
+        // Event handlers
+        currentAudio.addEventListener('play', () => {
+            console.log('Audio playback started');
+            showSpeakingAnimation();
+        });
+
+        currentAudio.addEventListener('ended', () => {
+            console.log('Audio playback finished');
+            hideSpeakingAnimation();
+            cleanupAudioBlob();
+        });
+
+        currentAudio.addEventListener('error', (e) => {
+            console.error('Audio playback error:', e);
+            hideSpeakingAnimation();
+            cleanupAudioBlob();
+        });
+
+        // Start playback
+        await currentAudio.play();
+
+    } catch (error) {
+        console.error('TTS error:', error);
+        hideSpeakingAnimation();
+        // Show error message
+        const messages = MESSAGES[currentLanguage];
+        if (messages && messages.ttsError) {
+            // Optionally show error notification to user
+            console.warn(messages.ttsError);
+        }
+    }
+}
+
+// Stop current audio playback
+function stopAudio() {
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio = null;
+    }
+    cleanupAudioBlob();
+    hideSpeakingAnimation();
+}
+
+// Clean up blob URL to prevent memory leaks
+function cleanupAudioBlob() {
+    if (currentAudioBlob) {
+        URL.revokeObjectURL(currentAudioBlob);
+        currentAudioBlob = null;
+    }
+}
+
+// Toggle voice output and play last bot message
+async function toggleVoice() {
     isVoiceEnabled = !isVoiceEnabled;
 
     if (isVoiceEnabled) {
         voiceToggle.classList.add('active');
+
+        // Get last bot message
+        const lastBotMessage = getLastBotMessage();
+        if (lastBotMessage) {
+            await speakText(lastBotMessage, currentLanguage);
+        } else {
+            console.warn('No bot message to read');
+        }
     } else {
+        // Stop current playback
+        stopAudio();
         voiceToggle.classList.remove('active');
         voiceToggle.classList.remove('speaking');
         voiceToggle.classList.add('muted');

@@ -1,54 +1,50 @@
-
-# Core
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
-pydantic>=2.5.0
+# Core dependencies
+aiofiles
+alembic
+beautifulsoup4
+einops
+fastapi
+httpx
+lxml
+loguru
+natsort
+psycopg2-binary
+pydantic
 pydantic_settings
-python-dotenv>=1.0.0
+pydub
+pypdf
+python-dotenv
+python-multipart>=0.0.18,<0.1
+qdrant-client
 
-# Database
-sqlalchemy>=2.0.23
-psycopg2-binary>=2.9.9
-alembic>=1.12.1
-
-# Vector DB & Embeddings
-qdrant-client>=1.7.0
-sentence-transformers>=2.2.2
-
-# Document Processing
-pypdf>=3.17.0
-beautifulsoup4>=4.12.2
-lxml>=4.9.3
-
-# Utilities
-python-multipart>=0.0.6
-aiofiles>=23.2.1
-httpx>=0.25.1
-
-# ============================================================================
-# NEW: LLM Dependencies for Llama 3.1
-# ============================================================================
-
-# Transformers ecosystem
-transformers>=4.36.0
-torch>=2.1.0  # CPU version, use torch+cu118 for CUDA 11.8
+# Audio / ML
+librosa>=0.10.1,<0.11
+soundfile
+torch>=2.3.0
+torchvision>=0.14.0
 accelerate>=0.25.0
-# bitsandbytes>=0.41.0  # For 4-bit/8-bit quantization (GPU only, commented out for CPU)
-sentencepiece>=0.1.99
-protobuf>=3.20.0
+transformers>=4.45.2
+sentence-transformers==2.2.2
+huggingface-hub>=0.23.2,<1.0
+sentencepiece
 
-# HuggingFace Hub
-huggingface-hub>=0.19.0
+# Gradio UI
+gradio==5.44.0
+gradio-client==1.12.1
 
-# Add extra index for prebuilt Windows wheels
-# llama_cpp_python
+# Database & ORM
+sqlalchemy>=2.0.23
 
+# Optional: GPU support if needed
+# torchaudio (if working with audio models)
+# torchaudio
 
+# External Git packages
+git+https://github.com/fishaudio/fish-speech.git@main
 
+# NumPy pinned to <2 to avoid compatibility issues
+numpy<2
+protobuf==3.20.3
 
-# ============================================================================
-# Notes:
-# ============================================================================
-
-# 1. For CPU-only inference (Windows without GPU):
-#    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+# Server
+uvicorn
