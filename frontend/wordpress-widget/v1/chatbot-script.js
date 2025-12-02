@@ -20,27 +20,27 @@ const USE_STREAMING = true; // Toggle streaming vs regular
 // Language-specific messages
 const MESSAGES = {
     EN: {
-        initialGreeting: "Hi there! 👋 I'm your friendly assistant at Functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?",
-        placeholder: "Type your message...",
+        initialGreeting: "Hi there! 👋 I'm FIONA, your friendly assistant at Functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?",
+        placeholder: "Type your message or click mic to speak...",
         errorMessage: "Sorry, there was an error. Please try again.",
         typingIndicator: "Typing...",
-        headerTitle: "Functiomed Assistant",
+        headerTitle: "FIONA",
         headerStatus: "● Online"
     },
     DE: {
-        initialGreeting: "Hallo! 👋 Ich bin Ihr freundlicher Assistent bei Functiomed. Ich bin hier, um Ihnen bei allem zu helfen - sei es Informationen über unsere Dienstleistungen, Ärzte oder die Beantwortung Ihrer Fragen. Wie kann ich Ihnen heute helfen?",
+        initialGreeting: "Hallo! 👋 Ich bin FIONA, Ihre freundliche Assistentin bei Functiomed. Ich bin hier, um Ihnen bei allem zu helfen, was Sie brauchen - ob es darum geht, Informationen über unsere Dienstleistungen, Ärzte zu finden oder Ihre Fragen zu beantworten. Womit kann ich Ihnen heute helfen?",
         placeholder: "Geben Sie Ihre Nachricht ein...",
         errorMessage: "Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.",
         typingIndicator: "Tippt...",
-        headerTitle: "Functiomed Assistent",
+        headerTitle: "FIONA",
         headerStatus: "● Online"
     },
     FR: {
-        initialGreeting: "Bonjour! 👋 Je suis votre assistant amical chez Functiomed. Je suis là pour vous aider avec tout ce dont vous avez besoin - que ce soit pour trouver des informations sur nos services, nos médecins ou pour répondre à vos questions. Comment puis-je vous aider aujourd'hui?",
+        initialGreeting: "Bonjour ! 👋 Je suis FIONA, votre assistante amicale chez Functiomed. Je suis là pour vous aider avec tout ce dont vous avez besoin - que ce soit pour trouver des informations sur nos services, nos médecins ou répondre à vos questions. En quoi puis-je vous aider aujourd'hui ?",
         placeholder: "Tapez votre message...",
         errorMessage: "Désolé, une erreur s'est produite. Veuillez réessayer.",
         typingIndicator: "Écrit...",
-        headerTitle: "Assistant Functiomed",
+        headerTitle: "FIONA",
         headerStatus: "● En ligne"
     }
 };
@@ -56,6 +56,7 @@ const typingIndicator = document.getElementById('typingIndicator');
 const stopButton = document.getElementById('stopButton');
 const voiceToggle = document.getElementById('voiceToggle');
 const micButton = document.getElementById('micButton');
+const pitchAnimation = document.getElementById('pitchAnimation');
 
 // Initialize
 function init() {
@@ -67,35 +68,26 @@ function init() {
     setInitialTime();
     updateLanguageUI();
     setupEventListeners();
-    addLanguageSelector();
+    setupLanguageSelector();
     setupFAQButtons();
     loadFAQs(); // Pre-load FAQ data
 }
 
-// Add language selector to chat header
-function addLanguageSelector() {
-    const headerContent = document.querySelector('.chat-header-content');
-    
-    const languageSelector = document.createElement('div');
-    languageSelector.className = 'language-selector';
-    languageSelector.innerHTML = `
-        <select id="languageSelect" class="language-select">
-            <option value="DE" ${currentLanguage === 'DE' ? 'selected' : ''}>German</option>
-            <option value="EN" ${currentLanguage === 'EN' ? 'selected' : ''}>English</option>
-            <option value="FR" ${currentLanguage === 'FR' ? 'selected' : ''}>French</option>
-        </select>
-    `;
-    
-    // Insert before close button
-    const chatHeader = document.querySelector('.chat-header');
-    chatHeader.insertBefore(languageSelector, closeButton);
-    
-    // Add event listener
-    document.getElementById('languageSelect').addEventListener('change', (e) => {
-        currentLanguage = e.target.value;
-        updateLanguageUI();
-        loadFAQs(); // Reload FAQs in new language
-    });
+// Setup language selector event listener
+function setupLanguageSelector() {
+    const languageSelect = document.getElementById('languageSelect');
+
+    // Set initial value
+    if (languageSelect) {
+        languageSelect.value = currentLanguage;
+
+        // Add event listener
+        languageSelect.addEventListener('change', (e) => {
+            currentLanguage = e.target.value;
+            updateLanguageUI();
+            loadFAQs(); // Reload FAQs in new language
+        });
+    }
 }
 
 // Update UI text based on selected language
@@ -684,7 +676,7 @@ async function handleFAQClick(faqId) {
         // Add instant cached answer (no API call needed!)
         setTimeout(() => {
             addMessage(answer, 'bot');
-            hideFAQs(); // Hide FAQs after first interaction
+            // Don't hide FAQs - keep them visible like inspiration widget
         }, 100);
 
         return;
@@ -719,7 +711,7 @@ async function handleFAQClick(faqId) {
         hideTypingIndicator();
         addMessage(faqData.answer, 'bot');
 
-        hideFAQs();
+        // Don't hide FAQs - keep them visible like inspiration widget
 
     } catch (error) {
         console.error('Error fetching FAQ:', error);
@@ -733,9 +725,9 @@ async function handleFAQClick(faqId) {
 // Hide FAQ buttons after first interaction
 function hideFAQs() {
     if (!faqsHidden) {
-        const faqContainer = document.getElementById('faqContainer');
-        if (faqContainer) {
-            faqContainer.classList.add('hidden');
+        const faqSection = document.getElementById('faqSection');
+        if (faqSection) {
+            faqSection.classList.add('hidden');
             faqsHidden = true;
         }
     }
@@ -743,9 +735,9 @@ function hideFAQs() {
 
 // Show FAQ buttons again (optional - for reset)
 function showFAQs() {
-    const faqContainer = document.getElementById('faqContainer');
-    if (faqContainer) {
-        faqContainer.classList.remove('hidden');
+    const faqSection = document.getElementById('faqSection');
+    if (faqSection) {
+        faqSection.classList.remove('hidden');
         faqsHidden = false;
     }
 }
@@ -762,11 +754,31 @@ function toggleVoice() {
         voiceToggle.classList.add('active');
     } else {
         voiceToggle.classList.remove('active');
+        voiceToggle.classList.remove('speaking');
         voiceToggle.classList.add('muted');
+        if (pitchAnimation) {
+            pitchAnimation.style.display = 'none';
+        }
         setTimeout(() => voiceToggle.classList.remove('muted'), 300);
     }
 
     console.log('Voice output:', isVoiceEnabled ? 'enabled' : 'disabled');
+}
+
+// Show speaking animation
+function showSpeakingAnimation() {
+    if (isVoiceEnabled && voiceToggle && pitchAnimation) {
+        voiceToggle.classList.add('speaking');
+        pitchAnimation.style.display = 'flex';
+    }
+}
+
+// Hide speaking animation
+function hideSpeakingAnimation() {
+    if (voiceToggle && pitchAnimation) {
+        voiceToggle.classList.remove('speaking');
+        pitchAnimation.style.display = 'none';
+    }
 }
 
 // Initialize speech recognition

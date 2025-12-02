@@ -131,7 +131,7 @@
 }
 
 .voice-toggle {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.15);
     color: white;
     border: none;
     min-width: 36px;
@@ -144,19 +144,30 @@
     transition: all 0.2s ease;
     padding: 0 4px;
     position: relative;
+    gap: 4px;
 }
 
 .voice-toggle:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.25);
 }
 
 .voice-toggle.active {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.voice-toggle.speaking {
+    background: rgba(255, 255, 255, 0.25);
+    animation: speaking-pulse 1.5s ease-in-out infinite;
+    border-radius: 18px;
+    padding: 0 8px;
 }
 
 .voice-toggle svg {
     width: 20px;
     height: 20px;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
 }
 
 .voice-toggle.muted svg path:last-child {
@@ -170,6 +181,61 @@
     height: 2px;
     background: white;
     transform: rotate(-45deg);
+}
+
+/* Pitch animation */
+.pitch-animation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    pointer-events: none;
+    z-index: 2;
+    margin-left: 2px;
+}
+
+.pitch-animation .wave-bar {
+    width: 3px;
+    height: 8px;
+    background: white;
+    border-radius: 2px;
+    animation: wave-animation 0.8s ease-in-out infinite;
+}
+
+.pitch-animation .wave-bar:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.pitch-animation .wave-bar:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.pitch-animation .wave-bar:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.pitch-animation .wave-bar:nth-child(4) {
+    animation-delay: 0.6s;
+}
+
+@keyframes wave-animation {
+    0%, 100% {
+        transform: scaleY(0.5);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scaleY(1.5);
+        opacity: 1;
+    }
+}
+
+@keyframes speaking-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0);
+    }
 }
 
 .close-button {
@@ -196,7 +262,7 @@
     flex: 1;
     overflow-y: auto;
     padding: 1.5rem;
-    background: var(--background);
+    background: white;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -322,11 +388,13 @@
 .typing-indicator {
     display: none;
     padding: 12px 16px;
-    background: white;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 18px;
     border-bottom-left-radius: 4px;
     width: fit-content;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    align-self: flex-start;
 }
 
 .typing-indicator.active {
@@ -433,6 +501,7 @@
     width: 44px;
     height: 44px;
     background: var(--primary-color);
+    color: white;
     border: none;
     border-radius: 50%;
     display: flex;
@@ -460,7 +529,9 @@
 .send-button svg {
     width: 20px;
     height: 20px;
-    fill: white;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
 }
 
 @media (max-width: 768px) {
@@ -486,8 +557,8 @@
 
 /* Language selector in header */
 .language-selector {
-    margin-left: auto;
-    margin-right: 10px;
+    display: flex;
+    align-items: center;
 }
 
 .language-select {
@@ -495,20 +566,39 @@
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 13px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 500;
     cursor: pointer;
     outline: none;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
 }
 
 .language-select:hover {
     background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.language-select:focus {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.6);
 }
 
 .language-select option {
-    background: #667eea;
+    background: var(--primary-color);
     color: white;
+}
+
+/* FAQ Section at Bottom */
+.faq-section {
+    background: var(--background);
+    border-top: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    overflow: hidden;
+}
+
+.faq-section.hidden {
+    display: none;
 }
 
 /* FAQ Container and Buttons */
@@ -516,21 +606,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    padding: 0.75rem 0;
-    max-height: 120px;
-    overflow-y: auto;
-}
-
-.faq-container.hidden {
-    display: none;
-}
-
-.faq-title {
-    width: 100%;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
+    overflow: hidden;
 }
 
 .faq-button {
