@@ -1,50 +1,15 @@
-# Core dependencies
-aiofiles
-alembic
-beautifulsoup4
-einops
-fastapi
-httpx
-lxml
-loguru
-natsort
-psycopg2-binary
-pydantic
-pydantic_settings
-pydub
-pypdf
-python-dotenv
-python-multipart>=0.0.18,<0.1
-qdrant-client
-
-# Audio / ML
-librosa>=0.10.1,<0.11
-soundfile
-torch>=2.3.0
-torchvision>=0.14.0
-accelerate>=0.25.0
-transformers>=4.45.2
-sentence-transformers==2.2.2
-huggingface-hub>=0.23.2,<1.0
-sentencepiece
-
-# Gradio UI
-gradio==5.44.0
-gradio-client==1.12.1
-
-# Database & ORM
-sqlalchemy>=2.0.23
-
-# Optional: GPU support if needed
-# torchaudio (if working with audio models)
-# torchaudio
-
-# External Git packages
-git+https://github.com/fishaudio/fish-speech.git@main
-
-# NumPy pinned to <2 to avoid compatibility issues
-numpy<2
-protobuf==3.20.3
-
-# Server
-uvicorn
+gtts>=2.5.0
+fastapi>=0.104.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.6
+torch>=2.0.0
+transformers>=4.35.0
+numpy>=1.24.0
+sentence-transformers>=2.2.0
+qdrant-client>=1.7.0
+pymupdf>=1.23.0  # fitz for PDF processing
+langchain-text-splitters>=0.0.1
+pydantic>=2.5.0
+pydantic-settings>=2.0.0
+python-dotenv>=1.0.0
+requests>=2.31.0

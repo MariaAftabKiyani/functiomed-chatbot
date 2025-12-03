@@ -3,7 +3,6 @@ from typing import ClassVar, Optional, List
 from pydantic_settings import BaseSettings
 from pydantic import Field
 import logging
-import torch
 
 class Settings(BaseSettings):
     """Application settings with environment variable support"""
@@ -129,35 +128,11 @@ class Settings(BaseSettings):
     HF_HOME: str = os.getenv("HF_HOME", "./models/huggingface")  # Model cache directory
 
     # ============================================================================
-    # TTS Configuration (Fish Speech 1.5)
+    # TTS Configuration (HuggingFace Inference API)
     # ============================================================================
 
-    # Model paths
-    TTS_MODEL_PATH: str = os.getenv(
-        "TTS_MODEL_PATH",
-        os.path.join(HF_HOME, "fish-speech-1.5")
-    )
-    TTS_DEVICE: str = os.getenv("TTS_DEVICE", "cpu")  # "cpu" or "cuda"
-
-    # Reference voices directory
-    TTS_REFERENCE_DIR: str = os.getenv(
-        "TTS_REFERENCE_DIR",
-        os.path.join(os.path.dirname(__file__), "..", "..", "data", "reference_voices")
-    )
-
-    # Reference voice texts (for voice cloning context)
-    TTS_REFERENCE_TEXT_DE: str = os.getenv(
-        "TTS_REFERENCE_TEXT_DE",
-        "Guten Tag, wie kann ich Ihnen heute helfen?"
-    )
-    TTS_REFERENCE_TEXT_EN: str = os.getenv(
-        "TTS_REFERENCE_TEXT_EN",
-        "Hello, how can I help you today?"
-    )
-    TTS_REFERENCE_TEXT_FR: str = os.getenv(
-        "TTS_REFERENCE_TEXT_FR",
-        "Bonjour, comment puis-je vous aider aujourd'hui?"
-    )
+    # HuggingFace API authentication
+    HF_API_TOKEN: str = os.getenv("HF_API_TOKEN", os.getenv("HF_HUB_TOKEN", ""))
 
     # Audio cache directory
     TTS_CACHE_DIR: str = os.getenv(

@@ -1,5 +1,5 @@
 """
-TTS API endpoint - Text-to-Speech with Fish Speech 1.5
+TTS API endpoint - Text-to-Speech with Google TTS (gTTS)
 """
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import FileResponse
@@ -53,7 +53,7 @@ async def generate_tts(request: TTSRequest) -> TTSResponse:
 
     This endpoint:
     1. Validates text and language
-    2. Generates audio using Fish Speech 1.5 (or gTTS fallback)
+    2. Generates audio using Google TTS (gTTS)
     3. Returns audio file URL for download
     4. Automatically deletes previous audio
     """
