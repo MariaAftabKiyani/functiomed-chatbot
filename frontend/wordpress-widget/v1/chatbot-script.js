@@ -138,9 +138,10 @@ const chatInput = document.getElementById('chatInput');
 const sendButton = document.getElementById('sendButton');
 const typingIndicator = document.getElementById('typingIndicator');
 const stopButton = document.getElementById('stopButton');
-const voiceToggle = document.getElementById('voiceToggle');
+// Global voice toggle removed - using per-message speaker buttons instead
+// const voiceToggle = document.getElementById('voiceToggle');
 const micButton = document.getElementById('micButton');
-const pitchAnimation = document.getElementById('pitchAnimation');
+// const pitchAnimation = document.getElementById('pitchAnimation');
 
 // Initialize
 function init() {
@@ -196,11 +197,59 @@ function updateLanguageUI() {
     }
 }
 
-// Set initial message time
+// Set initial message time and add action buttons
 function setInitialTime() {
     const timeElement = document.getElementById('initialTime');
-    if (timeElement) {
-        timeElement.textContent = getCurrentTime();
+    const initialMessage = timeElement ? timeElement.closest('.message.bot') : null;
+
+    if (timeElement && initialMessage) {
+        const time = getCurrentTime();
+        timeElement.textContent = time;
+
+        // Get the initial message text
+        const contentDiv = initialMessage.querySelector('.message-content');
+        const messageText = contentDiv ? contentDiv.textContent.trim() : '';
+
+        // Store text in data attribute
+        initialMessage.setAttribute('data-message-text', messageText);
+
+        // Convert old structure to new footer structure
+        const footerDiv = document.createElement('div');
+        footerDiv.className = 'message-footer';
+        footerDiv.innerHTML = `
+            <div class="message-time">${time}</div>
+            <div class="message-actions">
+                <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span class="btn-text">Copy</span>
+                </button>
+                <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                    <span class="btn-text">Listen</span>
+                </button>
+            </div>
+        `;
+
+        // Remove old time element
+        timeElement.remove();
+
+        // Append new footer
+        initialMessage.appendChild(footerDiv);
+
+        // Add event listeners
+        const copyBtn = footerDiv.querySelector('.copy-btn');
+        const speakerBtn = footerDiv.querySelector('.speaker-btn');
+
+        if (copyBtn && speakerBtn) {
+            copyBtn.addEventListener('click', () => copyMessageText(messageText, copyBtn));
+            speakerBtn.addEventListener('click', () => toggleMessageAudio(initialMessage, speakerBtn));
+        }
     }
 }
 
@@ -220,7 +269,8 @@ function setupEventListeners() {
     closeButton.addEventListener('click', toggleChat);
     sendButton.addEventListener('click', sendMessage);
     stopButton.addEventListener('click', stopGeneration);
-    voiceToggle.addEventListener('click', toggleVoice);
+    // Global voice toggle removed - using per-message speaker buttons
+    // voiceToggle.addEventListener('click', toggleVoice);
     micButton.addEventListener('click', toggleMicrophone);
 
     chatInput.addEventListener('keypress', (e) => {
@@ -546,12 +596,52 @@ function addMessage(text, sender, sources = null, confidence = null) {
     // Convert markdown to HTML for bot messages
     const formattedText = sender === 'bot' ? markdownToHtml(text) : escapeHtml(text);
 
-    messageDiv.innerHTML = `
-        <div class="message-content">${formattedText}</div>
-        <div class="message-time">${time}</div>
-    `;
+    // Store original text in data attribute for copy/TTS functionality
+    messageDiv.setAttribute('data-message-text', text);
+
+    if (sender === 'bot') {
+        // Bot messages with action buttons
+        messageDiv.innerHTML = `
+            <div class="message-content">${formattedText}</div>
+            <div class="message-footer">
+                <div class="message-time">${time}</div>
+                <div class="message-actions">
+                    <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <span class="btn-text">Copy</span>
+                    </button>
+                    <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                        <span class="btn-text">Listen</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    } else {
+        // User messages without action buttons
+        messageDiv.innerHTML = `
+            <div class="message-content">${formattedText}</div>
+            <div class="message-time">${time}</div>
+        `;
+    }
 
     chatMessages.appendChild(messageDiv);
+
+    // Add event listeners for bot messages
+    if (sender === 'bot') {
+        const copyBtn = messageDiv.querySelector('.copy-btn');
+        const speakerBtn = messageDiv.querySelector('.speaker-btn');
+
+        copyBtn.addEventListener('click', () => copyMessageText(text, copyBtn));
+        speakerBtn.addEventListener('click', () => toggleMessageAudio(messageDiv, speakerBtn));
+    }
+
     scrollToBottom();
 
     // Store in conversation history
@@ -627,6 +717,9 @@ function updateStreamingMessage(messageDiv, text) {
 function finalizeStreamingMessage(messageDiv, text, wasCancelled = false, hasError = false) {
     messageDiv.classList.remove('streaming');
 
+    // Store original text in data attribute for copy/TTS functionality
+    messageDiv.setAttribute('data-message-text', text);
+
     const contentDiv = messageDiv.querySelector('.message-content');
     if (contentDiv) {
         if (hasError) {
@@ -646,6 +739,50 @@ function finalizeStreamingMessage(messageDiv, text, wasCancelled = false, hasErr
                 contentDiv.appendChild(cancelledNote);
             }
         }
+    }
+
+    // Add message footer with action buttons if not already present
+    if (!messageDiv.querySelector('.message-footer') && !hasError) {
+        const timeDiv = messageDiv.querySelector('.message-time');
+        const time = timeDiv ? timeDiv.textContent : getCurrentTime();
+
+        // Create footer with time and actions
+        const footerDiv = document.createElement('div');
+        footerDiv.className = 'message-footer';
+        footerDiv.innerHTML = `
+            <div class="message-time">${time}</div>
+            <div class="message-actions">
+                <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span class="btn-text">Copy</span>
+                </button>
+                <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                    <span class="btn-text">Listen</span>
+                </button>
+            </div>
+        `;
+
+        // Remove old time div if exists
+        if (timeDiv) {
+            timeDiv.remove();
+        }
+
+        // Append footer
+        messageDiv.appendChild(footerDiv);
+
+        // Add event listeners
+        const copyBtn = footerDiv.querySelector('.copy-btn');
+        const speakerBtn = footerDiv.querySelector('.speaker-btn');
+
+        copyBtn.addEventListener('click', () => copyMessageText(text, copyBtn));
+        speakerBtn.addEventListener('click', () => toggleMessageAudio(messageDiv, speakerBtn));
     }
 
     scrollToBottom();
@@ -970,48 +1107,298 @@ function cleanupAudioBlob() {
     }
 }
 
-// Toggle voice output and play last bot message
+// Toggle voice output - DEPRECATED: Global voice toggle removed
+// Now using per-message speaker buttons instead
 async function toggleVoice() {
-    isVoiceEnabled = !isVoiceEnabled;
-
-    if (isVoiceEnabled) {
-        voiceToggle.classList.add('active');
-
-        // Get last bot message
-        const lastBotMessage = getLastBotMessage();
-        if (lastBotMessage) {
-            await speakText(lastBotMessage, currentLanguage);
-        } else {
-            console.warn('No bot message to read');
-        }
-    } else {
-        // Stop current playback
-        stopAudio();
-        voiceToggle.classList.remove('active');
-        voiceToggle.classList.remove('speaking');
-        voiceToggle.classList.add('muted');
-        if (pitchAnimation) {
-            pitchAnimation.style.display = 'none';
-        }
-        setTimeout(() => voiceToggle.classList.remove('muted'), 300);
-    }
-
-    console.log('Voice output:', isVoiceEnabled ? 'enabled' : 'disabled');
+    console.log('Global voice toggle deprecated - use per-message speaker buttons');
+    // Kept for backward compatibility, does nothing
 }
 
-// Show speaking animation
+// Show speaking animation - DEPRECATED: Global voice toggle removed
 function showSpeakingAnimation() {
-    if (isVoiceEnabled && voiceToggle && pitchAnimation) {
-        voiceToggle.classList.add('speaking');
-        pitchAnimation.style.display = 'flex';
+    // Global animation removed - using per-message button states instead
+}
+
+// Hide speaking animation - DEPRECATED: Global voice toggle removed
+function hideSpeakingAnimation() {
+    // Global animation removed - using per-message button states instead
+}
+
+// ============================================================================
+// Per-Message Action Functions (Copy & TTS)
+// ============================================================================
+
+// Track currently playing message
+let currentPlayingMessage = null;
+let currentPlayingButton = null;
+
+// Copy message text to clipboard
+async function copyMessageText(text, buttonElement) {
+    try {
+        // Try modern Clipboard API first
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+            showCopySuccess(buttonElement);
+        } else {
+            // Fallback for older browsers
+            fallbackCopyText(text);
+            showCopySuccess(buttonElement);
+        }
+    } catch (error) {
+        console.error('Copy failed:', error);
+        showCopyError(buttonElement);
     }
 }
 
-// Hide speaking animation
-function hideSpeakingAnimation() {
-    if (voiceToggle && pitchAnimation) {
-        voiceToggle.classList.remove('speaking');
-        pitchAnimation.style.display = 'none';
+// Fallback copy method for older browsers
+function fallbackCopyText(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        document.execCommand('copy');
+        textArea.remove();
+    } catch (error) {
+        console.error('Fallback copy failed:', error);
+        textArea.remove();
+        throw error;
+    }
+}
+
+// Show copy success feedback
+function showCopySuccess(buttonElement) {
+    const originalHTML = buttonElement.innerHTML;
+
+    // Change to checkmark
+    buttonElement.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span class="btn-text">Copied!</span>
+    `;
+    buttonElement.classList.add('copy-success');
+
+    // Revert after 1.5 seconds
+    setTimeout(() => {
+        buttonElement.innerHTML = originalHTML;
+        buttonElement.classList.remove('copy-success');
+    }, 1500);
+}
+
+// Show copy error feedback
+function showCopyError(buttonElement) {
+    const originalHTML = buttonElement.innerHTML;
+
+    buttonElement.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+        <span class="btn-text">Failed</span>
+    `;
+    buttonElement.classList.add('copy-error');
+
+    setTimeout(() => {
+        buttonElement.innerHTML = originalHTML;
+        buttonElement.classList.remove('copy-error');
+    }, 1500);
+}
+
+// Toggle audio playback for a specific message
+async function toggleMessageAudio(messageDiv, buttonElement) {
+    console.log('toggleMessageAudio called');
+    const text = messageDiv.getAttribute('data-message-text');
+
+    if (!text) {
+        console.error('No message text found in data-message-text attribute');
+        console.log('MessageDiv:', messageDiv);
+        return;
+    }
+
+    console.log('Message text found:', text.substring(0, 50) + '...');
+
+    // If this message is currently playing, stop it
+    if (currentPlayingMessage === messageDiv && currentAudio && !currentAudio.paused) {
+        console.log('Stopping currently playing message');
+        stopMessageAudio(buttonElement);
+        return;
+    }
+
+    // Stop any other playing audio
+    if (currentPlayingMessage && currentPlayingButton) {
+        console.log('Stopping other playing message');
+        stopMessageAudio(currentPlayingButton);
+    }
+
+    // Start playing this message
+    console.log('Starting audio playback');
+    await playMessageAudio(text, messageDiv, buttonElement);
+}
+
+// Play audio for a specific message
+async function playMessageAudio(text, messageDiv, buttonElement) {
+    try {
+        // Update button to loading state
+        updateSpeakerButtonState(buttonElement, 'loading');
+
+        // Store reference
+        currentPlayingMessage = messageDiv;
+        currentPlayingButton = buttonElement;
+
+        // Clean up previous audio
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio = null;
+        }
+        cleanupAudioBlob();
+
+        // Strip markdown formatting for clean audio
+        const cleanText = stripMarkdownForTTS(text);
+
+        console.log(`Generating TTS for message: "${cleanText.substring(0, 50)}..." (${currentLanguage})`);
+
+        // Call TTS API
+        const response = await fetch(`${API_BASE_URL}/api/v1/tts/generate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: cleanText,
+                language: currentLanguage
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`TTS API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('TTS generated:', data);
+
+        // Fetch audio file
+        const audioUrl = `${API_BASE_URL}${data.audio_url}`;
+        const audioResponse = await fetch(audioUrl);
+
+        if (!audioResponse.ok) {
+            throw new Error(`Failed to fetch audio: ${audioResponse.status}`);
+        }
+
+        const audioBlob = await audioResponse.blob();
+        currentAudioBlob = URL.createObjectURL(audioBlob);
+
+        // Create and play audio
+        currentAudio = new Audio(currentAudioBlob);
+
+        // Event handlers
+        currentAudio.addEventListener('play', () => {
+            console.log('Audio playback started');
+            updateSpeakerButtonState(buttonElement, 'playing');
+        });
+
+        currentAudio.addEventListener('ended', () => {
+            console.log('Audio playback finished');
+            updateSpeakerButtonState(buttonElement, 'idle');
+            cleanupAudioBlob();
+            currentPlayingMessage = null;
+            currentPlayingButton = null;
+        });
+
+        currentAudio.addEventListener('error', (e) => {
+            console.error('Audio playback error:', e);
+            updateSpeakerButtonState(buttonElement, 'error');
+            cleanupAudioBlob();
+            currentPlayingMessage = null;
+            currentPlayingButton = null;
+        });
+
+        // Start playback
+        await currentAudio.play();
+
+    } catch (error) {
+        console.error('TTS error:', error);
+        updateSpeakerButtonState(buttonElement, 'error');
+        currentPlayingMessage = null;
+        currentPlayingButton = null;
+    }
+}
+
+// Stop audio playback for a message
+function stopMessageAudio(buttonElement) {
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio = null;
+    }
+    cleanupAudioBlob();
+    updateSpeakerButtonState(buttonElement, 'idle');
+    currentPlayingMessage = null;
+    currentPlayingButton = null;
+}
+
+// Update speaker button visual state
+function updateSpeakerButtonState(buttonElement, state) {
+    // Remove all state classes
+    buttonElement.classList.remove('loading', 'playing', 'error');
+
+    const originalSVG = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+    `;
+
+    switch (state) {
+        case 'loading':
+            buttonElement.classList.add('loading');
+            buttonElement.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32">
+                        <animate attributeName="stroke-dashoffset" from="32" to="0" dur="1s" repeatCount="indefinite"/>
+                    </circle>
+                </svg>
+                <span class="btn-text">Loading...</span>
+            `;
+            break;
+
+        case 'playing':
+            buttonElement.classList.add('playing');
+            buttonElement.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                </svg>
+                <span class="btn-text">Stop</span>
+            `;
+            break;
+
+        case 'error':
+            buttonElement.classList.add('error');
+            buttonElement.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span class="btn-text">Error</span>
+            `;
+            setTimeout(() => {
+                buttonElement.classList.remove('error');
+                buttonElement.innerHTML = originalSVG + '<span class="btn-text">Listen</span>';
+            }, 2000);
+            break;
+
+        case 'idle':
+        default:
+            buttonElement.innerHTML = originalSVG + '<span class="btn-text">Listen</span>';
+            break;
     }
 }
 

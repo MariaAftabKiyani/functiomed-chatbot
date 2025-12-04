@@ -130,113 +130,10 @@
     gap: 0.5rem;
 }
 
-.voice-toggle {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    border: none;
-    min-width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0 4px;
-    position: relative;
-    gap: 4px;
-}
-
-.voice-toggle:hover {
-    background: rgba(255, 255, 255, 0.25);
-}
-
-.voice-toggle.active {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-.voice-toggle.speaking {
-    background: rgba(255, 255, 255, 0.25);
-    animation: speaking-pulse 1.5s ease-in-out infinite;
-    border-radius: 18px;
-    padding: 0 8px;
-}
-
-.voice-toggle svg {
-    width: 20px;
-    height: 20px;
-    position: relative;
-    z-index: 1;
-    flex-shrink: 0;
-}
-
-.voice-toggle.muted svg path:last-child {
-    display: none;
-}
-
-.voice-toggle.muted::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 2px;
-    background: white;
-    transform: rotate(-45deg);
-}
-
-/* Pitch animation */
-.pitch-animation {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    pointer-events: none;
-    z-index: 2;
-    margin-left: 2px;
-}
-
-.pitch-animation .wave-bar {
-    width: 3px;
-    height: 8px;
-    background: white;
-    border-radius: 2px;
-    animation: wave-animation 0.8s ease-in-out infinite;
-}
-
-.pitch-animation .wave-bar:nth-child(1) {
-    animation-delay: 0s;
-}
-
-.pitch-animation .wave-bar:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.pitch-animation .wave-bar:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-.pitch-animation .wave-bar:nth-child(4) {
-    animation-delay: 0.6s;
-}
-
-@keyframes wave-animation {
-    0%, 100% {
-        transform: scaleY(0.5);
-        opacity: 0.6;
-    }
-    50% {
-        transform: scaleY(1.5);
-        opacity: 1;
-    }
-}
-
-@keyframes speaking-pulse {
-    0%, 100% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
-    }
-    50% {
-        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0);
-    }
-}
+/* Global voice toggle removed - using per-message speaker buttons instead */
+/* .voice-toggle { ... } */
+/* .pitch-animation { ... } */
+/* All related animations removed */
 
 .close-button {
     background: transparent;
@@ -383,6 +280,107 @@
 
 .message.bot .message-time {
     text-align: left;
+}
+
+/* Message footer with action buttons */
+.message-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.25rem;
+    padding: 0 0.5rem;
+    gap: 12px;
+}
+
+.message-actions {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* Action buttons base styles */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    font-family: inherit;
+}
+
+.action-btn:hover {
+    background: #f5f5f5;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+}
+
+.action-btn svg {
+    flex-shrink: 0;
+    stroke: currentColor;
+}
+
+/* Copy button states */
+.copy-btn.copy-success {
+    border-color: #10b981;
+    color: #10b981;
+    background: #f0fdf4;
+}
+
+.copy-btn.copy-error {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: #fef2f2;
+}
+
+/* Speaker button states */
+.speaker-btn.loading {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.speaker-btn.playing {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: rgba(174, 140, 100, 0.1);
+}
+
+.speaker-btn.playing:hover {
+    background: rgba(174, 140, 100, 0.15);
+}
+
+.speaker-btn.error {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: #fef2f2;
+}
+
+/* Responsive - hide text on mobile, show icons only */
+@media (max-width: 480px) {
+    .action-btn {
+        padding: 6px;
+        min-width: 32px;
+        justify-content: center;
+    }
+
+    .action-btn .btn-text {
+        display: none;
+    }
+
+    .action-btn svg {
+        margin: 0;
+    }
 }
 
 .typing-indicator {
