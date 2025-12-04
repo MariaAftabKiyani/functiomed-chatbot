@@ -1,0 +1,122 @@
+services:
+  # Qdrant Vector Database Service
+  - type: pserv
+    name: functiomed-qdrant
+    env: docker
+    image:
+      url: qdrant/qdrant:latest
+    plan: starter  # 512MB RAM minimum, upgrade as needed
+    region: frankfurt  # Should match backend region
+    disk:
+      name: qdrant-data
+      mountPath: /qdrant/storage
+      sizeGB: 10  # Adjust based on your vector data size
+    envVars:
+      - key: QDRANT__SERVICE__GRPC_PORT
+        value: 6334
+
+  # Backend API Service
+  - type: web
+    name: functiomed-chatbot-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: starter  # Upgrade to standard or pro for production (minimum 2GB RAM recommended)
+    region: frankfurt  # Change to your preferred region
+    branch: main
+    healthCheckPath: /health
+    envVars:
+      # Application Settings
+      - key: DEBUG
+        value: False
+
+      # Qdrant Vector Database (Connected to internal Render service)
+      - key: QDRANT_URL
+        fromService:
+          type: pserv
+          name: functiomed-qdrant
+          property: hostport  # Uses internal private URL
+      - key: QDRANT_API_KEY
+        value: ""  # Leave empty for internal Render service (no auth needed)
+      - key: QDRANT_COLLECTION
+        value: functiomed_medical_docs
+      - key: QDRANT_VECTOR_SIZE
+        value: 1024
+      - key: QDRANT_DISTANCE_METRIC
+        value: Cosine
+      - key: QDRANT_TIMEOUT
+        value: 30
+
+      # Embedding Model Configuration
+      - key: EMBEDDING_MODEL
+        value: BAAI/bge-m3
+      - key: EMBEDDING_DEVICE
+        value: cpu
+      - key: EMBEDDING_BATCH_SIZE
+        value: 16
+      - key: EMBEDDING_MAX_LENGTH
+        value: 8192
+      - key: EMBEDDING_NORMALIZE
+        value: True
+
+      # HuggingFace Authentication (Required for model access)
+      - key: HF_HUB_TOKEN
+        sync: false  # Set this manually in Render dashboard as a secret
+      - key: HF_API_TOKEN
+        sync: false  # Set this manually in Render dashboard as a secret
+      - key: HF_HOME
+        value: /app/models/huggingface
+
+      # Document Processing
+      - key: CHUNK_SIZE
+        value: 800
+      - key: CHUNK_OVERLAP
+        value: 150
+      - key: MIN_CHUNK_SIZE
+        value: 200
+
+      # Retrieval Settings
+      - key: RETRIEVAL_TOP_K
+        value: 1
+      - key: RETRIEVAL_MIN_SCORE
+        value: 0.9
+      - key: RETRIEVAL_MAX_QUERY_LENGTH
+        value: 512
+
+      # LLM Configuration
+      - key: LLM_MODEL_NAME
+        value: meta-llama/Llama-3.2-1B-Instruct
+      - key: LLM_MAX_TOKENS
+        value: 512
+      - key: LLM_TEMPERATURE
+        value: 0.8
+      - key: LLM_TOP_P
+        value: 0.9
+      - key: LLM_CONTEXT_WINDOW
+        value: 8192
+
+      # RAG Configuration
+      - key: RAG_MAX_CONTEXT_TOKENS
+        value: 1024
+      - key: RAG_MAX_CHUNKS
+        value: 5
+      - key: RAG_MIN_CHUNK_SCORE
+        value: 0.5
+      - key: RAG_ENABLE_CITATIONS
+        value: true
+
+      # TTS Configuration
+      - key: TTS_CACHE_DIR
+        value: /app/data/tts_cache
+      - key: TTS_MAX_CHARS
+        value: 2000
+      - key: TTS_TIMEOUT
+        value: 30
+
+      # Retry Settings
+      - key: MAX_RETRIES
+        value: 3
+      - key: RETRY_DELAY
+        value: 1.0
+      - key: UPLOAD_BATCH_SIZE
+        value: 100

@@ -84,13 +84,13 @@ class Settings(BaseSettings):
     # ============================================================================
 
     # Model settings
-    LLM_MODEL_NAME: str = os.getenv("LLM_MODEL_NAME", "openai-community/gpt2-large")
+    LLM_MODEL_NAME: str = os.getenv("LLM_MODEL_NAME", "meta-llama/Llama-3.2-1B-Instruct")
 
     # Generation settings
-    LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS","1024"))  # Max tokens for responses
+    LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS","512"))  # Max tokens for responses
     LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.8"))  # Sampling temperature
     LLM_TOP_P: float = float(os.getenv("LLM_TOP_P", "0.9"))
-    LLM_CONTEXT_WINDOW: int = int(os.getenv("LLM_CONTEXT_WINDOW", "4096"))  # Context window size 
+    LLM_CONTEXT_WINDOW: int = int(os.getenv("LLM_CONTEXT_WINDOW", "8192"))  # Llama-3.2-1B context window (128K capable, but limiting for performance) 
 
     # ============================================================================
     # RAG (Retrieval-Augmented Generation) Configuration

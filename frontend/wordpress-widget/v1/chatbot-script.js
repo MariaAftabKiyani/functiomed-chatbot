@@ -13,6 +13,9 @@ let isListening = false; // Microphone listening state
 // Audio player state for TTS
 let currentAudio = null;  // HTML5 Audio instance
 let currentAudioBlob = null;  // Blob URL for cleanup
+let audioCache = [];  // Store last 3 audio blobs with TTL
+const MAX_AUDIO_CACHE_SIZE = 3;
+const AUDIO_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 // Configuration
 const API_BASE_URL = 'http://localhost:8000';  // Change to your backend URL
@@ -87,9 +90,9 @@ const HARDCODED_FAQS = {
             FR: "Quels sont vos horaires ?"
         },
         answer: {
-            EN: "We usually respond to inquiries within **24 hours** on **weekdays**.",
-            DE: "Wir beantworten Anfragen in der Regel innerhalb von **24 Stunden** an **Werktagen**.",
-            FR: "Nous répondons généralement aux demandes dans les **24 heures** en **semaine**."
+            EN: "Our regular opening hours are **Monday to Friday, from 08:00 to 18:00**. Appointments outside these hours are possible by arrangement.",
+            DE: "Unsere regulären Öffnungszeiten sind **Montag bis Freitag, von 08:00 bis 18:00 Uhr**. Termine außerhalb dieser Zeiten sind nach Vereinbarung möglich.",
+            FR: "Nos heures d'ouverture régulières sont du **lundi au vendredi, de 08h00 à 18h00**. Des rendez-vous en dehors de ces heures sont possibles sur arrangement."
         },
         category: "general"
     }
@@ -293,6 +296,9 @@ async function sendMessageStreaming(message) {
     // Create abort controller for this request
     currentAbortController = new AbortController();
 
+    // Show typing indicator while waiting for stream to start
+    showTypingIndicator();
+
     // Show stop button
     showStopButton();
 
@@ -300,6 +306,7 @@ async function sendMessageStreaming(message) {
         const response = await fetchBotResponseStreaming(message, currentAbortController.signal);
 
     } catch (error) {
+        hideTypingIndicator();
         if (error.name === 'AbortError') {
             console.log('Request was cancelled by user');
         } else {
@@ -331,7 +338,8 @@ async function fetchBotResponse(query) {
                 language: currentLanguage,
                 top_k: 5,
                 min_score: 0.3,
-                style: 'standard'
+                style: 'standard',
+                max_tokens: 512
             })
         });
 
@@ -365,7 +373,8 @@ async function fetchBotResponseStreaming(query, signal) {
                 language: currentLanguage,
                 top_k: 5,
                 min_score: 0.3,
-                style: 'standard'
+                style: 'standard',
+                max_tokens: 512
             }),
             signal: signal  // Pass abort signal
         });
@@ -374,15 +383,13 @@ async function fetchBotResponseStreaming(query, signal) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // Create a streaming message container
-        const messageDiv = createStreamingMessage();
-        currentStreamingMessage = messageDiv;
-
         // Process the stream
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
         let fullText = '';
+        let messageDiv = null;
+        let firstChunkReceived = false;
 
         while (true) {
             const { done, value } = await reader.read();
@@ -406,6 +413,14 @@ async function fetchBotResponseStreaming(query, signal) {
                         // Store metadata (sources, confidence, etc.)
                         console.log('Metadata:', data);
                     } else if (data.type === 'chunk') {
+                        // Create message container on first chunk
+                        if (!firstChunkReceived) {
+                            hideTypingIndicator();
+                            messageDiv = createStreamingMessage();
+                            currentStreamingMessage = messageDiv;
+                            firstChunkReceived = true;
+                        }
+
                         // Append text chunk
                         fullText += data.text;
                         updateStreamingMessage(messageDiv, fullText);
@@ -426,6 +441,7 @@ async function fetchBotResponseStreaming(query, signal) {
         }
 
     } catch (error) {
+        hideTypingIndicator();
         if (currentStreamingMessage) {
             finalizeStreamingMessage(currentStreamingMessage, '', false, true);
         }
@@ -797,6 +813,43 @@ function getLastBotMessage() {
     return null;
 }
 
+// Strip markdown formatting for TTS (keeps text clean for audio)
+function stripMarkdownForTTS(text) {
+    if (!text) return text;
+
+    let cleaned = text;
+
+    // Remove bold: **text** or __text__
+    cleaned = cleaned.replace(/\*\*(.+?)\*\*/g, '$1');
+    cleaned = cleaned.replace(/__(.+?)__/g, '$1');
+
+    // Remove italic: *text* or _text_ (but not in URLs or already processed)
+    cleaned = cleaned.replace(/\*(.+?)\*/g, '$1');
+    cleaned = cleaned.replace(/\b_(.+?)_\b/g, '$1');
+
+    // Remove links: [text](url) → text
+    cleaned = cleaned.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+
+    // Remove headers: ## Header → Header
+    cleaned = cleaned.replace(/^#{1,6}\s+/gm, '');
+
+    // Remove list markers: • item, - item, * item → item
+    cleaned = cleaned.replace(/^[\s]*[•\-\*]\s+/gm, '');
+
+    // Remove inline code: `code` → code
+    cleaned = cleaned.replace(/`([^`]+)`/g, '$1');
+
+    // Remove code blocks: ```code``` → code
+    cleaned = cleaned.replace(/```[\s\S]*?```/g, (match) => {
+        return match.replace(/```/g, '').trim();
+    });
+
+    // Clean up multiple spaces
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+
+    return cleaned;
+}
+
 // Generate and play TTS audio
 async function speakText(text, language) {
     try {
@@ -805,7 +858,10 @@ async function speakText(text, language) {
         // Clean up previous audio
         stopAudio();
 
-        console.log(`Generating TTS for: "${text.substring(0, 50)}..." (${language})`);
+        // Strip markdown formatting for clean audio
+        const cleanText = stripMarkdownForTTS(text);
+
+        console.log(`Generating TTS for: "${cleanText.substring(0, 50)}..." (${language})`);
 
         // Call TTS API
         const response = await fetch(`${API_BASE_URL}/api/v1/tts/generate`, {
@@ -814,7 +870,7 @@ async function speakText(text, language) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                text: text,
+                text: cleanText,
                 language: language
             })
         });
@@ -887,7 +943,29 @@ function stopAudio() {
 // Clean up blob URL to prevent memory leaks
 function cleanupAudioBlob() {
     if (currentAudioBlob) {
-        URL.revokeObjectURL(currentAudioBlob);
+        // Add to cache instead of immediate cleanup
+        const cacheEntry = {
+            url: currentAudioBlob,
+            timestamp: Date.now(),
+            timeout: setTimeout(() => {
+                URL.revokeObjectURL(currentAudioBlob);
+                // Remove from cache array
+                const index = audioCache.indexOf(cacheEntry);
+                if (index > -1) {
+                    audioCache.splice(index, 1);
+                }
+            }, AUDIO_TTL)
+        };
+
+        audioCache.push(cacheEntry);
+
+        // Keep only last 3 - remove oldest if exceeded
+        if (audioCache.length > MAX_AUDIO_CACHE_SIZE) {
+            const oldest = audioCache.shift();
+            clearTimeout(oldest.timeout);
+            URL.revokeObjectURL(oldest.url);
+        }
+
         currentAudioBlob = null;
     }
 }
