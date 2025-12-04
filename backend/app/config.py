@@ -1,7 +1,7 @@
 import os
-from typing import ClassVar, Optional, List
+from typing import ClassVar, Optional, List, Union
 from pydantic_settings import BaseSettings
-from pydantic import Field
+from pydantic import Field, field_validator
 import logging
 
 class Settings(BaseSettings):
@@ -13,13 +13,16 @@ class Settings(BaseSettings):
     DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
 
     # CORS settings
-    ALLOWED_ORIGINS: List[str] = [
-        'http://localhost',
-        'http://localhost:3000',
-        'http://127.0.0.1',
-        'http://localhost:8000',
-        '*'
-    ]
+    ALLOWED_ORIGINS: Union[List[str], str] = "*"
+
+    @field_validator('ALLOWED_ORIGINS', mode='before')
+    @classmethod
+    def parse_cors(cls, v):
+        if isinstance(v, str):
+            if v == "*":
+                return ["*"]
+            return [origin.strip() for origin in v.split(',')]
+        return v
 
     # Qdrant Vector Database
     QDRANT_URL: str = os.getenv("QDRANT_URL", "http://localhost:6333")
