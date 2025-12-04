@@ -118,3 +118,20 @@ services:
         value: 1.0
       - key: UPLOAD_BATCH_SIZE
         value: 100
+
+  # Frontend Static Site
+  - type: web
+    name: functiomed-chatbot-frontend
+    env: static
+    region: frankfurt
+    branch: main
+    buildCommand: ""  # No build needed - serving static files
+    staticPublishPath: frontend
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: "*"
