@@ -22,10 +22,7 @@ services:
     plan: starter  # Upgrade to standard or pro for production (minimum 2GB RAM recommended)
     region: frankfurt  # Change to your preferred region
     branch: main
-    rootDir: backend
     healthCheckPath: /health
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
     envVars:
       # Application Settings
       - key: DEBUG
