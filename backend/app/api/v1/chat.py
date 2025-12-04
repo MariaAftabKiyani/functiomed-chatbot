@@ -25,7 +25,7 @@ class ChatRequest(BaseModel):
     """Chat request with RAG parameters"""
     query: str = Field(..., min_length=1, max_length=512, description="User question")
     category: Optional[List[str]] = Field(default=None, description="Filter by categories")
-    language: Optional[str] = Field(default=None, pattern="^(DE|EN)$", description="Response language")
+    language: Optional[str] = Field(default=None, pattern="^(DE|EN|FR)$", description="Response language")
     source_type: Optional[str] = Field(default=None, description="Filter by source type")
     top_k: Optional[int] = Field(default=5, ge=1, le=10, description="Number of context chunks")
     min_score: Optional[float] = Field(default=0.5, ge=0.0, le=1.0, description="Minimum similarity")

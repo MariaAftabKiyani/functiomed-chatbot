@@ -23,15 +23,16 @@ logger = logging.getLogger(__name__)
 
 class LLMService:
     """
-    Llama 3.2 1B Instruct service with:
+    LLM service supporting Llama 3.2 1B Instruct with:
     - CPU-only inference
+    - Automatic input truncation for long contexts
     - Robust error handling
     - Token management
     - Response validation
     """
 
     def __init__(self):
-        """Initialize Llama 3.2 1B model for CPU"""
+        """Initialize LLM model for CPU inference"""
         self.model = None
         self.tokenizer = None
         self.pipeline = None
@@ -205,7 +206,29 @@ class LLMService:
                 logger.error("Tokenizer is not loaded!")
                 raise RuntimeError("Tokenizer not loaded")
 
+            # Get model's max position embeddings (context limit)
+            model_max_length = getattr(self.model.config, 'max_position_embeddings', 2048)
+
+            # Tokenize to check length
+            input_ids = self.tokenizer.encode(prompt, add_special_tokens=True)
+            input_length = len(input_ids)
+
+            # Calculate safe max length (leave room for generation)
+            safe_max_input = model_max_length - max_tokens - 10  # Safety buffer
+
+            # Truncate if needed
+            if input_length > safe_max_input:
+                logger.warning(
+                    f"Input too long ({input_length} tokens), truncating to {safe_max_input} tokens "
+                    f"(model max: {model_max_length}, max_new_tokens: {max_tokens})"
+                )
+                # Truncate from the beginning, keeping the most recent context
+                input_ids = input_ids[-safe_max_input:]
+                prompt = self.tokenizer.decode(input_ids, skip_special_tokens=True)
+                logger.debug(f"Truncated prompt length: {len(input_ids)} tokens")
+
             logger.debug(f"Pipeline parameters:")
+            logger.debug(f"  input_tokens: {len(input_ids)}")
             logger.debug(f"  max_new_tokens: {max_tokens}")
             logger.debug(f"  temperature: {temperature}")
             logger.debug(f"  do_sample: {temperature > 0}")
@@ -220,7 +243,9 @@ class LLMService:
                     temperature=temperature,
                     do_sample=temperature > 0,
                     return_full_text=False,  # Only return generated text
-                    pad_token_id=self.tokenizer.eos_token_id
+                    pad_token_id=self.tokenizer.eos_token_id,
+                    truncation=True,  # Enable truncation in pipeline
+                    max_length=model_max_length  # Set explicit max length
                 )
             except Exception as pipe_error:
                 logger.error(f"Pipeline execution failed: {type(pipe_error).__name__}")

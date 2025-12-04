@@ -9,80 +9,82 @@
         /* Demo page styles only */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f8f9fa;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
             margin: 0;
-        }
-
-        .demo-content {
-            text-align: center;
-            color: white;
-            margin-bottom: 100px;
-            max-width: 600px;
-        }
-
-        .demo-content h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-
-        .demo-content p {
-            font-size: 1.2em;
-            opacity: 0.9;
-            margin-bottom: 30px;
-        }
-
-        .demo-features {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .demo-features h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        .demo-features ul {
-            list-style: none;
             padding: 0;
         }
 
-        .demo-features li {
-            padding: 8px 0;
-            display: flex;
-            align-items: center;
+        .app-header {
+            background: #ffffff;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e0e0e0;
         }
 
-        .demo-features li:before {
-            content: "✓";
-            margin-right: 10px;
-            font-weight: bold;
-            color: #4CAF50;
+        .app-header h1 {
+            color: #AE8C64;
+            font-size: 2.5rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 300;
         }
 
-        .language-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            font-size: 0.9em;
-            margin: 0 4px;
+        .app-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .welcome-section {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-section h2 {
+            color: #AE8C64;
+            margin: 0 0 1rem 0;
+            font-weight: 400;
+            font-size: 1.5rem;
+        }
+
+        .welcome-section p {
+            color: #6c757d;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .app-header h1 {
+                font-size: 2rem;
+            }
+
+            .welcome-section {
+                margin: 2rem 1rem;
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Demo Content -->
-    <div class="demo-content">
-        <h1>Functiomed RAG Chatbot</h1>
-        <p>Multi-language medical assistant with AI-powered responses</p>
-    </div>
+    <!-- App Header -->
+    <header class="app-header">
+        <h1>Functiomed.ch</h1>
+        <p>Your Health & Wellness Partner</p>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="welcome-section">
+            <h2>Welcome</h2>
+            <p>Ask me anything about our services, book an appointment, or reserve parking.</p>
+        </div>
+    </main>
 
     <!-- Chat Button -->
     <div class="chat-button" id="chatButton">
@@ -96,68 +98,77 @@
         <!-- Chat Header -->
         <div class="chat-header">
             <div class="chat-header-content">
-                <div class="chat-avatar">🤖</div>
-                <div class="chat-header-text">
-                    <h3>Support Assistant</h3>
-                    <p>Online • We typically reply instantly</p>
-                </div>
+                <h3>FIONA</h3>
+                <span class="status-indicator">● Online</span>
             </div>
-            <button class="close-button" id="closeButton">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </button>
+            <div class="chat-header-actions">
+                <div class="language-selector">
+                    <select id="languageSelect" class="language-select" title="Select language">
+                        <option value="DE">Deutsch</option>
+                        <option value="EN">English</option>
+                        <option value="FR">Français</option>
+                    </select>
+                </div>
+                <button class="voice-toggle" id="voiceToggle" title="Toggle AI Voice">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                    </svg>
+                    <div class="pitch-animation" id="pitchAnimation" style="display: none;">
+                        <span class="wave-bar"></span>
+                        <span class="wave-bar"></span>
+                        <span class="wave-bar"></span>
+                        <span class="wave-bar"></span>
+                    </div>
+                </button>
+                <button class="close-button" id="closeButton">×</button>
+            </div>
         </div>
 
         <!-- Chat Messages -->
         <div class="chat-messages" id="chatMessages">
             <div class="message bot">
-                <div>
-                    <div class="message-content">
-                        Hallo! Willkommen bei functiomed. Wie kann ich Ihnen heute helfen?
-                    </div>
-                    <div class="message-time" id="initialTime"></div>
+                <div class="message-content">
+                    Hi there! 👋 I'm your friendly assistant at Functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?
                 </div>
+                <div class="message-time" id="initialTime"></div>
             </div>
 
-            <!-- FAQ Quick Buttons -->
-            <div class="faq-container" id="faqContainer">
-                <div class="faq-title">Häufig gestellte Fragen:</div>
-                <button class="faq-button" data-faq-id="services">
-                    <span class="faq-icon">💼</span>
-                    <span class="faq-text">Welche Leistungen bieten Sie an?</span>
-                </button>
-                <button class="faq-button" data-faq-id="pricing">
-                    <span class="faq-icon">💰</span>
-                    <span class="faq-text">Was sind Ihre Preispläne?</span>
-                </button>
-                <button class="faq-button" data-faq-id="appointment">
-                    <span class="faq-icon">📅</span>
-                    <span class="faq-text">Wie kann ich einen Termin vereinbaren?</span>
-                </button>
-                <button class="faq-button" data-faq-id="location">
-                    <span class="faq-icon">📍</span>
-                    <span class="faq-text">Wo befinden Sie sich?</span>
-                </button>
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
 
-        <!-- Typing Indicator -->
-        <div class="typing-indicator" id="typingIndicator">
-            <span></span>
-            <span></span>
-            <span></span>
+        <!-- FAQ Quick Buttons Section -->
+        <div class="faq-section" id="faqSection">
+            <div class="faq-container" id="faqContainer">
+                <button class="faq-button" data-faq-id="services">What services do you offer?</button>
+                <button class="faq-button" data-faq-id="physiotherapy">Tell me about physiotherapy</button>
+                <button class="faq-button" data-faq-id="appointment">How to book an appointment?</button>
+                <button class="faq-button" data-faq-id="contact">How do I contact you?</button>
+                <button class="faq-button" data-faq-id="hours">What are your hours?</button>
+            </div>
         </div>
 
         <!-- Chat Input -->
         <div class="chat-input-container">
             <div class="chat-input-wrapper">
+                <button class="mic-button" id="micButton" title="Voice input">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                        <line x1="12" y1="19" x2="12" y2="23" />
+                        <line x1="8" y1="23" x2="16" y2="23" />
+                    </svg>
+                </button>
                 <input
                     type="text"
                     class="chat-input"
                     id="chatInput"
-                    placeholder="Geben Sie Ihre Nachricht ein..."
+                    placeholder="Type your message or click mic to speak..."
                     autocomplete="off"
                 >
                 <!-- Stop Button - replaces send button during generation -->
@@ -167,8 +178,9 @@
                     </svg>
                 </button>
                 <button class="send-button" id="sendButton" disabled>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13" />
+                        <polygon points="22 2 15 22 11 13 2 9 22 2" />
                     </svg>
                 </button>
             </div>
