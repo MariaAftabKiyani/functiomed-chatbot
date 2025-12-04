@@ -18,13 +18,14 @@ services:
   # Backend API Service
   - type: web
     name: functiomed-chatbot-backend
-    env: docker
-    rootDir: backend
-    dockerfilePath: ./Dockerfile
+    runtime: docker
     plan: starter  # Upgrade to standard or pro for production (minimum 2GB RAM recommended)
     region: frankfurt  # Change to your preferred region
     branch: main
+    rootDir: backend
     healthCheckPath: /health
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     envVars:
       # Application Settings
       - key: DEBUG
