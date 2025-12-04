@@ -123,7 +123,6 @@ services:
   - type: web
     name: functiomed-chatbot-frontend
     env: static
-    region: frankfurt
     branch: main
     buildCommand: ""  # No build needed - serving static files
     staticPublishPath: frontend
