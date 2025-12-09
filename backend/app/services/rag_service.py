@@ -398,14 +398,26 @@ class RAGService:
     ) -> str:
         """
         Post-process and validate LLM response.
-        
+
         - Remove incomplete sentences
         - Clean formatting
+        - Remove leaked KONTEXT/source metadata
         - Validate citations
         """
         # Remove leading/trailing whitespace
         response = response.strip()
-        
+
+        # CRITICAL: Remove any leaked KONTEXT sections or source metadata
+        # Remove "KONTEXT:" headers and everything after them if they appear
+        response = re.sub(r'KONTEXT:.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
+        response = re.sub(r'AVAILABLE INFORMATION:.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
+
+        # Remove standalone source citations like "[1] Source: filename.pdf (Relevance: 0.85)"
+        response = re.sub(r'\[\d+\]\s*(?:Source|Quelle|Source\s*:).*?(?:\n|$)', '', response, flags=re.IGNORECASE)
+
+        # Remove "Relevance:" or "Relevanz:" metadata
+        response = re.sub(r'\((?:Relevance|Relevanz|Pertinence):\s*[\d.]+\)', '', response, flags=re.IGNORECASE)
+
         # Remove incomplete final sentence (no ending punctuation)
         if response and not response[-1] in '.!?':
             # Find last complete sentence
@@ -416,14 +428,17 @@ class RAGService:
             )
             if last_period > 0:
                 response = response[:last_period + 1]
-        
-        # Clean up multiple newlines
+
+        # Clean up multiple newlines (max 2 consecutive)
         response = re.sub(r'\n{3,}', '\n\n', response)
-        
+
+        # Clean up multiple spaces
+        response = re.sub(r' {2,}', ' ', response)
+
         # Ensure response is not empty
         if not response.strip():
             response = "Entschuldigung, ich konnte keine passende Antwort generieren."
-        
+
         return response.strip()
     
     def _extract_citations(self, text: str) -> List[str]:

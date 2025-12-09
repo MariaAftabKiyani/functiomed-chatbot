@@ -108,18 +108,27 @@ class Settings(BaseSettings):
     RAG_ENABLE_CITATIONS: bool = os.getenv("RAG_ENABLE_CITATIONS", "true").lower() == "true"
     RAG_FALLBACK_RESPONSE_DE: str = os.getenv(
         "RAG_FALLBACK_RESPONSE_DE",
-        "Entschuldigung, ich konnte keine relevanten Informationen zu Ihrer Frage in unseren Unterlagen finden. "
-        "Bitte kontaktieren Sie uns direkt für weitere Informationen."
+        "Entschuldigung, ich habe keine relevanten Informationen zu Ihrer Frage. "
+        "Für weitere Unterstützung können Sie uns gerne kontaktieren:\n\n"
+        "**Telefon**: +41 (0)44 401 15 15\n"
+        "**Email**: functiomed@hin.ch\n\n"
+        "Wir antworten in der Regel innerhalb von 24 Stunden an Werktagen."
     )
     RAG_FALLBACK_RESPONSE_EN: str = os.getenv(
         "RAG_FALLBACK_RESPONSE_EN",
-        "I apologize, but I could not find relevant information about your question in our records. "
-        "Please contact us directly for more information."
+        "I apologize, but I don't have relevant information available regarding this. "
+        "For further assistance, you can contact us:\n\n"
+        "**Phone**: +41 (0)44 401 15 15\n"
+        "**Email**: functiomed@hin.ch\n\n"
+        "We usually respond to inquiries within 24 hours on weekdays."
     )
     RAG_FALLBACK_RESPONSE_FR: str = os.getenv(
         "RAG_FALLBACK_RESPONSE_FR",
-        "Je m'excuse, mais je n'ai pas pu trouver d'informations pertinentes sur votre question dans nos dossiers. "
-        "Veuillez nous contacter directement pour plus d'informations."
+        "Je m'excuse, mais je n'ai pas d'informations pertinentes disponibles à ce sujet. "
+        "Pour une assistance supplémentaire, vous pouvez nous contacter :\n\n"
+        "**Téléphone** : +41 (0)44 401 15 15\n"
+        "**Email** : functiomed@hin.ch\n\n"
+        "Nous répondons généralement aux demandes dans les 24 heures les jours ouvrables."
     )
 
     # ============================================================================
