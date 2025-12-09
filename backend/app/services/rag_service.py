@@ -91,18 +91,18 @@ class RAGService:
         logger.info(f"  Max chunks: {settings.RAG_MAX_CHUNKS}")
         logger.info(f"  Min score: {settings.RAG_MIN_CHUNK_SCORE}")
     
-    def _detect_greeting_language(self, query: str) -> Optional[str]:
-        """Detect language from greeting itself"""
+    def _detect_language_from_text(self, query: str) -> Optional[str]:
+        """Detect language from query text"""
         query_lower = query.lower().strip()
 
-        # French greetings
-        if any(g in query_lower for g in ['bonjour', 'salut', 'bonsoir']):
+        # French words/greetings
+        if any(g in query_lower for g in ['bonjour', 'salut', 'bonsoir', 'merci', 'ok', 'bien', 'd\'accord']):
             return "FR"
-        # German greetings
-        elif any(g in query_lower for g in ['hallo', 'guten', 'servus', 'moin', 'grüß']):
+        # German words/greetings
+        elif any(g in query_lower for g in ['hallo', 'guten', 'servus', 'moin', 'grüß', 'danke', 'verstanden', 'alles klar', 'gut']):
             return "DE"
-        # English greetings
-        elif any(g in query_lower for g in ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening']):
+        # English words/greetings
+        elif any(g in query_lower for g in ['hello', 'hi', 'hey', 'good', 'thanks', 'ok', 'okay', 'understood', 'got it', 'alright', 'well', 'hmm', 'umm']):
             return "EN"
 
         return None
@@ -130,10 +130,41 @@ class RAGService:
 
         return False
 
+    def _is_acknowledgment(self, query: str) -> bool:
+        """Check if query is a short acknowledgment/filler word"""
+        query_lower = query.lower().strip()
+
+        # Remove punctuation for matching
+        query_clean = query_lower.strip('.,!?')
+
+        # Exact acknowledgments
+        acknowledgments = [
+            # English
+            'thanks', 'thank you', 'ok', 'okay', 'got it', 'understood',
+            'alright', 'well', 'hmm', 'umm', 'sure', 'yeah', 'yep', 'yes',
+            # German
+            'danke', 'verstanden', 'alles klar', 'gut', 'okay', 'ok', 'ja',
+            # French
+            'merci', 'ok', 'd\'accord', 'bien', 'oui'
+        ]
+
+        # Match exact acknowledgments
+        if query_clean in acknowledgments:
+            return True
+
+        # Match very short queries (1-2 words, max 15 chars) with acknowledgment stems
+        if len(query_clean) <= 15 and len(query_lower.split()) <= 2:
+            ack_stems = ['thank', 'ok', 'understood', 'got', 'alright', 'hmm', 'umm',
+                        'danke', 'verstanden', 'merci', 'bien', 'gut']
+            if any(stem in query_clean for stem in ack_stems):
+                return True
+
+        return False
+
     def _create_greeting_response(self, query: str, language: Optional[str]) -> RAGResponse:
         """Create response for greetings without retrieval"""
         # Try to detect language from the greeting itself first
-        detected_lang = self._detect_greeting_language(query)
+        detected_lang = self._detect_language_from_text(query)
         lang_to_use = detected_lang or (language.upper() if language else "EN")
 
         if lang_to_use == "DE":
@@ -142,6 +173,33 @@ class RAGService:
             answer = "Bonjour ! Bienvenue chez Functiomed. Comment puis-je vous aider ?"
         else:
             answer = "Hello! Welcome to Functiomed. How can I help you?"
+
+        return RAGResponse(
+            answer=answer,
+            sources=[],
+            query=query,
+            detected_language=lang_to_use,
+            retrieval_results=0,
+            citations=[],
+            confidence_score=1.0,
+            total_time_ms=0.0,
+            retrieval_time_ms=0.0,
+            generation_time_ms=0.0,
+            tokens_used=0
+        )
+
+    def _create_acknowledgment_response(self, query: str, language: Optional[str]) -> RAGResponse:
+        """Create response for acknowledgments without retrieval"""
+        # Try to detect language from the text
+        detected_lang = self._detect_language_from_text(query)
+        lang_to_use = detected_lang or (language.upper() if language else "EN")
+
+        if lang_to_use == "DE":
+            answer = "Gerne! Lassen Sie mich wissen, wenn Sie weitere Fragen zu Functiomed haben."
+        elif lang_to_use == "FR":
+            answer = "D'accord ! N'hésitez pas si vous avez d'autres questions sur Functiomed."
+        else:
+            answer = "You're welcome! Let me know if you need any more help with Functiomed services."
 
         return RAGResponse(
             answer=answer,
@@ -192,6 +250,11 @@ class RAGService:
         if self._is_greeting(query):
             logger.info("Detected greeting - returning direct response without retrieval")
             return self._create_greeting_response(query, language)
+
+        # Check for acknowledgments (thanks, ok, got it, etc.)
+        if self._is_acknowledgment(query):
+            logger.info("Detected acknowledgment - returning direct response without retrieval")
+            return self._create_acknowledgment_response(query, language)
 
         # Use defaults
         top_k = top_k or settings.RAG_MAX_CHUNKS
