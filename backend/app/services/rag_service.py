@@ -91,23 +91,54 @@ class RAGService:
         logger.info(f"  Max chunks: {settings.RAG_MAX_CHUNKS}")
         logger.info(f"  Min score: {settings.RAG_MIN_CHUNK_SCORE}")
     
-    def _is_greeting(self, query: str) -> bool:
-        """Check if query is a simple greeting"""
+    def _detect_greeting_language(self, query: str) -> Optional[str]:
+        """Detect language from greeting itself"""
         query_lower = query.lower().strip()
+
+        # French greetings
+        if any(g in query_lower for g in ['bonjour', 'salut', 'bonsoir']):
+            return "FR"
+        # German greetings
+        elif any(g in query_lower for g in ['hallo', 'guten', 'servus', 'moin', 'grüß']):
+            return "DE"
+        # English greetings
+        elif any(g in query_lower for g in ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening']):
+            return "EN"
+
+        return None
+
+    def _is_greeting(self, query: str) -> bool:
+        """Check if query is a simple greeting (handles typos)"""
+        query_lower = query.lower().strip()
+
+        # Exact matches
         greetings = [
             'hi', 'hello', 'hey', 'hallo', 'guten tag', 'guten morgen',
             'guten abend', 'grüß gott', 'servus', 'moin', 'bonjour',
-            'salut', 'good morning', 'good afternoon', 'good evening'
+            'salut', 'good morning', 'good afternoon', 'good evening', 'bonsoir'
         ]
-        return query_lower in greetings or len(query_lower.split()) <= 2 and any(g in query_lower for g in greetings)
 
-    def _create_greeting_response(self, language: str) -> RAGResponse:
+        if query_lower in greetings:
+            return True
+
+        # Fuzzy matching for common typos (length <= 10 chars, contains greeting-like words)
+        if len(query_lower) <= 10:
+            # Check for partial matches with common greetings
+            greeting_stems = ['hello', 'hi', 'hey', 'hallo', 'hall', 'bonjour', 'bonj', 'salut', 'guten', 'morgen', 'tag', 'abend']
+            if any(stem in query_lower for stem in greeting_stems):
+                return True
+
+        return False
+
+    def _create_greeting_response(self, query: str, language: Optional[str]) -> RAGResponse:
         """Create response for greetings without retrieval"""
-        lang_upper = language.upper() if language else "EN"
+        # Try to detect language from the greeting itself first
+        detected_lang = self._detect_greeting_language(query)
+        lang_to_use = detected_lang or (language.upper() if language else "EN")
 
-        if lang_upper == "DE":
+        if lang_to_use == "DE":
             answer = "Hallo! Willkommen bei Functiomed. Wie kann ich Ihnen helfen?"
-        elif lang_upper == "FR":
+        elif lang_to_use == "FR":
             answer = "Bonjour ! Bienvenue chez Functiomed. Comment puis-je vous aider ?"
         else:
             answer = "Hello! Welcome to Functiomed. How can I help you?"
@@ -115,8 +146,8 @@ class RAGService:
         return RAGResponse(
             answer=answer,
             sources=[],
-            query="",
-            detected_language=language,
+            query=query,
+            detected_language=lang_to_use,
             retrieval_results=0,
             citations=[],
             confidence_score=1.0,
@@ -160,7 +191,7 @@ class RAGService:
         # CRITICAL: Check for greetings FIRST, before retrieval
         if self._is_greeting(query):
             logger.info("Detected greeting - returning direct response without retrieval")
-            return self._create_greeting_response(language or "EN")
+            return self._create_greeting_response(query, language)
 
         # Use defaults
         top_k = top_k or settings.RAG_MAX_CHUNKS
