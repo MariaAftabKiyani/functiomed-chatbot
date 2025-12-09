@@ -368,11 +368,21 @@ class RAGService:
             }
             for result in retrieval_response.results
         ]
-        
+
+        # Log query token count
+        query_tokens = self.llm_service.count_tokens(query)
+        logger.info(f"📝 Query tokens: {query_tokens}")
+
+        # Log context details
+        context_text = "\n\n".join([c["text"] for c in context])
+        context_tokens = self.llm_service.count_tokens(context_text)
+        logger.info(f"📚 Retrieved context: {len(context)} chunks, {context_tokens} tokens")
+        logger.info(f"📄 Context preview (first 200 chars): {context_text[:200]}...")
+
         # Get appropriate template
         template = get_template(language=language, style=style)
         self.prompt_builder.template = template
-        
+
         # Build prompt with token management
         prompt = self.prompt_builder.build_prompt(
             context=context,
@@ -380,16 +390,31 @@ class RAGService:
             language=language,
             token_counter=self.llm_service.count_tokens
         )
-        
+
+        # Log final prompt details
+        prompt_tokens = self.llm_service.count_tokens(prompt)
+        logger.info(f"🔧 Final prompt: {prompt_tokens} tokens")
+        logger.info(f"📋 Full prompt:\n{'='*80}\n{prompt}\n{'='*80}")
+
         return prompt
     
     def _generate_response(self, prompt: str) -> Dict[str, Any]:
         """Generate response using LLM"""
-        return self.llm_service.generate(
+        logger.info(f"🤖 Generating LLM response (max_tokens={settings.LLM_MAX_TOKENS}, temp={settings.LLM_TEMPERATURE})...")
+
+        response = self.llm_service.generate(
             prompt=prompt,
             max_tokens=settings.LLM_MAX_TOKENS,
             temperature=settings.LLM_TEMPERATURE
         )
+
+        # Log response details
+        response_tokens = response.get('response_tokens', 0)
+        response_text = response.get('text', '')
+        logger.info(f"✅ LLM generated {response_tokens} tokens")
+        logger.info(f"📝 Raw LLM response:\n{'='*80}\n{response_text}\n{'='*80}")
+
+        return response
     
     def _post_process_response(
         self,
@@ -399,11 +424,12 @@ class RAGService:
         """
         Post-process and validate LLM response.
 
-        - Remove incomplete sentences
-        - Clean formatting
         - Remove leaked KONTEXT/source metadata
-        - Validate citations
+        - Preserve Markdown formatting
+        - Clean up excessive whitespace
         """
+        logger.info(f"🧹 Post-processing response ({len(response)} chars before cleaning)...")
+
         # Remove leading/trailing whitespace
         response = response.strip()
 
@@ -413,31 +439,21 @@ class RAGService:
         response = re.sub(r'AVAILABLE INFORMATION:.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
 
         # Remove standalone source citations like "[1] Source: filename.pdf (Relevance: 0.85)"
-        response = re.sub(r'\[\d+\]\s*(?:Source|Quelle|Source\s*:).*?(?:\n|$)', '', response, flags=re.IGNORECASE)
+        # But keep markdown links and normal citations [1], [2]
+        response = re.sub(r'\[\d+\]\s*(?:Source|Quelle):\s*[^\n]+\((?:Relevance|Relevanz|Pertinence):\s*[\d.]+\)', '', response, flags=re.IGNORECASE)
 
-        # Remove "Relevance:" or "Relevanz:" metadata
-        response = re.sub(r'\((?:Relevance|Relevanz|Pertinence):\s*[\d.]+\)', '', response, flags=re.IGNORECASE)
-
-        # Remove incomplete final sentence (no ending punctuation)
-        if response and not response[-1] in '.!?':
-            # Find last complete sentence
-            last_period = max(
-                response.rfind('.'),
-                response.rfind('!'),
-                response.rfind('?')
-            )
-            if last_period > 0:
-                response = response[:last_period + 1]
-
-        # Clean up multiple newlines (max 2 consecutive)
+        # Clean up multiple newlines (max 2 consecutive for markdown spacing)
         response = re.sub(r'\n{3,}', '\n\n', response)
 
-        # Clean up multiple spaces
-        response = re.sub(r' {2,}', ' ', response)
+        # Clean up multiple spaces (but preserve markdown formatting)
+        response = re.sub(r' {3,}', '  ', response)  # Allow 2 spaces for markdown line breaks
 
         # Ensure response is not empty
         if not response.strip():
             response = "Entschuldigung, ich konnte keine passende Antwort generieren."
+
+        logger.info(f"✅ Post-processing complete ({len(response)} chars after cleaning)")
+        logger.info(f"📝 Final response:\n{'='*80}\n{response}\n{'='*80}")
 
         return response.strip()
     

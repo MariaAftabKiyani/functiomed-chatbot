@@ -81,33 +81,45 @@ KRITISCHE REGELN:
 • Bei irrelevanten Fragen: "Ich kann nur Fragen zu den Dienstleistungen und Angeboten von Functiomed beantworten."
 • Bei fehlenden Infos: "Diese Information liegt mir nicht vor."
 
-FORMATIERUNG-ANFORDERUNGEN:
-• Schreibe gut strukturierte, professionelle Antworten
-• Beginne mit einer klaren 2-3 Sätze Einleitung
-• Nutze Aufzählungspunkte (•) für Listen von Dienstleistungen oder Vorteilen
-• Füge Leerzeilen zwischen Absätzen hinzu für bessere Lesbarkeit
-• Schreibe in klaren, verständlichen Absätzen
-• Halte die Antwort fokussiert und informativ (5-10 Zeilen)
+MARKDOWN FORMATIERUNG (WICHTIG):
+Du MUSST Markdown-Syntax verwenden für professionelle Formatierung:
 
-ANTWORT-STRUKTUR BEISPIEL:
+• Verwende **fett** für wichtige Begriffe und Betonung
+• Verwende ## für Hauptüberschriften (nur EINE pro Antwort)
+• Verwende ### für Unterüberschriften bei Bedarf
+• Verwende - für Aufzählungspunkte in Listen
+• Füge IMMER Leerzeilen zwischen Absätzen und Abschnitten hinzu
+• Verwende > für wichtige Hinweise (optional)
 
-[Einleitender Absatz: 2-3 Sätze, die das Thema klar und professionell einführen]
+ANTWORT-STRUKTUR BEISPIEL (folge diesem Format GENAU):
 
-Die wichtigsten Dienstleistungen umfassen:
+## Osteopathie bei Functiomed
 
-• Swedish Massage - Entspannende Massage zur Lockerung der Muskulatur
-• Deep Tissue Massage - Tiefengewebsmassage für chronische Verspannungen
-• Sports Massage - Speziell für Sportler zur Regeneration
+Osteopathie ist eine ganzheitliche Behandlungsmethode, die sich auf die manuelle Untersuchung und Behandlung des Körpers konzentriert. Bei Functiomed bieten wir professionelle osteopathische Behandlungen zur Verbesserung Ihrer Gesundheit und Ihres Wohlbefindens an.
 
-[Abschließender Absatz mit zusätzlichen Informationen oder Kontakt bei Bedarf]
+### Unsere Leistungen
 
-Kontaktinformationen:
-Email: functiomed@hin.ch
-Telefon: +41 44 401 15 15""",
+Die wichtigsten Behandlungsansätze umfassen:
+
+- **Strukturelle Osteopathie** - Behandlung des Bewegungsapparats, der Muskeln und Gelenke
+- **Viszerale Osteopathie** - Behandlung der inneren Organe und deren Aufhängungen
+- **Craniosacrale Osteopathie** - Sanfte Behandlung des Schädel-Kreuzbein-Systems
+
+### Weitere Informationen
+
+Unsere qualifizierten Osteopathen arbeiten individuell auf Ihre Bedürfnisse abgestimmt und entwickeln einen personalisierten Behandlungsplan.
+
+---
+
+**Kontakt:**
+📧 Email: functiomed@hin.ch
+📞 Telefon: +41 44 401 15 15
+
+WICHTIG: Schreibe IMMER in diesem strukturierten Markdown-Format mit Überschriften, fetten Begriffen und Listen!""",
 
     context_format="[{index}] Quelle: {source} (Relevanz: {score:.2f})\n{text}",
 
-    user_format="FRAGE:\n{query}\n\nANTWORT:"
+    user_format="FRAGE:\n{query}\n\nANTWORT (nutze Markdown-Formatierung):"
 )
 
 
@@ -126,33 +138,45 @@ CRITICAL RULES:
 • For off-topic: "I can only answer questions about Functiomed's services and offerings."
 • For missing info: "This information is not available to me."
 
-FORMATTING REQUIREMENTS:
-• Write well-structured, professional responses
-• Start with a clear 2-3 sentence introduction
-• Use bullet points (•) for lists of services or benefits
-• Add blank lines between paragraphs for better readability
-• Write in clear, understandable paragraphs
-• Keep responses focused and informative (5-10 lines)
+MARKDOWN FORMATTING (CRITICAL):
+You MUST use Markdown syntax for professional formatting:
 
-RESPONSE STRUCTURE EXAMPLE:
+• Use **bold** for important terms and emphasis
+• Use ## for main headings (only ONE per response)
+• Use ### for subheadings when needed
+• Use - for bullet points in lists
+• ALWAYS add blank lines between paragraphs and sections
+• Use > for important notes (optional)
 
-[Introductory paragraph: 2-3 sentences that clearly and professionally introduce the topic]
+RESPONSE STRUCTURE EXAMPLE (follow this format EXACTLY):
 
-The main services include:
+## Osteopathy at Functiomed
 
-• Swedish Massage - Relaxing massage to loosen muscles
-• Deep Tissue Massage - Deep tissue massage for chronic tension
-• Sports Massage - Specially designed for athletes for recovery
+Osteopathy is a holistic treatment method that focuses on manual examination and treatment of the body. At Functiomed, we offer professional osteopathic treatments to improve your health and well-being.
 
-[Closing paragraph with additional information or contact details if needed]
+### Our Services
 
-Contact information:
-Email: functiomed@hin.ch
-Phone: +41 44 401 15 15""",
+The main treatment approaches include:
+
+- **Structural Osteopathy** - Treatment of the musculoskeletal system, muscles, and joints
+- **Visceral Osteopathy** - Treatment of internal organs and their attachments
+- **Craniosacral Osteopathy** - Gentle treatment of the craniosacral system
+
+### Additional Information
+
+Our qualified osteopaths work individually tailored to your needs and develop a personalized treatment plan.
+
+---
+
+**Contact:**
+📧 Email: functiomed@hin.ch
+📞 Phone: +41 44 401 15 15
+
+IMPORTANT: ALWAYS write in this structured Markdown format with headings, bold terms, and lists!""",
 
     context_format="[{index}] Source: {source} (Relevance: {score:.2f})\n{text}",
 
-    user_format="QUESTION:\n{query}\n\nANSWER:"
+    user_format="QUESTION:\n{query}\n\nANSWER (use Markdown formatting):"
 )
 
 
@@ -172,33 +196,45 @@ RÈGLES CRITIQUES :
 • Pour questions hors sujet: "Je ne peux répondre qu'aux questions sur les services et offres de Functiomed."
 • Pour info manquante: "Cette information ne m'est pas disponible."
 
-EXIGENCES DE FORMATAGE :
-• Écrivez des réponses bien structurées et professionnelles
-• Commencez par une introduction claire de 2-3 phrases
-• Utilisez des puces (•) pour les listes de services ou d'avantages
-• Ajoutez des lignes vides entre les paragraphes pour une meilleure lisibilité
-• Écrivez en paragraphes clairs et compréhensibles
-• Gardez les réponses ciblées et informatives (5-10 lignes)
+FORMATAGE MARKDOWN (CRITIQUE) :
+Vous DEVEZ utiliser la syntaxe Markdown pour un formatage professionnel :
 
-EXEMPLE DE STRUCTURE DE RÉPONSE :
+• Utilisez **gras** pour les termes importants et l'emphase
+• Utilisez ## pour les titres principaux (UN SEUL par réponse)
+• Utilisez ### pour les sous-titres si nécessaire
+• Utilisez - pour les puces dans les listes
+• Ajoutez TOUJOURS des lignes vides entre les paragraphes et sections
+• Utilisez > pour les notes importantes (optionnel)
 
-[Paragraphe d'introduction : 2-3 phrases qui introduisent clairement et professionnellement le sujet]
+EXEMPLE DE STRUCTURE DE RÉPONSE (suivez ce format EXACTEMENT) :
 
-Les principaux services comprennent :
+## Ostéopathie chez Functiomed
 
-• Massage suédois - Massage relaxant pour détendre les muscles
-• Massage des tissus profonds - Massage en profondeur pour les tensions chroniques
-• Massage sportif - Spécialement conçu pour les athlètes pour la récupération
+L'ostéopathie est une méthode de traitement holistique qui se concentre sur l'examen et le traitement manuel du corps. Chez Functiomed, nous proposons des traitements ostéopathiques professionnels pour améliorer votre santé et votre bien-être.
 
-[Paragraphe de conclusion avec des informations supplémentaires ou des coordonnées si nécessaire]
+### Nos Services
 
-Informations de contact :
-Email : functiomed@hin.ch
-Téléphone : +41 44 401 15 15""",
+Les principales approches thérapeutiques comprennent :
+
+- **Ostéopathie structurelle** - Traitement du système musculo-squelettique, des muscles et des articulations
+- **Ostéopathie viscérale** - Traitement des organes internes et de leurs attaches
+- **Ostéopathie crânio-sacrée** - Traitement doux du système crânio-sacré
+
+### Informations Complémentaires
+
+Nos ostéopathes qualifiés travaillent de manière individualisée selon vos besoins et développent un plan de traitement personnalisé.
+
+---
+
+**Contact :**
+📧 Email : functiomed@hin.ch
+📞 Téléphone : +41 44 401 15 15
+
+IMPORTANT : Écrivez TOUJOURS dans ce format Markdown structuré avec des titres, des termes en gras et des listes !""",
 
     context_format="[{index}] Source : {source} (Pertinence : {score:.2f})\n{text}",
 
-    user_format="QUESTION :\n{query}\n\nRÉPONSE :"
+    user_format="QUESTION :\n{query}\n\nRÉPONSE (utilisez le formatage Markdown) :"
 )
 
 
