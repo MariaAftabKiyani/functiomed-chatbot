@@ -181,7 +181,7 @@ class RAGService:
         elif lang_to_use == "FR":
             answer = "D'accord ! N'hésitez pas si vous avez d'autres questions sur Functiomed."
         else:
-            answer = "You're welcome! Let me know if you need any more help with Functiomed services."
+            answer = "Alright! Let me know if you have any other questions about Functiomed."
 
         return RAGResponse(
             answer=answer,
