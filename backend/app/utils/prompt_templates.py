@@ -82,32 +82,28 @@ KRITISCHE REGELN:
 • Bei fehlenden Infos: "Diese Information liegt mir nicht vor."
 
 FORMATIERUNG-ANFORDERUNGEN:
-• Verwende ## für Hauptthemen, ### für Unterthemen
-• Verwende **fett** für wichtige Begriffe und Betonung
-• Füge Leerzeilen zwischen Abschnitten hinzu
-• Schreibe in klaren, professionellen Absätzen
-• Verwende Bullet-Points (-) für Listen
+• Schreibe gut strukturierte, professionelle Antworten
+• Beginne mit einer klaren 2-3 Sätze Einleitung
+• Nutze Aufzählungspunkte (•) für Listen von Dienstleistungen oder Vorteilen
+• Füge Leerzeilen zwischen Absätzen hinzu für bessere Lesbarkeit
+• Schreibe in klaren, verständlichen Absätzen
+• Halte die Antwort fokussiert und informativ (5-10 Zeilen)
 
-ANTWORT-STRUKTUR FÜR DIENSTLEISTUNGSFRAGEN:
+ANTWORT-STRUKTUR BEISPIEL:
 
-## [Themenname]
+[Einleitender Absatz: 2-3 Sätze, die das Thema klar und professionell einführen]
 
-[1-2 Sätze Einleitung in konversationellem Ton]
+Die wichtigsten Dienstleistungen umfassen:
 
-### Wichtige Informationen:
-- **Punkt 1**: Klare Beschreibung
-- **Punkt 2**: Klare Beschreibung
+• Swedish Massage - Entspannende Massage zur Lockerung der Muskulatur
+• Deep Tissue Massage - Tiefengewebsmassage für chronische Verspannungen
+• Sports Massage - Speziell für Sportler zur Regeneration
 
-### Zusätzliche Details:
-[Erklärender Absatz mit angemessenem Abstand]
+[Abschließender Absatz mit zusätzlichen Informationen oder Kontakt bei Bedarf]
 
----
-
-### Kontaktieren Sie uns:
-- **Email**: functiomed@hin.ch
-- **Telefon**: +41 44 401 15 15
-
-*Ich bin der functiomed Medical Assistant. Für persönliche medizinische Beratung wenden Sie sich bitte an unsere Fachkräfte.*""",
+Kontaktinformationen:
+Email: functiomed@hin.ch
+Telefon: +41 44 401 15 15""",
 
     context_format="[{index}] Quelle: {source} (Relevanz: {score:.2f})\n{text}",
 
@@ -131,32 +127,28 @@ CRITICAL RULES:
 • For missing info: "This information is not available to me."
 
 FORMATTING REQUIREMENTS:
-• Use ## for main topics, ### for subtopics
-• Use **bold** for key terms and emphasis
-• Add blank lines between sections
-• Write in clear, professional paragraphs
-• Use bullet points (-) for lists
+• Write well-structured, professional responses
+• Start with a clear 2-3 sentence introduction
+• Use bullet points (•) for lists of services or benefits
+• Add blank lines between paragraphs for better readability
+• Write in clear, understandable paragraphs
+• Keep responses focused and informative (5-10 lines)
 
-RESPONSE STRUCTURE FOR SERVICE QUESTIONS:
+RESPONSE STRUCTURE EXAMPLE:
 
-## [Topic Name]
+[Introductory paragraph: 2-3 sentences that clearly and professionally introduce the topic]
 
-[1-2 sentence introduction in conversational tone]
+The main services include:
 
-### Key Information:
-- **Point 1**: Clear description
-- **Point 2**: Clear description
+• Swedish Massage - Relaxing massage to loosen muscles
+• Deep Tissue Massage - Deep tissue massage for chronic tension
+• Sports Massage - Specially designed for athletes for recovery
 
-### Additional Details:
-[Explanatory paragraph with proper spacing]
+[Closing paragraph with additional information or contact details if needed]
 
----
-
-### Contact Us:
-- **Email**: functiomed@hin.ch
-- **Phone**: +41 44 401 15 15
-
-*I'm the functiomed Medical Assistant. For personalized medical advice, please consult our healthcare professionals.*""",
+Contact information:
+Email: functiomed@hin.ch
+Phone: +41 44 401 15 15""",
 
     context_format="[{index}] Source: {source} (Relevance: {score:.2f})\n{text}",
 
@@ -181,32 +173,28 @@ RÈGLES CRITIQUES :
 • Pour info manquante: "Cette information ne m'est pas disponible."
 
 EXIGENCES DE FORMATAGE :
-• Utilisez ## pour les sujets principaux, ### pour les sous-sujets
-• Utilisez **gras** pour les termes clés et l'emphase
-• Ajoutez des lignes vides entre les sections
-• Écrivez en paragraphes clairs et professionnels
-• Utilisez des puces (-) pour les listes
+• Écrivez des réponses bien structurées et professionnelles
+• Commencez par une introduction claire de 2-3 phrases
+• Utilisez des puces (•) pour les listes de services ou d'avantages
+• Ajoutez des lignes vides entre les paragraphes pour une meilleure lisibilité
+• Écrivez en paragraphes clairs et compréhensibles
+• Gardez les réponses ciblées et informatives (5-10 lignes)
 
-STRUCTURE DE RÉPONSE POUR LES QUESTIONS SUR LES SERVICES :
+EXEMPLE DE STRUCTURE DE RÉPONSE :
 
-## [Nom du sujet]
+[Paragraphe d'introduction : 2-3 phrases qui introduisent clairement et professionnellement le sujet]
 
-[Introduction de 1-2 phrases sur un ton conversationnel]
+Les principaux services comprennent :
 
-### Informations clés :
-- **Point 1** : Description claire
-- **Point 2** : Description claire
+• Massage suédois - Massage relaxant pour détendre les muscles
+• Massage des tissus profonds - Massage en profondeur pour les tensions chroniques
+• Massage sportif - Spécialement conçu pour les athlètes pour la récupération
 
-### Détails supplémentaires :
-[Paragraphe explicatif avec espacement approprié]
+[Paragraphe de conclusion avec des informations supplémentaires ou des coordonnées si nécessaire]
 
----
-
-### Contactez-nous :
-- **Email** : functiomed@hin.ch
-- **Téléphone** : +41 44 401 15 15
-
-*Je suis l'Assistant Médical functiomed. Pour des conseils médicaux personnalisés, veuillez consulter nos professionnels de santé.*""",
+Informations de contact :
+Email : functiomed@hin.ch
+Téléphone : +41 44 401 15 15""",
 
     context_format="[{index}] Source : {source} (Pertinence : {score:.2f})\n{text}",
 
