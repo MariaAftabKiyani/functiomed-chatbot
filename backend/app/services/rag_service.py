@@ -91,6 +91,41 @@ class RAGService:
         logger.info(f"  Max chunks: {settings.RAG_MAX_CHUNKS}")
         logger.info(f"  Min score: {settings.RAG_MIN_CHUNK_SCORE}")
     
+    def _is_greeting(self, query: str) -> bool:
+        """Check if query is a simple greeting"""
+        query_lower = query.lower().strip()
+        greetings = [
+            'hi', 'hello', 'hey', 'hallo', 'guten tag', 'guten morgen',
+            'guten abend', 'grüß gott', 'servus', 'moin', 'bonjour',
+            'salut', 'good morning', 'good afternoon', 'good evening'
+        ]
+        return query_lower in greetings or len(query_lower.split()) <= 2 and any(g in query_lower for g in greetings)
+
+    def _create_greeting_response(self, language: str) -> RAGResponse:
+        """Create response for greetings without retrieval"""
+        lang_upper = language.upper() if language else "EN"
+
+        if lang_upper == "DE":
+            answer = "Hallo! Willkommen bei Functiomed. Wie kann ich Ihnen helfen?"
+        elif lang_upper == "FR":
+            answer = "Bonjour ! Bienvenue chez Functiomed. Comment puis-je vous aider ?"
+        else:
+            answer = "Hello! Welcome to Functiomed. How can I help you?"
+
+        return RAGResponse(
+            answer=answer,
+            sources=[],
+            query="",
+            detected_language=language,
+            retrieval_results=0,
+            citations=[],
+            confidence_score=1.0,
+            total_time_ms=0.0,
+            retrieval_time_ms=0.0,
+            generation_time_ms=0.0,
+            tokens_used=0
+        )
+
     def generate_answer(
         self,
         query: str,
@@ -103,7 +138,7 @@ class RAGService:
     ) -> RAGResponse:
         """
         Generate answer using RAG pipeline.
-        
+
         Args:
             query: User question
             top_k: Number of chunks to retrieve
@@ -112,23 +147,28 @@ class RAGService:
             source_type: Filter by source type
             min_score: Minimum similarity score
             response_style: standard or concise
-            
+
         Returns:
             RAGResponse with answer and metadata
-            
+
         Raises:
             ValueError: If query is invalid
             RuntimeError: If RAG pipeline fails
         """
         start_time = time.time()
-        
+
+        # CRITICAL: Check for greetings FIRST, before retrieval
+        if self._is_greeting(query):
+            logger.info("Detected greeting - returning direct response without retrieval")
+            return self._create_greeting_response(language or "EN")
+
         # Use defaults
         top_k = top_k or settings.RAG_MAX_CHUNKS
         min_score = min_score if min_score is not None else settings.RAG_MIN_CHUNK_SCORE
-        
+
         logger.info(f"RAG pipeline started for query: '{query[:50]}...'")
         logger.debug(f"  Parameters: top_k={top_k}, category={category}, language={language}")
-        
+
         try:
             # Step 1: Retrieve relevant chunks
             logger.info("[1/4] Retrieving relevant documents...")
