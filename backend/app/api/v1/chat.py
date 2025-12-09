@@ -106,11 +106,11 @@ async def chat(request: ChatRequest) -> ChatResponse:
     4. Returns confidence score and metrics
     """
     try:
-        logger.info(f"Chat request: '{request.query[:50]}...'")
-        
+        logger.info(f"Chat request: '{request.query[:50]}...', language={request.language}")
+
         # Get RAG service
         rag_service: RAGService = get_rag_service()
-        
+
         # Generate answer
         response = rag_service.generate_answer(
             query=request.query,

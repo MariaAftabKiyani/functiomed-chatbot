@@ -91,22 +91,6 @@ class RAGService:
         logger.info(f"  Max chunks: {settings.RAG_MAX_CHUNKS}")
         logger.info(f"  Min score: {settings.RAG_MIN_CHUNK_SCORE}")
     
-    def _detect_language_from_text(self, query: str) -> Optional[str]:
-        """Detect language from query text"""
-        query_lower = query.lower().strip()
-
-        # French words/greetings
-        if any(g in query_lower for g in ['bonjour', 'salut', 'bonsoir', 'merci', 'ok', 'bien', 'd\'accord']):
-            return "FR"
-        # German words/greetings
-        elif any(g in query_lower for g in ['hallo', 'guten', 'servus', 'moin', 'grüß', 'danke', 'verstanden', 'alles klar', 'gut']):
-            return "DE"
-        # English words/greetings
-        elif any(g in query_lower for g in ['hello', 'hi', 'hey', 'good', 'thanks', 'ok', 'okay', 'understood', 'got it', 'alright', 'well', 'hmm', 'umm']):
-            return "EN"
-
-        return None
-
     def _is_greeting(self, query: str) -> bool:
         """Check if query is a simple greeting (handles typos)"""
         query_lower = query.lower().strip()
@@ -163,9 +147,8 @@ class RAGService:
 
     def _create_greeting_response(self, query: str, language: Optional[str]) -> RAGResponse:
         """Create response for greetings without retrieval"""
-        # Try to detect language from the greeting itself first
-        detected_lang = self._detect_language_from_text(query)
-        lang_to_use = detected_lang or (language.upper() if language else "EN")
+        # Use the language passed from UI, default to EN if not provided
+        lang_to_use = language.upper() if language else "EN"
 
         if lang_to_use == "DE":
             answer = "Hallo! Willkommen bei Functiomed. Wie kann ich Ihnen helfen?"
@@ -190,9 +173,8 @@ class RAGService:
 
     def _create_acknowledgment_response(self, query: str, language: Optional[str]) -> RAGResponse:
         """Create response for acknowledgments without retrieval"""
-        # Try to detect language from the text
-        detected_lang = self._detect_language_from_text(query)
-        lang_to_use = detected_lang or (language.upper() if language else "EN")
+        # Use the language passed from UI, default to EN if not provided
+        lang_to_use = language.upper() if language else "EN"
 
         if lang_to_use == "DE":
             answer = "Gerne! Lassen Sie mich wissen, wenn Sie weitere Fragen zu Functiomed haben."
@@ -248,12 +230,12 @@ class RAGService:
 
         # CRITICAL: Check for greetings FIRST, before retrieval
         if self._is_greeting(query):
-            logger.info("Detected greeting - returning direct response without retrieval")
+            logger.info(f"Detected greeting - returning direct response in language={language}")
             return self._create_greeting_response(query, language)
 
         # Check for acknowledgments (thanks, ok, got it, etc.)
         if self._is_acknowledgment(query):
-            logger.info("Detected acknowledgment - returning direct response without retrieval")
+            logger.info(f"Detected acknowledgment - returning direct response in language={language}")
             return self._create_acknowledgment_response(query, language)
 
         # Use defaults
