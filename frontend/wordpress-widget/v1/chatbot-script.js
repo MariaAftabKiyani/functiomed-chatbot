@@ -18,7 +18,7 @@ const MAX_AUDIO_CACHE_SIZE = 3;
 const AUDIO_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 // Configuration
-const API_BASE_URL = 'https://functiomed-chatbot.onrender.com';  // Deployed backend URL
+const API_BASE_URL = 'http://3.79.17.125:8000';  // Deployed backend URL
 const API_ENDPOINT = '/api/v1/chat/';
 const STREAM_ENDPOINT = '/api/v1/chat/stream';
 // const FAQ_ENDPOINT = '/api/v1/faqs/'; // No longer needed - FAQs are hardcoded

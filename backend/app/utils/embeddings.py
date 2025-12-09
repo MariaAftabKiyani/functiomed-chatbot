@@ -44,7 +44,7 @@ class EmbeddingService:
             # Use sentence-transformers (Windows-friendly)
             self.model = SentenceTransformer(
                 settings.EMBEDDING_MODEL,
-                device="cpu"
+                device=settings.EMBEDDING_DEVICE
             )
             
             # Warmup
