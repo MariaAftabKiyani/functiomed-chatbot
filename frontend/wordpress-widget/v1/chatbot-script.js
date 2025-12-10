@@ -99,7 +99,7 @@ const HARDCODED_FAQS = {
     orthopedics: {
         id: "orthopedics",
         question: {
-            EN: "What does our orthopedics department treat?",
+            EN: "What does your orthopedics department treat?",
             DE: "Was behandelt die Orthopädie bei functiomed?",
             FR: "Que traite le département d'orthopédie de functiomed ?"
         },
@@ -127,7 +127,7 @@ const HARDCODED_FAQS = {
     osteopathy_suitable: {
         id: "osteopathy_suitable",
         question: {
-            EN: "Who is osteopathic treatment suitable for?",
+            EN: "For whom is osteopathic treatment suitable for?",
             DE: "Für wen ist eine osteopathische Behandlung geeignet?",
             FR: "Pour qui le traitement ostéopathique est-il adapté ?"
         },
