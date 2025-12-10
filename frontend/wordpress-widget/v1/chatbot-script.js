@@ -172,7 +172,7 @@ const HARDCODED_FAQS = {
 const MESSAGES = {
     EN: {
         initialGreeting: "Hi there! 👋 I'm FUNIA, your friendly assistant at Functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?",
-        placeholder: "Type your message or click mic to speak...",
+        placeholder: "Type your message...",
         errorMessage: "Sorry, there was an error. Please try again.",
         typingIndicator: "Typing...",
         headerTitle: "FUNIA",
