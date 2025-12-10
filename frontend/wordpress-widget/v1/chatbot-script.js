@@ -104,9 +104,9 @@ const HARDCODED_FAQS = {
             FR: "Que traite le département d'orthopédie de functiomed ?"
         },
         answer: {
-            EN: "Orthopedics at functiomed deals with diseases and injuries of the musculoskeletal system, including bones, joints, muscles, and tendons.",
-            DE: "Die Orthopädie bei functiomed befasst sich mit Erkrankungen und Verletzungen des Bewegungsapparates, einschließlich Knochen, Gelenken, Muskeln und Sehnen.",
-            FR: "L'orthopédie chez functiomed s'occupe des maladies et des blessures de l'appareil locomoteur, y compris les os, les articulations, les muscles et les tendons."
+            EN: "Orthopedics at functiomed deals with diseases and injuries of the **musculoskeletal system**, including **bones**, **joints**, **muscles**, and **tendons**.",
+            DE: "Die Orthopädie bei functiomed befasst sich mit Erkrankungen und Verletzungen des **Bewegungsapparates**, einschließlich **Knochen**, **Gelenken**, **Muskeln** und **Sehnen**.",
+            FR: "L'orthopédie chez functiomed s'occupe des maladies et des blessures de l'**appareil locomoteur**, y compris les **os**, les **articulations**, les **muscles** et les **tendons**."
         },
         category: "services"
     },
@@ -118,9 +118,9 @@ const HARDCODED_FAQS = {
             FR: "Pour qui le traitement ostéopathique est-il adapté ?"
         },
         answer: {
-            EN: "Osteopathy is suitable for people of all ages, from newborns to seniors.",
-            DE: "Osteopathie ist für Menschen jeden Alters geeignet, von Neugeborenen bis zu Senioren.",
-            FR: "L'ostéopathie convient aux personnes de tout âge, des nouveau-nés aux seniors."
+            EN: "Osteopathy is suitable for people of **all ages**, from **newborns to seniors**.",
+            DE: "Osteopathie ist für Menschen **jeden Alters** geeignet, von **Neugeborenen bis zu Senioren**.",
+            FR: "L'ostéopathie convient aux personnes de **tout âge**, des **nouveau-nés aux seniors**."
         },
         category: "services"
     },
@@ -132,9 +132,9 @@ const HARDCODED_FAQS = {
             FR: "Quelles maladies sont traitées par le service de rhumatologie ?"
         },
         answer: {
-            EN: "Our rheumatology department treats inflammatory joint diseases, soft tissue rheumatism, and other rheumatic disorders.",
-            DE: "Unsere Rheumatologie behandelt entzündliche Gelenkerkrankungen, Weichteilrheuma und andere rheumatische Erkrankungen.",
-            FR: "Notre service de rhumatologie traite les maladies articulaires inflammatoires, les affections des tissus mous et d'autres troubles rhumatismaux."
+            EN: "Our rheumatology department treats **inflammatory joint diseases**, **soft tissue rheumatism**, and other **rheumatic disorders**.",
+            DE: "Unsere Rheumatologie behandelt **entzündliche Gelenkerkrankungen**, **Weichteilrheuma** und andere **rheumatische Erkrankungen**.",
+            FR: "Notre service de rhumatologie traite les **maladies articulaires inflammatoires**, les **affections des tissus mous** et d'autres **troubles rhumatismaux**."
         },
         category: "services"
     },
@@ -146,9 +146,9 @@ const HARDCODED_FAQS = {
             FR: "Que signifie la médecine intégrative ?"
         },
         answer: {
-            EN: "Integrative medicine combines conventional medical treatments with complementary therapies for a holistic approach.",
-            DE: "Integrative Medizin kombiniert schulmedizinische Verfahren mit komplementären Therapien für eine ganzheitliche Behandlung.",
-            FR: "La médecine intégrative combine les traitements médicaux conventionnels avec des thérapies complémentaires pour une prise en charge globale."
+            EN: "Integrative medicine combines **conventional medical treatments** with **complementary therapies** for a holistic approach.",
+            DE: "Integrative Medizin kombiniert schulmedizinische Verfahren** mit **komplementären Therapien** für eine ganzheitliche Behandlung.",
+            FR: "La médecine intégrative combine les **traitements médicaux conventionnels** avec des **thérapies complémentaires** pour une prise en charge globale."
         },
         category: "services"
     },
@@ -160,9 +160,9 @@ const HARDCODED_FAQS = {
             FR: "Que comprend la médecine complémentaire chez functiomed ?"
         },
         answer: {
-            EN: "Our complementary medicine includes acupuncture, homeopathy, medical massages, and other alternative healing methods.",
-            DE: "Unsere Komplementärmedizin umfasst Akupunktur, Homöopathie, medizinische Massagen und andere alternative Heilmethoden.",
-            FR: "Notre médecine complémentaire comprend l'acupuncture, l'homéopathie, les massages thérapeutiques et d'autres méthodes de guérison alternatives."
+            EN: "Our complementary medicine includes **acupuncture**, **homeopathy**, **medical massages**, and other alternative healing methods.",
+            DE: "Unsere Komplementärmedizin umfasst **Akupunktur**, **Homöopathie**, **medizinische Massagen** und andere alternative Heilmethoden.",
+            FR: "Notre médecine complémentaire comprend **l'acupuncture**, **l'homéopathie**, les **massages thérapeutiques** et d'autres méthodes de guérison alternatives."
         },
         category: "services"
     }
@@ -641,7 +641,7 @@ function markdownToHtml(text) {
 }
 
 // Add message to chat
-function addMessage(text, sender, sources = null, confidence = null) {
+function addMessage(text, sender, sources = null, confidence = null, autoScroll = true) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${sender}`;
 
@@ -697,7 +697,10 @@ function addMessage(text, sender, sources = null, confidence = null) {
     //     speakerBtn.addEventListener('click', () => toggleMessageAudio(messageDiv, speakerBtn));
     // }
 
-    scrollToBottom();
+    // Only auto-scroll if requested (default: true)
+    if (autoScroll) {
+        scrollToBottom();
+    }
 
     // Store in conversation history
     conversationHistory.push({
@@ -705,6 +708,9 @@ function addMessage(text, sender, sources = null, confidence = null) {
         sender: sender,
         timestamp: new Date().toISOString()
     });
+
+    // Return the message element for potential scrolling to specific position
+    return messageDiv;
 }
 
 // Show typing indicator
@@ -961,12 +967,17 @@ function handleFAQClick(faqId) {
         return;
     }
 
-    // Display question as user message
-    addMessage(question, 'user');
+    // Display question as user message (with auto-scroll to show the question)
+    const questionElement = addMessage(question, 'user', null, null, true);
 
-    // Display answer as bot message (instant response)
+    // Display answer as bot message (instant response, NO auto-scroll)
     setTimeout(() => {
-        addMessage(answer, 'bot');
+        addMessage(answer, 'bot', null, null, false);
+
+        // Scroll to show the question at the top of the chat
+        if (questionElement) {
+            questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
         // Don't hide FAQs - keep them visible like inspiration widget
     }, 100); // Small delay for UX (feels more natural)
 }
