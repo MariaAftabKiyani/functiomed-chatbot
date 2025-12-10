@@ -442,6 +442,11 @@ class RAGService:
         # But keep markdown links and normal citations [1], [2]
         response = re.sub(r'\[\d+\]\s*(?:Source|Quelle):\s*[^\n]+\((?:Relevance|Relevanz|Pertinence):\s*[\d.]+\)', '', response, flags=re.IGNORECASE)
 
+        # Remove unwanted remarks and notes at the end
+        response = re.sub(r'CRITICAL REMARK:.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
+        response = re.sub(r'IMPORTANT NOTE:.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
+        response = re.sub(r'Please note that.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
+
         # Clean up multiple newlines (max 2 consecutive for markdown spacing)
         response = re.sub(r'\n{3,}', '\n\n', response)
 
