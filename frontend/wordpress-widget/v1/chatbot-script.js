@@ -18,7 +18,7 @@ const MAX_AUDIO_CACHE_SIZE = 3;
 const AUDIO_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 // Configuration
-const API_BASE_URL = 'http://3.79.17.125:8000';  // Deployed backend URL
+const API_BASE_URL = 'http://localhost:8000';  // Deployed backend URL
 const API_ENDPOINT = '/api/v1/chat/';
 const STREAM_ENDPOINT = '/api/v1/chat/stream';
 // const FAQ_ENDPOINT = '/api/v1/faqs/'; // No longer needed - FAQs are hardcoded
@@ -95,6 +95,76 @@ const HARDCODED_FAQS = {
             FR: "Nos heures d'ouverture régulières sont du **lundi au vendredi, de 08h00 à 18h00**. Des rendez-vous en dehors de ces heures sont possibles sur arrangement."
         },
         category: "general"
+    },
+    orthopedics: {
+        id: "orthopedics",
+        question: {
+            EN: "What does the orthopedics department at functiomed treat?",
+            DE: "Was behandelt die Orthopädie bei functiomed?",
+            FR: "Que traite le département d'orthopédie de functiomed ?"
+        },
+        answer: {
+            EN: "Orthopedics at functiomed deals with diseases and injuries of the musculoskeletal system, including bones, joints, muscles, and tendons.",
+            DE: "Die Orthopädie bei functiomed befasst sich mit Erkrankungen und Verletzungen des Bewegungsapparates, einschließlich Knochen, Gelenken, Muskeln und Sehnen.",
+            FR: "L'orthopédie chez functiomed s'occupe des maladies et des blessures de l'appareil locomoteur, y compris les os, les articulations, les muscles et les tendons."
+        },
+        category: "services"
+    },
+    osteopathy_suitable: {
+        id: "osteopathy_suitable",
+        question: {
+            EN: "Who is osteopathic treatment suitable for?",
+            DE: "Für wen ist eine osteopathische Behandlung geeignet?",
+            FR: "Pour qui le traitement ostéopathique est-il adapté ?"
+        },
+        answer: {
+            EN: "Osteopathy is suitable for people of all ages, from newborns to seniors.",
+            DE: "Osteopathie ist für Menschen jeden Alters geeignet, von Neugeborenen bis zu Senioren.",
+            FR: "L'ostéopathie convient aux personnes de tout âge, des nouveau-nés aux seniors."
+        },
+        category: "services"
+    },
+    rheumatology: {
+        id: "rheumatology",
+        question: {
+            EN: "Which conditions does rheumatology treat?",
+            DE: "Welche Erkrankungen behandelt die Rheumatologie?",
+            FR: "Quelles maladies sont traitées par le service de rhumatologie ?"
+        },
+        answer: {
+            EN: "Our rheumatology department treats inflammatory joint diseases, soft tissue rheumatism, and other rheumatic disorders.",
+            DE: "Unsere Rheumatologie behandelt entzündliche Gelenkerkrankungen, Weichteilrheuma und andere rheumatische Erkrankungen.",
+            FR: "Notre service de rhumatologie traite les maladies articulaires inflammatoires, les affections des tissus mous et d'autres troubles rhumatismaux."
+        },
+        category: "services"
+    },
+    integrative_medicine: {
+        id: "integrative_medicine",
+        question: {
+            EN: "What is meant by integrative medicine?",
+            DE: "Was versteht man unter integrativer Medizin?",
+            FR: "Que signifie la médecine intégrative ?"
+        },
+        answer: {
+            EN: "Integrative medicine combines conventional medical treatments with complementary therapies for a holistic approach.",
+            DE: "Integrative Medizin kombiniert schulmedizinische Verfahren mit komplementären Therapien für eine ganzheitliche Behandlung.",
+            FR: "La médecine intégrative combine les traitements médicaux conventionnels avec des thérapies complémentaires pour une prise en charge globale."
+        },
+        category: "services"
+    },
+    complementary_medicine: {
+        id: "complementary_medicine",
+        question: {
+            EN: "What does complementary medicine at functiomed include?",
+            DE: "Was umfasst die Komplementärmedizin bei functiomed?",
+            FR: "Que comprend la médecine complémentaire chez functiomed ?"
+        },
+        answer: {
+            EN: "Our complementary medicine includes acupuncture, homeopathy, medical massages, and other alternative healing methods.",
+            DE: "Unsere Komplementärmedizin umfasst Akupunktur, Homöopathie, medizinische Massagen und andere alternative Heilmethoden.",
+            FR: "Notre médecine complémentaire comprend l'acupuncture, l'homéopathie, les massages thérapeutiques et d'autres méthodes de guérison alternatives."
+        },
+        category: "services"
     }
 };
 
@@ -107,7 +177,8 @@ const MESSAGES = {
         typingIndicator: "Typing...",
         headerTitle: "FIONA",
         headerStatus: "● Online",
-        ttsError: "Could not play audio. Please try again."
+        ttsError: "Could not play audio. Please try again.",
+        demoMessage: "Please click on FAQs below to get instant answers to common questions."
     },
     DE: {
         initialGreeting: "Hallo! 👋 Ich bin FIONA, Ihre freundliche Assistentin bei Functiomed. Ich bin hier, um Ihnen bei allem zu helfen, was Sie brauchen - ob es darum geht, Informationen über unsere Dienstleistungen, Ärzte zu finden oder Ihre Fragen zu beantworten. Womit kann ich Ihnen heute helfen?",
@@ -116,7 +187,8 @@ const MESSAGES = {
         typingIndicator: "Tippt...",
         headerTitle: "FIONA",
         headerStatus: "● Online",
-        ttsError: "Audio konnte nicht abgespielt werden. Bitte versuchen Sie es erneut."
+        ttsError: "Audio konnte nicht abgespielt werden. Bitte versuchen Sie es erneut.",
+        demoMessage: "Bitte klicken Sie auf FAQs unten, um sofortige Antworten auf häufig gestellte Fragen zu erhalten."
     },
     FR: {
         initialGreeting: "Bonjour ! 👋 Je suis FIONA, votre assistante amicale chez Functiomed. Je suis là pour vous aider avec tout ce dont vous avez besoin - que ce soit pour trouver des informations sur nos services, nos médecins ou répondre à vos questions. En quoi puis-je vous aider aujourd'hui ?",
@@ -125,7 +197,8 @@ const MESSAGES = {
         typingIndicator: "Écrit...",
         headerTitle: "FIONA",
         headerStatus: "● En ligne",
-        ttsError: "Impossible de lire l'audio. Veuillez réessayer."
+        ttsError: "Impossible de lire l'audio. Veuillez réessayer.",
+        demoMessage: "Veuillez cliquer sur FAQs ci-dessous pour obtenir des réponses instantanées aux questions fréquentes."
     }
 };
 
@@ -213,28 +286,29 @@ function setInitialTime() {
         // Store text in data attribute
         initialMessage.setAttribute('data-message-text', messageText);
 
-        // Convert old structure to new footer structure
+        // Convert old structure to new footer structure - action buttons commented out
         const footerDiv = document.createElement('div');
         footerDiv.className = 'message-footer';
         footerDiv.innerHTML = `
             <div class="message-time">${time}</div>
-            <div class="message-actions">
-                <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <span class="btn-text">Copy</span>
-                </button>
-                <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                    <span class="btn-text">Listen</span>
-                </button>
-            </div>
         `;
+        // COMMENTED OUT: Action buttons for initial message
+        // <div class="message-actions">
+        //     <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
+        //         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        //             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        //             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        //         </svg>
+        //         <span class="btn-text">Copy</span>
+        //     </button>
+        //     <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
+        //         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        //             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        //             <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        //         </svg>
+        //         <span class="btn-text">Listen</span>
+        //     </button>
+        // </div>
 
         // Remove old time element
         timeElement.remove();
@@ -242,14 +316,14 @@ function setInitialTime() {
         // Append new footer
         initialMessage.appendChild(footerDiv);
 
-        // Add event listeners
-        const copyBtn = footerDiv.querySelector('.copy-btn');
-        const speakerBtn = footerDiv.querySelector('.speaker-btn');
-
-        if (copyBtn && speakerBtn) {
-            copyBtn.addEventListener('click', () => copyMessageText(messageText, copyBtn));
-            speakerBtn.addEventListener('click', () => toggleMessageAudio(initialMessage, speakerBtn));
-        }
+        // COMMENTED OUT: Event listeners for initial message action buttons
+        // const copyBtn = footerDiv.querySelector('.copy-btn');
+        // const speakerBtn = footerDiv.querySelector('.speaker-btn');
+        //
+        // if (copyBtn && speakerBtn) {
+        //     copyBtn.addEventListener('click', () => copyMessageText(messageText, copyBtn));
+        //     speakerBtn.addEventListener('click', () => toggleMessageAudio(initialMessage, speakerBtn));
+        // }
     }
 }
 
@@ -326,49 +400,29 @@ async function sendMessage() {
 async function sendMessageRegular(message) {
     showTypingIndicator();
 
-    try {
-        const response = await fetchBotResponse(message);
+    // Simulate a short delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 800));
 
-        hideTypingIndicator();
-        addMessage(response.answer, 'bot');
+    hideTypingIndicator();
 
-    } catch (error) {
-        console.error('Error fetching response:', error);
-        hideTypingIndicator();
-
-        const messages = MESSAGES[currentLanguage];
-        addMessage(messages.errorMessage, 'bot');
-    }
+    // Return demo message in the selected language
+    const messages = MESSAGES[currentLanguage];
+    addMessage(messages.demoMessage, 'bot');
 }
 
 // Streaming message with stop capability
 async function sendMessageStreaming(message) {
-    // Create abort controller for this request
-    currentAbortController = new AbortController();
-
-    // Show typing indicator while waiting for stream to start
+    // Show typing indicator while preparing response
     showTypingIndicator();
 
-    // Show stop button
-    showStopButton();
+    // Simulate a short delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 800));
 
-    try {
-        const response = await fetchBotResponseStreaming(message, currentAbortController.signal);
+    hideTypingIndicator();
 
-    } catch (error) {
-        hideTypingIndicator();
-        if (error.name === 'AbortError') {
-            console.log('Request was cancelled by user');
-        } else {
-            console.error('Error fetching response:', error);
-            const messages = MESSAGES[currentLanguage];
-            addMessage(messages.errorMessage, 'bot');
-        }
-    } finally {
-        hideStopButton();
-        currentAbortController = null;
-        currentStreamingMessage = null;
-    }
+    // Return demo message in the selected language
+    const messages = MESSAGES[currentLanguage];
+    addMessage(messages.demoMessage, 'bot');
 }
 
 // Fetch response from backend API (regular, non-streaming)
@@ -600,29 +654,30 @@ function addMessage(text, sender, sources = null, confidence = null) {
     messageDiv.setAttribute('data-message-text', text);
 
     if (sender === 'bot') {
-        // Bot messages with action buttons
+        // Bot messages - action buttons commented out
         messageDiv.innerHTML = `
             <div class="message-content">${formattedText}</div>
             <div class="message-footer">
                 <div class="message-time">${time}</div>
-                <div class="message-actions">
-                    <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                        </svg>
-                        <span class="btn-text">Copy</span>
-                    </button>
-                    <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                        </svg>
-                        <span class="btn-text">Listen</span>
-                    </button>
-                </div>
             </div>
         `;
+        // COMMENTED OUT: Action buttons (Copy & Listen)
+        // <div class="message-actions">
+        //     <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
+        //         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        //             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        //             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        //         </svg>
+        //         <span class="btn-text">Copy</span>
+        //     </button>
+        //     <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
+        //         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        //             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        //             <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        //         </svg>
+        //         <span class="btn-text">Listen</span>
+        //     </button>
+        // </div>
     } else {
         // User messages without action buttons
         messageDiv.innerHTML = `
@@ -633,14 +688,14 @@ function addMessage(text, sender, sources = null, confidence = null) {
 
     chatMessages.appendChild(messageDiv);
 
-    // Add event listeners for bot messages
-    if (sender === 'bot') {
-        const copyBtn = messageDiv.querySelector('.copy-btn');
-        const speakerBtn = messageDiv.querySelector('.speaker-btn');
-
-        copyBtn.addEventListener('click', () => copyMessageText(text, copyBtn));
-        speakerBtn.addEventListener('click', () => toggleMessageAudio(messageDiv, speakerBtn));
-    }
+    // COMMENTED OUT: Event listeners for action buttons
+    // if (sender === 'bot') {
+    //     const copyBtn = messageDiv.querySelector('.copy-btn');
+    //     const speakerBtn = messageDiv.querySelector('.speaker-btn');
+    //
+    //     copyBtn.addEventListener('click', () => copyMessageText(text, copyBtn));
+    //     speakerBtn.addEventListener('click', () => toggleMessageAudio(messageDiv, speakerBtn));
+    // }
 
     scrollToBottom();
 
@@ -741,33 +796,34 @@ function finalizeStreamingMessage(messageDiv, text, wasCancelled = false, hasErr
         }
     }
 
-    // Add message footer with action buttons if not already present
+    // Add message footer - action buttons commented out
     if (!messageDiv.querySelector('.message-footer') && !hasError) {
         const timeDiv = messageDiv.querySelector('.message-time');
         const time = timeDiv ? timeDiv.textContent : getCurrentTime();
 
-        // Create footer with time and actions
+        // Create footer with time only
         const footerDiv = document.createElement('div');
         footerDiv.className = 'message-footer';
         footerDiv.innerHTML = `
             <div class="message-time">${time}</div>
-            <div class="message-actions">
-                <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <span class="btn-text">Copy</span>
-                </button>
-                <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                    <span class="btn-text">Listen</span>
-                </button>
-            </div>
         `;
+        // COMMENTED OUT: Action buttons for streaming messages
+        // <div class="message-actions">
+        //     <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
+        //         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        //             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        //             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        //         </svg>
+        //         <span class="btn-text">Copy</span>
+        //     </button>
+        //     <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
+        //         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        //             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        //             <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        //         </svg>
+        //         <span class="btn-text">Listen</span>
+        //     </button>
+        // </div>
 
         // Remove old time div if exists
         if (timeDiv) {
@@ -777,12 +833,12 @@ function finalizeStreamingMessage(messageDiv, text, wasCancelled = false, hasErr
         // Append footer
         messageDiv.appendChild(footerDiv);
 
-        // Add event listeners
-        const copyBtn = footerDiv.querySelector('.copy-btn');
-        const speakerBtn = footerDiv.querySelector('.speaker-btn');
-
-        copyBtn.addEventListener('click', () => copyMessageText(text, copyBtn));
-        speakerBtn.addEventListener('click', () => toggleMessageAudio(messageDiv, speakerBtn));
+        // COMMENTED OUT: Event listeners for streaming message action buttons
+        // const copyBtn = footerDiv.querySelector('.copy-btn');
+        // const speakerBtn = footerDiv.querySelector('.speaker-btn');
+        //
+        // copyBtn.addEventListener('click', () => copyMessageText(text, copyBtn));
+        // speakerBtn.addEventListener('click', () => toggleMessageAudio(messageDiv, speakerBtn));
     }
 
     scrollToBottom();
