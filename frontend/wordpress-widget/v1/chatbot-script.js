@@ -171,31 +171,31 @@ const HARDCODED_FAQS = {
 // Language-specific messages
 const MESSAGES = {
     EN: {
-        initialGreeting: "Hi there! 👋 I'm FIONA, your friendly assistant at Functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?",
+        initialGreeting: "Hi there! 👋 I'm FUNIA, your friendly assistant at Functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?",
         placeholder: "Type your message or click mic to speak...",
         errorMessage: "Sorry, there was an error. Please try again.",
         typingIndicator: "Typing...",
-        headerTitle: "FIONA",
+        headerTitle: "FUNIA",
         headerStatus: "● Online",
         ttsError: "Could not play audio. Please try again.",
         demoMessage: "Please click on FAQs below to get instant answers to common questions."
     },
     DE: {
-        initialGreeting: "Hallo! 👋 Ich bin FIONA, Ihre freundliche Assistentin bei Functiomed. Ich bin hier, um Ihnen bei allem zu helfen, was Sie brauchen - ob es darum geht, Informationen über unsere Dienstleistungen, Ärzte zu finden oder Ihre Fragen zu beantworten. Womit kann ich Ihnen heute helfen?",
+        initialGreeting: "Hallo! 👋 Ich bin FUNIA, Ihre freundliche Assistentin bei Functiomed. Ich bin hier, um Ihnen bei allem zu helfen, was Sie brauchen - ob es darum geht, Informationen über unsere Dienstleistungen, Ärzte zu finden oder Ihre Fragen zu beantworten. Womit kann ich Ihnen heute helfen?",
         placeholder: "Geben Sie Ihre Nachricht ein...",
         errorMessage: "Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.",
         typingIndicator: "Tippt...",
-        headerTitle: "FIONA",
+        headerTitle: "FUNIA",
         headerStatus: "● Online",
         ttsError: "Audio konnte nicht abgespielt werden. Bitte versuchen Sie es erneut.",
         demoMessage: "Bitte klicken Sie auf FAQs unten, um sofortige Antworten auf häufig gestellte Fragen zu erhalten."
     },
     FR: {
-        initialGreeting: "Bonjour ! 👋 Je suis FIONA, votre assistante amicale chez Functiomed. Je suis là pour vous aider avec tout ce dont vous avez besoin - que ce soit pour trouver des informations sur nos services, nos médecins ou répondre à vos questions. En quoi puis-je vous aider aujourd'hui ?",
+        initialGreeting: "Bonjour ! 👋 Je suis FUNIA, votre assistante amicale chez Functiomed. Je suis là pour vous aider avec tout ce dont vous avez besoin - que ce soit pour trouver des informations sur nos services, nos médecins ou répondre à vos questions. En quoi puis-je vous aider aujourd'hui ?",
         placeholder: "Tapez votre message...",
         errorMessage: "Désolé, une erreur s'est produite. Veuillez réessayer.",
         typingIndicator: "Écrit...",
-        headerTitle: "FIONA",
+        headerTitle: "FUNIA",
         headerStatus: "● En ligne",
         ttsError: "Impossible de lire l'audio. Veuillez réessayer.",
         demoMessage: "Veuillez cliquer sur FAQs ci-dessous pour obtenir des réponses instantanées aux questions fréquentes."
