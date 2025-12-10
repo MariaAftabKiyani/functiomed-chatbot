@@ -118,9 +118,9 @@ const HARDCODED_FAQS = {
             FR: "Que traite le département d'orthopédie chez functiomed ?"
         },
         answer: {
-            EN: "Orthopedics at functiomed deals with diseases and injuries of the **musculoskeletal system**, including **bones**, **joints**, **muscles**, and **tendons**.",
-            DE: "Die Orthopädie bei functiomed befasst sich mit Erkrankungen und Verletzungen des **Bewegungsapparates**, einschließlich **Knochen**, **Gelenken**, **Muskeln** und **Sehnen**.",
-            FR: "L'orthopédie chez functiomed s'occupe des maladies et des blessures de l'**appareil locomoteur**, y compris les **os**, les **articulations**, les **muscles** et les **tendons**."
+            EN: "Our orthopedics team helps with conditions that affect the **musculoskeletal system**. This includes problems involving **bones, joints, muscles, and tendons**, whether they are caused by injuries or chronic issues.",
+            DE: "Unser Orthopädie-Team hilft bei Erkrankungen, die das **Bewegungsapparates** betreffen. Dazu gehören Probleme mit **Knochen, Gelenken, Muskeln und Sehnen**, egal ob sie durch Verletzungen oder chronische Beschwerden verursacht werden.",
+            FR: "Notre équipe d'orthopédie aide à traiter les affections qui touchent l'**appareil locomoteur**. Cela inclut les problèmes concernant les **os, articulations, muscles et tendons**, qu'ils soient causés par des blessures ou des problèmes chroniques."
         },
         category: "services"
     },
@@ -132,9 +132,9 @@ const HARDCODED_FAQS = {
             FR: "Pour qui le traitement ostéopathique est-il adapté ?"
         },
         answer: {
-            EN: "Osteopathy is suitable for people of **all ages**, from **newborns to seniors**.",
-            DE: "Osteopathie ist für Menschen **jeden Alters** geeignet, von **Neugeborenen bis zu Senioren**.",
-            FR: "L'ostéopathie convient aux personnes de **tout âge**, des **nouveau-nés aux seniors**."
+            EN: "Osteopathy is suitable for people of **all ages**, from newborn babies to elderly patients. It is designed to support the body's natural ability to heal itself, improve mobility, relieve pain, and enhance overall well-being.",
+            DE: "Osteopathie ist für Menschen **jeden Alters** geeignet, von neugeborenen Babys bis zu älteren Patienten. Sie wurde entwickelt, um die natürliche Selbstheilungsfähigkeit des Körpers zu unterstützen, die Mobilität zu verbessern, Schmerzen zu lindern und das allgemeine Wohlbefinden zu steigern.",
+            FR: "L'ostéopathie convient aux personnes de **tout âge**, des nouveau-nés aux patients âgés. Elle est conçue pour soutenir la capacité naturelle du corps à se guérir, améliorer la mobilité, soulager la douleur et améliorer le bien-être général."
         },
         category: "services"
     },
@@ -146,9 +146,9 @@ const HARDCODED_FAQS = {
             FR: "Quelles maladies sont traitées par le service de rhumatologie ?"
         },
         answer: {
-            EN: "Our rheumatology department treats **inflammatory joint** diseases, **soft tissue rheumatism**, and other **rheumatic disorders**.",
-            DE: "Unsere Rheumatologie behandelt **entzündliche Gelenkerkrankungen**, **Weichteilrheuma** und andere **rheumatische Erkrankungen**.",
-            FR: "Notre service de rhumatologie traite les **maladies articulaires inflammatoires**, les **affections des tissus mous** et d'autres **troubles rhumatismaux**."
+            EN: "Our rheumatology department specializes in the diagnosis and treatment of a wide range of rheumatic conditions. This includes **inflammatory joint** diseases, **soft tissue rheumatism**, and other conditions that affect the joints, muscles, and connective tissues.",
+            DE: "Unsere Rheumatologie-Abteilung ist auf die Diagnose und Behandlung einer Vielzahl rheumatischer Erkrankungen spezialisiert. Dazu gehören **entzündliche Gelenkerkrankungen**, **Weichteilrheuma** und andere Erkrankungen, die die Gelenke, Muskeln und Bindegewebe betreffen.",
+            FR: "Notre service de rhumatologie est spécialisé dans le diagnostic et le traitement d'un large éventail de conditions rhumatismales. Cela inclut les **maladies articulaires inflammatoires**, le **rhumatisme des tissus mous** et d'autres affections qui touchent les articulations, les muscles et les tissus conjonctifs."
         },
         category: "services"
     },
@@ -216,9 +216,9 @@ const HARDCODED_FAQS = {
             FR: "Y a-t-il des places de parking chez functiomed ?"
         },
         answer: {
-            EN: "Yes, **free parking spaces** are available directly in front of the practice. Additionally, **public parking spaces** are located nearby.",
-            DE: "Ja, es stehen Ihnen **kostenlose Parkplätze** direkt vor der Praxis zur Verfügung. Zusätzlich befinden sich **öffentliche Parkplätze** in unmittelbarer Nähe.",
-            FR: "Oui, des **places de parking gratuites** sont disponibles directement devant la pratique. De plus, des **places de parking publiques** se trouvent à proximité."
+            EN: "**Yes**, you'll find **free parking spaces** right in front of our practice, and there are also public parking options in the nearby area.",
+            DE: "**Ja**, Sie finden **kostenlose Parkplätze** direkt vor unserer Praxis, und es gibt auch öffentliche Parkmöglichkeiten in der Nähe.",
+            FR: "**Oui**, vous trouverez des **places de parking gratuites** juste devant notre cabinet, et il y a également des options de stationnement public dans les environs."
         },
         category: "general"
     },
@@ -230,9 +230,9 @@ const HARDCODED_FAQS = {
             FR: "Quelles langues le personnel parle-t-il ?"
         },
         answer: {
-            EN: "Our team speaks **German**, **English**, **French**, **Italian**, and many more. Please inform us of your preferred language if needed.",
-            DE: "Unser Team spricht **Deutsch**, **Englisch**, **Französisch** und **Italienisch** und viele mehr. Bitte teilen Sie uns bei Bedarf Ihre bevorzugte Sprache mit.",
-            FR: "Notre équipe parle **allemand**, **anglais**, **français**, **italien** et bien d'autres. Veuillez nous informer si vous avez une langue préférée."
+            EN: "Our team speaks **German, English, French, Italian**, and several other languages. Just let us know your preferred language so we can make your visit as comfortable as possible.",
+            DE: "Unser Team spricht **Deutsch, Englisch, Französisch, Italienisch** und mehrere andere Sprachen. Teilen Sie uns einfach Ihre bevorzugte Sprache mit, damit wir Ihren Besuch so angenehm wie möglich gestalten können.",
+            FR: "Notre équipe parle **allemand, anglais, français, italien** et plusieurs autres langues. Faites-nous simplement savoir votre langue préférée afin que nous puissions rendre votre visite aussi confortable que possible."
         },
         category: "general"
     },
@@ -244,9 +244,9 @@ const HARDCODED_FAQS = {
             FR: "Quels services offre la médecine du sport ?"
         },
         answer: {
-            EN: "Our sports medicine covers **prevention**, **diagnosis**, and **treatment** of sports-related injuries. We support both **recreational** and **professional** athletes.",
-            DE: "Unsere Sportmedizin umfasst **Prävention**, **Diagnose** und **Behandlung** von sportbedingten Verletzungen. Wir unterstützen sowohl **Freizeit-** als auch **Profisportler**.",
-            FR: "Notre médecine du sport couvre la **prévention**, le **diagnostic** et le **traitement** des blessures liées au sport. Nous soutenons les athlètes **amateurs** et **professionnels**."
+            EN: "We provide comprehensive support for athletes, from **preventing** injuries to **diagnosing** and **treating** sports-related problems. We're here for both **recreational** and **professional** athletes.",
+            DE: "Wir bieten umfassende Unterstützung für Sportler, von der **Prävention** von Verletzungen bis zur **Diagnose** und **Behandlung** sportbedingter Probleme. Wir sind für **Freizeit-** und **Profisportler** da.",
+            FR: "Nous offrons un soutien complet aux athlètes, de la **prévention** des blessures au **diagnostic** et au **traitement** des problèmes liés au sport. Nous sommes là pour les athlètes **amateurs** et **professionnels**."
         },
         category: "medical"
     },
@@ -258,9 +258,9 @@ const HARDCODED_FAQS = {
             FR: "Ai-je besoin d'une ordonnance pour un rendez-vous ?"
         },
         answer: {
-            EN: "**No**, you can book an appointment directly with us. A referral is not mandatory **unless** you are in a special insurance model, such as the primary care physician model.",
-            DE: "**Nein**, Sie können direkt einen Termin bei uns vereinbaren. Eine Überweisung ist nicht zwingend erforderlich **ausser** Sie sind in einem speziellen Versicherungsmodell, wie z.B. das Hausarztmodell",
-            FR: "**Non**, vous pouvez prendre rendez-vous directement avec nous. Une ordonnance n'est nécessaire **que si** vous êtes dans un modèle d'assurance spécial, comme le modèle médecin de famille."
+            EN: "**Not necessarily**. You can book an appointment directly with us unless you're part of a special insurance model, such as the primary care physician model, which may require a referral.",
+            DE: "**Nicht unbedingt**. Sie können direkt einen Termin bei uns buchen, es sei denn, Sie sind Teil eines speziellen Versicherungsmodells, wie z.B. das Hausarztmodell, das möglicherweise eine Überweisung erfordert.",
+            FR: "**Pas nécessairement**. Vous pouvez prendre rendez-vous directement avec nous sauf si vous faites partie d'un modèle d'assurance spécial, tel que le modèle de médecin de famille, qui peut nécessiter une ordonnance."
         },
         category: "general"
     },
@@ -272,9 +272,9 @@ const HARDCODED_FAQS = {
             FR: "Les coûts sont-ils couverts par l'assurance maladie ?"
         },
         answer: {
-            EN: "The costs for **orthopedic** and **traumatological** treatments are generally covered by **basic** health insurance or **accident** insurance.",
-            DE: "Die Kosten für **orthopädische** und **traumatologische** Behandlungen werden in der Regel von der **Grundversicherung** oder **Unfallversicherung** übernommen.",
-            FR: "Les coûts des traitements **orthopédiques** et **traumatologiques** sont généralement couverts par **l'assurance de base** ou **l'assurance accident**."
+            EN: "Most orthopedic and traumatology treatments are covered by **basic** health insurance or **accident** insurance. We always recommend checking with your insurance provider in advance to understand exactly what is covered for your specific situation.",
+            DE: "Die meisten orthopädischen und traumatologischen Behandlungen werden von der **Grundversicherung** oder **Unfallversicherung** übernommen. Wir empfehlen immer, vorab bei Ihrer Versicherung nachzufragen, um genau zu verstehen, was für Ihre spezifische Situation abgedeckt ist.",
+            FR: "La plupart des traitements orthopédiques et traumatologiques sont couverts par **l'assurance de base** ou **l'assurance accident**. Nous recommandons toujours de vérifier auprès de votre assureur à l'avance pour comprendre exactement ce qui est couvert pour votre situation spécifique."
         },
         category: "general"
     },
@@ -286,9 +286,9 @@ const HARDCODED_FAQS = {
             FR: "Combien de séances sont nécessaires ?"
         },
         answer: {
-            EN: "The number of sessions **varies** depending on the condition. In general, **multiple sessions** are required.",
-            DE: "Die Anzahl der Sitzungen **variiert** je nach Beschwerdebild. In der Regel sind **mehrere Sitzungen** notwendig.",
-            FR: "Le nombre de séances **varie** en fonction de la condition. En général, **plusieurs séances** sont nécessaires."
+            EN: "This depends on your individual situation. Many patients benefit from several sessions, but the exact number varies from case to case.",
+            DE: "Das hängt von Ihrer individuellen Situation ab. Viele Patienten profitieren von mehreren Sitzungen, aber die genaue Anzahl variiert von Fall zu Fall.",
+            FR: "Cela dépend de votre situation individuelle. De nombreux patients bénéficient de plusieurs séances, mais le nombre exact varie d'un cas à l'autre."
         },
         category: "medical"
     },
@@ -300,9 +300,9 @@ const HARDCODED_FAQS = {
             FR: "L'ostéopathie est-elle couverte par l'assurance maladie ?"
         },
         answer: {
-            EN: "Many **supplementary** insurance plans cover **part of the costs** for osteopathic treatments. Coverage must be clarified by the patient before the appointment.",
-            DE: "Viele **Zusatzversicherungen** übernehmen einen **Teil der Kosten** für osteopathische Behandlungen. Die Kostenübernahme muss durch den Patienten vor dem Termin abgeklärt werden.",
-            FR: "De nombreuses **assurances complémentaires** couvrent une **partie des coûts** des traitements ostéopathiques. La couverture doit être clarifiée par le patient avant le rendez-vous."
+            EN: "**Supplementary insurance** often covers **part of the costs**. It's always best for patients to check their coverage in advance.",
+            DE: "**Zusatzversicherungen** übernehmen oft einen **Teil der Kosten**. Es ist immer am besten, wenn Patienten ihre Deckung im Voraus prüfen.",
+            FR: "**L'assurance complémentaire** couvre souvent une **partie des coûts**. Il est toujours préférable que les patients vérifient leur couverture à l'avance."
         },
         category: "insurance"
     },
@@ -314,9 +314,9 @@ const HARDCODED_FAQS = {
             FR: "Que comprend la médecine interne chez functiomed ?"
         },
         answer: {
-            EN: "Internal medicine deals with diseases of **internal organs** such as the heart, lungs, liver, and kidneys.",
-            DE: "Die Innere Medizin befasst sich mit Erkrankungen der **inneren Organe**, wie Herz, Lunge, Leber und Nieren.",
-            FR: "La médecine interne traite les maladies des **organes internes** tels que le cœur, les poumons, le foie et les reins."
+            EN: "Internal medicine at functiomed focuses on the prevention, diagnosis, and treatment of diseases affecting the body's **internal organs**. This includes conditions related to the **heart, lungs, liver, kidneys**, and other vital systems. Our specialists take a comprehensive approach, considering the overall health of each patient, to provide accurate diagnoses, effective treatment plans, and ongoing care for both acute and chronic medical conditions.",
+            DE: "Die Innere Medizin bei functiomed konzentriert sich auf die Prävention, Diagnose und Behandlung von Erkrankungen, die die **inneren Organe** des Körpers betreffen. Dazu gehören Erkrankungen im Zusammenhang mit **Herz, Lunge, Leber, Nieren** und anderen lebenswichtigen Systemen. Unsere Spezialisten verfolgen einen umfassenden Ansatz und berücksichtigen die allgemeine Gesundheit jedes Patienten, um genaue Diagnosen, wirksame Behandlungspläne und kontinuierliche Betreuung sowohl für akute als auch chronische Erkrankungen bereitzustellen.",
+            FR: "La médecine interne chez functiomed se concentre sur la prévention, le diagnostic et le traitement des maladies affectant les **organes internes** du corps. Cela inclut les conditions liées au **cœur, poumons, foie, reins** et autres systèmes vitaux. Nos spécialistes adoptent une approche globale, en tenant compte de la santé générale de chaque patient, pour fournir des diagnostics précis, des plans de traitement efficaces et des soins continus pour les affections médicales aiguës et chroniques."
         },
         category: "medical"
     },
@@ -328,9 +328,9 @@ const HARDCODED_FAQS = {
             FR: "Comment est posée la diagnosis ?"
         },
         answer: {
-            EN: "We use **laboratory tests** and **imaging** procedures to establish an accurate diagnosis.",
-            DE: "Wir nutzen **Laboruntersuchungen** und **bildgebende Verfahren**, um eine genaue Diagnose zu stellen.",
-            FR: "Nous utilisons des **analyses de laboratoire** et des **examens d'imagerie** pour établir un diagnostic précis."
+            EN: "We use a combination of **laboratory tests** and modern **imaging techniques** to ensure an accurate diagnosis.",
+            DE:  "Wir verwenden eine Kombination aus **Labortests** und modernen **Bildgebungsverfahren**, um eine genaue Diagnose zu gewährleisten.",
+            FR: "Nous utilisons une combinaison d'**analyses de laboratoire** et de **techniques d'imagerie modernes** pour assurer un diagnostic précis."
         },
         category: "medical"
     },
@@ -343,8 +343,8 @@ const HARDCODED_FAQS = {
         },
         answer: {
             EN: "For certain blood tests, fasting is required. We will inform you in advance.",
-            DE: "Für bestimmte Blutuntersuchungen ist es erforderlich, nüchtern zu sein. Wir informieren Sie rechtzeitig.",
-            FR: "Pour certains tests sanguins, le jeûne est requis. Nous vous en informerons à l'avance."
+            DE: "Einige Bluttests erfordern Fasten. Keine Sorge, wir informieren Sie im Voraus, falls dies auf Sie zutrifft.",
+            FR: "Certains tests sanguins nécessitent le jeûne. Ne vous inquiétez pas, nous vous informerons à l'avance si cela s'applique à vous."
         },
         category: "medical"
     },
@@ -356,9 +356,9 @@ const HARDCODED_FAQS = {
             FR: "Quelles thérapies sont proposées ?"
         },
         answer: {
-            EN: "We offer **acupuncture**, **homeopathy**, **infusion therapies**, **colon hydrotherapy**, **ozone therapy**, **orthomolecular medicine**, **nutritional counseling**, and **mental coaching**.",
-            DE: "Wir bieten **Akupunktur**, **Homöopathie**, **Infusionstherapien**, **Colon Hydro Therapie**, **Ozontherapie**, **Orthomolekularmedizin**, **Ernährungsberatung** und **Mental Coaching** an.",
-            FR: "Nous proposons **l'acupuncture**, **l'homéopathie**, les **thérapies par perfusion**, **l'hydrothérapie du côlon**, la **thérapie par ozone**, la **médecine orthomoléculaire**, le **conseil nutritionnel** et le **coaching mental**."
+            EN: "Within our integrative medicine program, we offer a wide range of therapies designed to complement conventional medical treatments. These include **acupuncture, homeopathy, infusion therapies, colon hydrotherapy, ozone therapy, orthomolecular medicine, nutritional counseling**, and **mental coaching**. Each therapy is carefully selected to support your overall health, promote healing, and enhance your quality of life, with treatment plans tailored to your individual needs.",
+            DE: "Im Rahmen unseres Programms für integrative Medizin bieten wir eine Vielzahl von Therapien an, die die konventionelle medizinische Behandlung ergänzen. Dazu gehören **Akupunktur, Homöopathie, Infusionstherapien, Colon-Hydro-Therapie, Ozontherapie, Orthomolekularmedizin, Ernährungsberatung** und **Mental Coaching**. Jede Therapie wird sorgfältig ausgewählt, um Ihre allgemeine Gesundheit zu unterstützen, die Heilung zu fördern und Ihre Lebensqualität zu verbessern, wobei die Behandlungspläne auf Ihre individuellen Bedürfnisse zugeschnitten sind.",
+            FR: "Dans le cadre de notre programme de médecine intégrative, nous proposons une large gamme de thérapies conçues pour compléter les traitements médicaux conventionnels. Celles-ci incluent **l'acupuncture, l'homéopathie, les thérapies par perfusion, l'hydrothérapie du côlon, la thérapie par ozone, la médecine orthomoléculaire, le conseil nutritionnel** et **le coaching mental**. Chaque thérapie est soigneusement sélectionnée pour soutenir votre santé globale, favoriser la guérison et améliorer votre qualité de vie, avec des plans de traitement adaptés à vos besoins individuels."
         },
         category: "medical"
     },
@@ -370,9 +370,9 @@ const HARDCODED_FAQS = {
             FR: "La médecine intégrative est-elle scientifiquement reconnue ?"
         },
         answer: {
-            EN: "Many methods are scientifically studied and complement conventional medicine.",
-            DE: "Viele Methoden sind wissenschaftlich untersucht und ergänzen die Schulmedizin.",
-            FR: "De nombreuses méthodes sont étudiées scientifiquement et complètent la médecine conventionnelle."
+            EN: "Many of the methods we use have been scientifically examined and work well alongside conventional medicine.",
+            DE: "Viele der von uns angewandten Methoden wurden wissenschaftlich untersucht und ergänzen die Schulmedizin sehr gut.",
+            FR: "De nombreuses méthodes que nous utilisons ont été examinées scientifiquement et fonctionnent bien en complément de la médecine conventionnelle."
         },
         category: "medical"
     },
@@ -383,11 +383,11 @@ const HARDCODED_FAQS = {
             DE: "Wie finde ich die passende Therapie für mich?",
             FR: "Comment trouver la thérapie qui me convient ?"
         },
-        answer: {
-            EN: "In a **personal consultation**, we determine together the most suitable therapy approaches.",
-            DE: "In einem **persönlichen Gespräch** ermitteln wir gemeinsam die geeigneten Therapieansätze.",
-            FR: "Lors d'une **consultation personnelle**, nous déterminons ensemble les approches thérapeutiques les plus adaptées."
-        },
+    answer: {
+        EN: "Choosing the right therapy depends on your individual health needs, goals, and preferences. During a **personal consultation**, our specialists will review your medical history, discuss your symptoms, and assess your overall condition. Based on this information, we will recommend the most suitable treatment options and create a tailored plan to help you achieve the best possible results for your health and well-being.",
+        DE: "Die Wahl der richtigen Therapie hängt von Ihren individuellen Gesundheitsbedürfnissen, Zielen und Vorlieben ab. In einem **persönlichen Gespräch** prüfen unsere Spezialisten Ihre Krankengeschichte, besprechen Ihre Symptome und beurteilen Ihren allgemeinen Zustand. Auf dieser Grundlage empfehlen wir die am besten geeigneten Behandlungsmöglichkeiten und erstellen einen individuell zugeschnittenen Plan, um die bestmöglichen Ergebnisse für Ihre Gesundheit und Ihr Wohlbefinden zu erzielen.",
+        FR: "Le choix de la thérapie appropriée dépend de vos besoins de santé, de vos objectifs et de vos préférences individuels. Lors d'une **consultation personnelle**, nos spécialistes examineront vos antécédents médicaux, discuteront de vos symptômes et évalueront votre état général. Sur cette base, nous recommanderons les options de traitement les plus adaptées et créerons un plan personnalisé pour vous aider à obtenir les meilleurs résultats possibles pour votre santé et votre bien-être."
+    },
         category: "medical"
     },
     acupuncture: {
@@ -397,11 +397,11 @@ const HARDCODED_FAQS = {
             DE: "Wie läuft eine Akupunktursitzung ab?",
             FR: "Comment se déroule une séance d'acupuncture ?"
         },
-        answer: {
-            EN: "**Fine needles** are placed at **specific points** to harmonize the flow of energy.\nFor children or anyone who does not like needles but wants to benefit from Far Eastern healing arts, we offer Tuina. Tuina is a Chinese massage technique based on traditional Chinese medicine.\nUsing various manual techniques, Tuina can positively influence the **energy flow**, **release blockages**, and bring body and mind into **balance**.",
-            DE: "**Feine Nadeln** werden an **spezifischen Punkten** gesetzt, um den Energiefluss zu harmonisieren.\nFür Kinder oder alle die Nadeln nicht mögen und doch von den fernöstlichen Heilkünsten profitieren wollen, bieten wir Tuina an. Tuina ist eine chinesische Massageform, die auf der traditionellen chinesischen Medizin beruht.\nMit diversen manuellen Techniken kann der Energie-Fluss mit Tuina positiv beeinflusst werden, **Blockaden lösen sich auf** und **Körper und Seele kommen in Einklang**.",
-            FR: "**De fines aiguilles** sont placées à des **points spécifiques** pour harmoniser le flux d'énergie.\nPour les enfants ou toute personne qui n'aime pas les aiguilles mais souhaite bénéficier des arts de guérison de l'Extrême-Orient, nous proposons le Tuina. Le Tuina est une technique de massage chinoise basée sur la médecine traditionnelle chinoise.\nÀ l'aide de différentes techniques manuelles, le Tuina peut influencer positivement le **flux d'énergie**, **libérer les blocages** et **équilibrer le corps et l'esprit**."
-        },
+    answer: {
+        EN: "During an acupuncture session, **very fine needles** are carefully placed at **specific points** on the body to help balance energy flow and support the body’s natural healing processes. For children or anyone who is uncomfortable with needles but still wants to benefit from Far Eastern healing methods, we offer Tuina. **Tuina** is a traditional Chinese massage technique that uses gentle manual movements to **improve energy flow, release blockages**, and promote harmony between body and mind. Each session is tailored to the individual’s needs to ensure a safe and effective treatment.",
+        DE: "Während einer Akupunktursitzung werden **sehr feine Nadeln** sorgfältig an **spezifischen Punkten** des Körpers gesetzt, um den Energiefluss zu harmonisieren und die natürlichen Heilungsprozesse des Körpers zu unterstützen. Für Kinder oder alle, die sich mit Nadeln unwohl fühlen, aber dennoch von fernöstlichen Heilmethoden profitieren möchten, bieten wir Tuina an. **Tuina** ist eine traditionelle chinesische Massagetechnik, bei der sanfte manuelle Bewegungen den **Energiefluss verbessern, Blockaden lösen** und Harmonie zwischen Körper und Geist fördern. Jede Sitzung wird individuell angepasst, um eine sichere und effektive Behandlung zu gewährleisten.",
+        FR: "Lors d'une séance d'acupuncture, des **aiguilles très fines** sont placées avec soin à des **points spécifiques** du corps pour aider à équilibrer le flux d'énergie et soutenir les processus naturels de guérison. Pour les enfants ou toute personne mal à l'aise avec les aiguilles mais souhaitant bénéficier des méthodes de guérison de l'Extrême-Orient, nous proposons le Tuina. **Tuina** est une technique de massage chinoise traditionnelle utilisant des mouvements manuels doux pour **améliorer le flux d'énergie, libérer les blocages** et promouvoir l'harmonie entre le corps et l'esprit. Chaque séance est adaptée aux besoins individuels pour garantir un traitement sûr et efficace."
+    },
         category: "medical"
     },
     homeopathy: {
@@ -411,11 +411,11 @@ const HARDCODED_FAQS = {
             DE: "Ist Homöopathie für Kinder geeignet?",
             FR: "L'homéopathie est-elle adaptée aux enfants ?"
         },
-        answer: {
-            EN: "**Yes**, homeopathy can also be used for children. No needles are used for children.",
-            DE: "**Ja**, Homöopathie kann auch bei Kindern angewendet werden. Bei Kindern verwendet man keine Nadeln.",
-            FR: "**Oui**, l'homéopathie peut également être utilisée pour les enfants. Aucune aiguille n'est utilisée pour les enfants."
-        },
+    answer: {
+        EN: "**Yes**, homeopathy is **safe and suitable** for children of all ages. Treatments are completely needle-free and gentle, making them well-tolerated by young patients. Homeopathy can help support a child’s natural healing processes, address common ailments, and improve overall well-being, all while being adapted to the individual needs of each child.",
+        DE: "**Ja**, Homöopathie ist **sicher und für Kinder jeden Alters geeignet**. Die Behandlungen sind vollständig nadelfrei und sanft, sodass sie von jungen Patienten gut vertragen werden. Homöopathie kann die natürlichen Heilungsprozesse eines Kindes unterstützen, häufige Beschwerden lindern und das allgemeine Wohlbefinden verbessern, wobei sie stets an die individuellen Bedürfnisse des Kindes angepasst wird.",
+        FR: "**Oui**, l'homéopathie est **sans danger et adaptée** aux enfants de tout âge. Les traitements sont totalement sans aiguilles et doux, ce qui les rend bien tolérés par les jeunes patients. L'homéopathie peut soutenir les processus naturels de guérison de l'enfant, traiter les affections courantes et améliorer le bien-être général, tout en étant adaptée aux besoins individuels de chaque enfant."
+    },
         category: "medical"
     },
     massage: {
@@ -523,6 +523,16 @@ function init() {
     setupLanguageSelector();
     setupFAQButtons();
     loadFAQs(); // Pre-load FAQ data
+
+    // Animate initial message after a short delay
+    setTimeout(() => {
+        const initialMessage = document.getElementById('initialMessage');
+        if (initialMessage) {
+
+            initialMessage.classList.remove('initial-hidden');
+            initialMessage.classList.add('pop-in');
+        }
+    }, 400); // 0.4 seconds delay
 }
 
 // Setup language selector event listener
