@@ -71,7 +71,7 @@ const HARDCODED_FAQS = {
     contact: {
         id: "contact",
         question: {
-            EN: "How do I contact you?",
+            EN: "How to contact you?",
             DE: "Wie kann ich Sie kontaktieren?",
             FR: "Comment puis-je vous contacter ?"
         },
@@ -99,7 +99,7 @@ const HARDCODED_FAQS = {
     orthopedics: {
         id: "orthopedics",
         question: {
-            EN: "What does the orthopedics department at functiomed treat?",
+            EN: "What does our orthopedics department treat?",
             DE: "Was behandelt die Orthopädie bei functiomed?",
             FR: "Que traite le département d'orthopédie de functiomed ?"
         },
@@ -141,7 +141,7 @@ const HARDCODED_FAQS = {
     integrative_medicine: {
         id: "integrative_medicine",
         question: {
-            EN: "What is meant by integrative medicine?",
+            EN: "What is integrative medicine?",
             DE: "Was versteht man unter integrativer Medizin?",
             FR: "Que signifie la médecine intégrative ?"
         },
@@ -155,7 +155,7 @@ const HARDCODED_FAQS = {
     complementary_medicine: {
         id: "complementary_medicine",
         question: {
-            EN: "What does complementary medicine at functiomed include?",
+            EN: "What does complementary medicine include?",
             DE: "Was umfasst die Komplementärmedizin bei functiomed?",
             FR: "Que comprend la médecine complémentaire chez functiomed ?"
         },

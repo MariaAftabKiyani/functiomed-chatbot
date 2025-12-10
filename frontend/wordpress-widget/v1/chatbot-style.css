@@ -598,11 +598,32 @@
     background: var(--background);
     border-top: 1px solid var(--border);
     padding: 0.75rem 1rem;
-    overflow: hidden;
+    max-height: 95px;
+    overflow-y: auto;
 }
 
 .faq-section.hidden {
     display: none;
+}
+
+/* Custom scrollbar for FAQ section */
+.faq-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.faq-section::-webkit-scrollbar-thumb {
+    background: #a0a0a0;
+    border-radius: 3px;
+}
+
+.faq-section::-webkit-scrollbar-thumb:hover {
+    background: #808080;
+}
+
+/* Firefox scrollbar */
+.faq-section {
+    scrollbar-width: thin;
+    scrollbar-color: #a0a0a0 transparent;
 }
 
 /* FAQ Container and Buttons */
@@ -610,7 +631,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    overflow: hidden;
 }
 
 .faq-button {
