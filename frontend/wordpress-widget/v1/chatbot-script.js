@@ -110,6 +110,20 @@ const HARDCODED_FAQS = {
         },
         category: "services"
     },
+    orthopedics_functiomed: {
+        id: "orthopedics_functiomed",
+        question: {
+            EN: "What does the orthopedics department at functiomed treat?",
+            DE: "Was behandelt die Orthopädie-Abteilung bei functiomed?",
+            FR: "Que traite le département d'orthopédie chez functiomed ?"
+        },
+        answer: {
+            EN: "Orthopedics at functiomed deals with diseases and injuries of the **musculoskeletal system**, including **bones**, **joints**, **muscles**, and **tendons**.",
+            DE: "Die Orthopädie bei functiomed befasst sich mit Erkrankungen und Verletzungen des **Bewegungsapparates**, einschließlich **Knochen**, **Gelenken**, **Muskeln** und **Sehnen**.",
+            FR: "L'orthopédie chez functiomed s'occupe des maladies et des blessures de l'**appareil locomoteur**, y compris les **os**, les **articulations**, les **muscles** et les **tendons**."
+        },
+        category: "services"
+    },
     osteopathy_suitable: {
         id: "osteopathy_suitable",
         question: {
@@ -132,7 +146,7 @@ const HARDCODED_FAQS = {
             FR: "Quelles maladies sont traitées par le service de rhumatologie ?"
         },
         answer: {
-            EN: "Our rheumatology department treats **inflammatory joint diseases**, **soft tissue rheumatism**, and other **rheumatic disorders**.",
+            EN: "Our rheumatology department treats **inflammatory joint** diseases, **soft tissue rheumatism**, and other **rheumatic disorders**.",
             DE: "Unsere Rheumatologie behandelt **entzündliche Gelenkerkrankungen**, **Weichteilrheuma** und andere **rheumatische Erkrankungen**.",
             FR: "Notre service de rhumatologie traite les **maladies articulaires inflammatoires**, les **affections des tissus mous** et d'autres **troubles rhumatismaux**."
         },
@@ -144,6 +158,20 @@ const HARDCODED_FAQS = {
             EN: "What is integrative medicine?",
             DE: "Was versteht man unter integrativer Medizin?",
             FR: "Que signifie la médecine intégrative ?"
+        },
+        answer: {
+            EN: "Integrative medicine combines **conventional medical treatments** with **complementary therapies** for a holistic approach.",
+            DE: "Integrative Medizin kombiniert schulmedizinische Verfahren** mit **komplementären Therapien** für eine ganzheitliche Behandlung.",
+            FR: "La médecine intégrative combine les **traitements médicaux conventionnels** avec des **thérapies complémentaires** pour une prise en charge globale."
+        },
+        category: "services"
+    },
+    integrative_medicine_meaning: {
+        id: "integrative_medicine_meaning",
+        question: {
+            EN: "What is meant by integrative medicine?",
+            DE: "Was ist mit integrativer Medizin gemeint?",
+            FR: "Que signifie par médecine intégrative ?"
         },
         answer: {
             EN: "Integrative medicine combines **conventional medical treatments** with **complementary therapies** for a holistic approach.",
@@ -165,6 +193,272 @@ const HARDCODED_FAQS = {
             FR: "Notre médecine complémentaire comprend **l'acupuncture**, **l'homéopathie**, les **massages thérapeutiques** et d'autres méthodes de guérison alternatives."
         },
         category: "services"
+    },
+    complementary_medicine_functiomed: {
+        id: "complementary_medicine_functiomed",
+        question: {
+            EN: "What does complementary medicine at functiomed include?",
+            DE: "Was umfasst die Komplementärmedizin bei functiomed?",
+            FR: "Que comprend la médecine complémentaire chez functiomed ?"
+        },
+        answer: {
+            EN: "Our complementary medicine includes **acupuncture**, **homeopathy**, **medical massages**, and other alternative healing methods.",
+            DE: "Unsere Komplementärmedizin umfasst **Akupunktur**, **Homöopathie**, **medizinische Massagen** und andere alternative Heilmethoden.",
+            FR: "Notre médecine complémentaire comprend **l'acupuncture**, **l'homéopathie**, les **massages thérapeutiques** et d'autres méthodes de guérison alternatives."
+        },
+        category: "services"
+    },
+    parking: {
+        id: "parking",
+        question: {
+            EN: "Are there parking facilities at functiomed?",
+            DE: "Gibt es Parkmöglichkeiten bei functiomed?",
+            FR: "Y a-t-il des places de parking chez functiomed ?"
+        },
+        answer: {
+            EN: "Yes, **free parking spaces** are available directly in front of the practice. Additionally, **public parking spaces** are located nearby.",
+            DE: "Ja, es stehen Ihnen **kostenlose Parkplätze** direkt vor der Praxis zur Verfügung. Zusätzlich befinden sich **öffentliche Parkplätze** in unmittelbarer Nähe.",
+            FR: "Oui, des **places de parking gratuites** sont disponibles directement devant la pratique. De plus, des **places de parking publiques** se trouvent à proximité."
+        },
+        category: "general"
+    },
+    languages: {
+        id: "languages",
+        question: {
+            EN: "Which languages do the staff speak?",
+            DE: "Welche Sprachen sprechen die Mitarbeitenden?",
+            FR: "Quelles langues le personnel parle-t-il ?"
+        },
+        answer: {
+            EN: "Our team speaks **German**, **English**, **French**, **Italian**, and many more. Please inform us of your preferred language if needed.",
+            DE: "Unser Team spricht **Deutsch**, **Englisch**, **Französisch** und **Italienisch** und viele mehr. Bitte teilen Sie uns bei Bedarf Ihre bevorzugte Sprache mit.",
+            FR: "Notre équipe parle **allemand**, **anglais**, **français**, **italien** et bien d'autres. Veuillez nous informer si vous avez une langue préférée."
+        },
+        category: "general"
+    },
+    sports_medicine: {
+        id: "sports_medicine",
+        question: {
+            EN: "What services does sports medicine offer?",
+            DE: "Welche Leistungen bietet die Sportmedizin?",
+            FR: "Quels services offre la médecine du sport ?"
+        },
+        answer: {
+            EN: "Our sports medicine covers **prevention**, **diagnosis**, and **treatment** of sports-related injuries. We support both **recreational** and **professional** athletes.",
+            DE: "Unsere Sportmedizin umfasst **Prävention**, **Diagnose** und **Behandlung** von sportbedingten Verletzungen. Wir unterstützen sowohl **Freizeit-** als auch **Profisportler**.",
+            FR: "Notre médecine du sport couvre la **prévention**, le **diagnostic** et le **traitement** des blessures liées au sport. Nous soutenons les athlètes **amateurs** et **professionnels**."
+        },
+        category: "medical"
+    },
+    referral: {
+        id: "referral",
+        question: {
+            EN: "Do I need a referral for an appointment?",
+            DE: "Benötige ich eine Überweisung für einen Termin?",
+            FR: "Ai-je besoin d'une ordonnance pour un rendez-vous ?"
+        },
+        answer: {
+            EN: "**No**, you can book an appointment directly with us. A referral is not mandatory **unless** you are in a special insurance model, such as the primary care physician model.",
+            DE: "**Nein**, Sie können direkt einen Termin bei uns vereinbaren. Eine Überweisung ist nicht zwingend erforderlich **ausser** Sie sind in einem speziellen Versicherungsmodell, wie z.B. das Hausarztmodell",
+            FR: "**Non**, vous pouvez prendre rendez-vous directement avec nous. Une ordonnance n'est nécessaire **que si** vous êtes dans un modèle d'assurance spécial, comme le modèle médecin de famille."
+        },
+        category: "general"
+    },
+    insurance_coverage: {
+        id: "insurance_coverage",
+        question: {
+            EN: "Are the costs covered by health insurance?",
+            DE: "Werden die Kosten von der Krankenkasse übernommen?",
+            FR: "Les coûts sont-ils couverts par l'assurance maladie ?"
+        },
+        answer: {
+            EN: "The costs for **orthopedic** and **traumatological** treatments are generally covered by **basic** health insurance or **accident** insurance.",
+            DE: "Die Kosten für **orthopädische** und **traumatologische** Behandlungen werden in der Regel von der **Grundversicherung** oder **Unfallversicherung** übernommen.",
+            FR: "Les coûts des traitements **orthopédiques** et **traumatologiques** sont généralement couverts par **l'assurance de base** ou **l'assurance accident**."
+        },
+        category: "general"
+    },
+    osteopathy_sessions: {
+        id: "osteopathy_sessions",
+        question: {
+            EN: "How many sessions are necessary?",
+            DE: "Wie viele Sitzungen sind notwendig?",
+            FR: "Combien de séances sont nécessaires ?"
+        },
+        answer: {
+            EN: "The number of sessions **varies** depending on the condition. In general, **multiple sessions** are required.",
+            DE: "Die Anzahl der Sitzungen **variiert** je nach Beschwerdebild. In der Regel sind **mehrere Sitzungen** notwendig.",
+            FR: "Le nombre de séances **varie** en fonction de la condition. En général, **plusieurs séances** sont nécessaires."
+        },
+        category: "medical"
+    },
+    osteopathy_insurance: {
+        id: "osteopathy_insurance",
+        question: {
+            EN: "Is osteopathy covered by health insurance?",
+            DE: "Wird Osteopathie von der Krankenkasse bezahlt?",
+            FR: "L'ostéopathie est-elle couverte par l'assurance maladie ?"
+        },
+        answer: {
+            EN: "Many **supplementary** insurance plans cover **part of the costs** for osteopathic treatments. Coverage must be clarified by the patient before the appointment.",
+            DE: "Viele **Zusatzversicherungen** übernehmen einen **Teil der Kosten** für osteopathische Behandlungen. Die Kostenübernahme muss durch den Patienten vor dem Termin abgeklärt werden.",
+            FR: "De nombreuses **assurances complémentaires** couvrent une **partie des coûts** des traitements ostéopathiques. La couverture doit être clarifiée par le patient avant le rendez-vous."
+        },
+        category: "insurance"
+    },
+    internal_medicine: {
+        id: "internal_medicine",
+        question: {
+            EN: "What does internal medicine at functiomed include?",
+            DE: "Was umfasst die Innere Medizin bei functiomed?",
+            FR: "Que comprend la médecine interne chez functiomed ?"
+        },
+        answer: {
+            EN: "Internal medicine deals with diseases of **internal organs** such as the heart, lungs, liver, and kidneys.",
+            DE: "Die Innere Medizin befasst sich mit Erkrankungen der **inneren Organe**, wie Herz, Lunge, Leber und Nieren.",
+            FR: "La médecine interne traite les maladies des **organes internes** tels que le cœur, les poumons, le foie et les reins."
+        },
+        category: "medical"
+    },
+    diagnosis: {
+        id: "diagnosis",
+        question: {
+            EN: "How is the diagnosis made?",
+            DE: "Wie erfolgt die Diagnosestellung?",
+            FR: "Comment est posée la diagnosis ?"
+        },
+        answer: {
+            EN: "We use **laboratory tests** and **imaging** procedures to establish an accurate diagnosis.",
+            DE: "Wir nutzen **Laboruntersuchungen** und **bildgebende Verfahren**, um eine genaue Diagnose zu stellen.",
+            FR: "Nous utilisons des **analyses de laboratoire** et des **examens d'imagerie** pour établir un diagnostic précis."
+        },
+        category: "medical"
+    },
+    fasting: {
+        id: "fasting",
+        question: {
+            EN: "Do I need to fast for a blood test?",
+            DE: "Muss ich nüchtern zur Blutabnahme erscheinen?",
+            FR: "Dois-je jeûner pour une prise de sang ?"
+        },
+        answer: {
+            EN: "For certain blood tests, fasting is required. We will inform you in advance.",
+            DE: "Für bestimmte Blutuntersuchungen ist es erforderlich, nüchtern zu sein. Wir informieren Sie rechtzeitig.",
+            FR: "Pour certains tests sanguins, le jeûne est requis. Nous vous en informerons à l'avance."
+        },
+        category: "medical"
+    },
+    therapies: {
+        id: "therapies",
+        question: {
+            EN: "Which therapies are offered?",
+            DE: "Welche Therapien werden angeboten?",
+            FR: "Quelles thérapies sont proposées ?"
+        },
+        answer: {
+            EN: "We offer **acupuncture**, **homeopathy**, **infusion therapies**, **colon hydrotherapy**, **ozone therapy**, **orthomolecular medicine**, **nutritional counseling**, and **mental coaching**.",
+            DE: "Wir bieten **Akupunktur**, **Homöopathie**, **Infusionstherapien**, **Colon Hydro Therapie**, **Ozontherapie**, **Orthomolekularmedizin**, **Ernährungsberatung** und **Mental Coaching** an.",
+            FR: "Nous proposons **l'acupuncture**, **l'homéopathie**, les **thérapies par perfusion**, **l'hydrothérapie du côlon**, la **thérapie par ozone**, la **médecine orthomoléculaire**, le **conseil nutritionnel** et le **coaching mental**."
+        },
+        category: "medical"
+    },
+    integrative_science: {
+        id: "integrative_science",
+        question: {
+            EN: "Is integrative medicine scientifically recognized?",
+            DE: "Ist integrative Medizin wissenschaftlich anerkannt?",
+            FR: "La médecine intégrative est-elle scientifiquement reconnue ?"
+        },
+        answer: {
+            EN: "Many methods are scientifically studied and complement conventional medicine.",
+            DE: "Viele Methoden sind wissenschaftlich untersucht und ergänzen die Schulmedizin.",
+            FR: "De nombreuses méthodes sont étudiées scientifiquement et complètent la médecine conventionnelle."
+        },
+        category: "medical"
+    },
+    therapy_selection: {
+        id: "therapy_selection",
+        question: {
+            EN: "How do I find the right therapy for me?",
+            DE: "Wie finde ich die passende Therapie für mich?",
+            FR: "Comment trouver la thérapie qui me convient ?"
+        },
+        answer: {
+            EN: "In a **personal consultation**, we determine together the most suitable therapy approaches.",
+            DE: "In einem **persönlichen Gespräch** ermitteln wir gemeinsam die geeigneten Therapieansätze.",
+            FR: "Lors d'une **consultation personnelle**, nous déterminons ensemble les approches thérapeutiques les plus adaptées."
+        },
+        category: "medical"
+    },
+    acupuncture: {
+        id: "acupuncture",
+        question: {
+            EN: "How does an acupuncture session work?",
+            DE: "Wie läuft eine Akupunktursitzung ab?",
+            FR: "Comment se déroule une séance d'acupuncture ?"
+        },
+        answer: {
+            EN: "**Fine needles** are placed at **specific points** to harmonize the flow of energy.\nFor children or anyone who does not like needles but wants to benefit from Far Eastern healing arts, we offer Tuina. Tuina is a Chinese massage technique based on traditional Chinese medicine.\nUsing various manual techniques, Tuina can positively influence the **energy flow**, **release blockages**, and bring body and mind into **balance**.",
+            DE: "**Feine Nadeln** werden an **spezifischen Punkten** gesetzt, um den Energiefluss zu harmonisieren.\nFür Kinder oder alle die Nadeln nicht mögen und doch von den fernöstlichen Heilkünsten profitieren wollen, bieten wir Tuina an. Tuina ist eine chinesische Massageform, die auf der traditionellen chinesischen Medizin beruht.\nMit diversen manuellen Techniken kann der Energie-Fluss mit Tuina positiv beeinflusst werden, **Blockaden lösen sich auf** und **Körper und Seele kommen in Einklang**.",
+            FR: "**De fines aiguilles** sont placées à des **points spécifiques** pour harmoniser le flux d'énergie.\nPour les enfants ou toute personne qui n'aime pas les aiguilles mais souhaite bénéficier des arts de guérison de l'Extrême-Orient, nous proposons le Tuina. Le Tuina est une technique de massage chinoise basée sur la médecine traditionnelle chinoise.\nÀ l'aide de différentes techniques manuelles, le Tuina peut influencer positivement le **flux d'énergie**, **libérer les blocages** et **équilibrer le corps et l'esprit**."
+        },
+        category: "medical"
+    },
+    homeopathy: {
+        id: "homeopathy",
+        question: {
+            EN: "Is homeopathy suitable for children?",
+            DE: "Ist Homöopathie für Kinder geeignet?",
+            FR: "L'homéopathie est-elle adaptée aux enfants ?"
+        },
+        answer: {
+            EN: "**Yes**, homeopathy can also be used for children. No needles are used for children.",
+            DE: "**Ja**, Homöopathie kann auch bei Kindern angewendet werden. Bei Kindern verwendet man keine Nadeln.",
+            FR: "**Oui**, l'homéopathie peut également être utilisée pour les enfants. Aucune aiguille n'est utilisée pour les enfants."
+        },
+        category: "medical"
+    },
+    massage: {
+        id: "massage",
+        question: {
+            EN: "Which massage techniques are offered?",
+            DE: "Welche Massagetechniken werden angeboten?",
+            FR: "Quelles techniques de massage sont proposées ?"
+        },
+        answer: {
+            EN: "We offer **classic** massages, **reflexology**, **hot stone** massages, **Japanese facial** massage, **Lomi Lomi**, **pregnancy** massage, **anti-cellulite** massage, **manual lymphatic drainage**, **Shiatsu**, and **sports** massages.",
+            DE: "Wir bieten **klassische** Massagen, **Fußreflexzonenmassagen**, **Hot-Stone-Massagen**, **Japanische Gesichtsmassage**, **Lomi Lomi**, **Schwangerschaftsmassage**, **Anti Cellulite Massage**, **Manuelle Lymphdrainage**, **Shiatsu** und **Sportmassagen** an.",
+            FR: "Nous proposons des **massages classiques**, des **massages réflexes**, des **massages aux pierres chaudes**, le **massage facial japonais**, le **Lomi Lomi**, les **massages prénataux**, le **massage anti-cellulite**, le **drainage lymphatique manuel**, le **Shiatsu** et les **massages sportifs**."
+        },
+        category: "medical"
+    },
+    hours_practice: {
+        id: "hours_practice",
+        question: {
+            EN: "What are the practice opening hours?",
+            DE: "Wie sind die Öffnungszeiten der Praxis?",
+            FR: "Quels sont les horaires d'ouverture de la pratique ?"
+        },
+        answer: {
+            EN: "Our regular opening hours are **Monday to Friday, from 08:00 to 18:00**. Appointments outside these hours are possible by arrangement.",
+            DE: "Unsere regulären Öffnungszeiten sind **Montag bis Freitag, von 08:00 bis 18:00 Uhr**. Termine außerhalb dieser Zeiten sind nach Vereinbarung möglich.",
+            FR: "Nos heures d'ouverture régulières sont du **lundi au vendredi, de 08h00 à 18h00**. Des rendez-vous en dehors de ces heures sont possibles sur arrangement."
+        },
+        category: "general"
+    },
+    appointment_booking: {
+        id: "appointment_booking",
+        question: {
+            EN: "How can I make an appointment?",
+            DE: "Wie kann ich einen Termin vereinbaren?",
+            FR: "Comment puis-je prendre rendez-vous ?"
+        },
+        answer: {
+            EN: "**Booking link:** [Click here to book online](https://functiomed.thefotoloft.ch/pages/online-termin-buchen/)\n\n**Step-by-Step Guide:**\n**1. Select Treatment & Reason:** Choose your specialty and reason for consultation.\n**2. Choose Practitioner:** Pick your preferred doctor or therapist or view all available appointments.\n**3. Select Time Slot:** Browse the calendar and select a suitable date and time.\n**4. Enter Email:** Provide a valid email to continue and confirm booking.\n**5. Medicosearch Registration:** Enter first name, last name, and password to create an account, and accept Privacy Policy and Terms & Conditions.\n**6. Confirm Booking:** Submit email and account details to finalize your appointment.",
+            DE: "**Buchungslink:** [Hier klicken zum Online-Buchen](https://functiomed.thefotoloft.ch/pages/online-termin-buchen/)\n\n**Schritt-für-Schritt-Anleitung:**\n**1. Behandlung & Grund auswählen:** Wählen Sie Ihre Fachrichtung und den Grund für die Konsultation.\n**2. Behandler wählen:** Wählen Sie Ihren bevorzugten Arzt oder Therapeuten oder zeigen Sie alle verfügbaren Termine an.\n**3. Zeitfenster auswählen:** Durchsuchen Sie den Kalender und wählen Sie ein passendes Datum und Uhrzeit.\n**4. E-Mail eingeben:** Geben Sie eine gültige E-Mail-Adresse ein, um die Buchung fortzusetzen und zu bestätigen.\n**5. Medicosearch-Registrierung:** Geben Sie Vorname, Nachname und Passwort ein, um ein Konto zu erstellen, und akzeptieren Sie Datenschutzbestimmungen und AGB.\n**6. Buchung bestätigen:** Senden Sie Ihre E-Mail und Kontodaten, um den Termin abzuschließen.",
+            FR: "**Lien de réservation :** [Cliquez ici pour réserver en ligne](https://functiomed.thefotoloft.ch/pages/online-termin-buchen/)\n\n**Guide étape par étape :**\n**1. Sélectionner le traitement et le motif :** Choisissez votre spécialité et le motif de la consultation.\n**2. Choisir le praticien :** Sélectionnez votre médecin ou thérapeute préféré ou affichez tous les rendez-vous disponibles.\n**3. Choisir l'horaire :** Parcourez le calendrier et sélectionnez une date et une heure appropriées.\n**4. Saisir l'e-mail :** Fournissez une adresse e-mail valide pour continuer et confirmer la réservation.\n**5. Inscription sur Medicosearch :** Entrez votre prénom, nom et mot de passe pour créer un compte, et acceptez la politique de confidentialité et les conditions générales.\n**6. Confirmer la réservation :** Soumettez vos coordonnées e-mail et de compte pour finaliser votre rendez-vous."
+        },
+        category: "booking"
     }
 };
 
@@ -233,19 +527,28 @@ function init() {
 
 // Setup language selector event listener
 function setupLanguageSelector() {
-    const languageSelect = document.getElementById('languageSelect');
+    const languageBtns = document.querySelectorAll('.language-btn');
 
-    // Set initial value
-    if (languageSelect) {
-        languageSelect.value = currentLanguage;
+    // Set initial active state
+    languageBtns.forEach(btn => {
+        if (btn.dataset.lang === currentLanguage) {
+            btn.classList.add('active');
+        }
 
         // Add event listener
-        languageSelect.addEventListener('change', (e) => {
-            currentLanguage = e.target.value;
+        btn.addEventListener('click', () => {
+            // Remove active class from all buttons
+            languageBtns.forEach(b => b.classList.remove('active'));
+
+            // Add active class to clicked button
+            btn.classList.add('active');
+
+            // Update language
+            currentLanguage = btn.dataset.lang;
             updateLanguageUI();
             loadFAQs(); // Reload FAQs in new language
         });
-    }
+    });
 }
 
 // Update UI text based on selected language
@@ -375,6 +678,32 @@ function toggleChat() {
     }
 }
 
+// Helper function to find matching FAQ based on exact question match
+function findMatchingFAQ(userQuery) {
+    if (!userQuery) return null;
+
+    // Normalize user query for comparison (trim, lowercase, remove punctuation)
+    const normalizedQuery = userQuery.trim().toLowerCase().replace(/[?!.,;:]/g, '');
+
+    // Search through all FAQs
+    for (const faqId in faqCache) {
+        const faq = faqCache[faqId];
+
+        // Check if question matches in current language
+        if (faq.question && faq.question[currentLanguage]) {
+            // Normalize FAQ question (lowercase, remove punctuation)
+            const faqQuestion = faq.question[currentLanguage].toLowerCase().replace(/[?!.,;:]/g, '');
+
+            // Exact match (case-insensitive, punctuation-insensitive)
+            if (normalizedQuery === faqQuestion) {
+                return faq;
+            }
+        }
+    }
+
+    return null;
+}
+
 // Send message with API integration
 async function sendMessage() {
     const message = chatInput.value.trim();
@@ -405,9 +734,18 @@ async function sendMessageRegular(message) {
 
     hideTypingIndicator();
 
-    // Return demo message in the selected language
-    const messages = MESSAGES[currentLanguage];
-    addMessage(messages.demoMessage, 'bot');
+    // Check if user query matches any FAQ question exactly
+    const matchedFAQ = findMatchingFAQ(message);
+
+    if (matchedFAQ) {
+        // Return FAQ answer immediately
+        const answer = matchedFAQ.answer[currentLanguage];
+        addMessage(answer, 'bot');
+    } else {
+        // Return demo message in the selected language
+        const messages = MESSAGES[currentLanguage];
+        addMessage(messages.demoMessage, 'bot');
+    }
 }
 
 // Streaming message with stop capability
@@ -420,9 +758,18 @@ async function sendMessageStreaming(message) {
 
     hideTypingIndicator();
 
-    // Return demo message in the selected language
-    const messages = MESSAGES[currentLanguage];
-    addMessage(messages.demoMessage, 'bot');
+    // Check if user query matches any FAQ question exactly
+    const matchedFAQ = findMatchingFAQ(message);
+
+    if (matchedFAQ) {
+        // Return FAQ answer immediately
+        const answer = matchedFAQ.answer[currentLanguage];
+        addMessage(answer, 'bot');
+    } else {
+        // Return demo message in the selected language
+        const messages = MESSAGES[currentLanguage];
+        addMessage(messages.demoMessage, 'bot');
+    }
 }
 
 // Fetch response from backend API (regular, non-streaming)
