@@ -1,11 +1,13 @@
 """
 FAQ API endpoint - Provides instant responses for common questions
 """
-from fastapi import APIRouter, HTTPException, Response
-from typing import List, Optional
+from fastapi import APIRouter, HTTPException, Response, Request
+from fastapi.responses import StreamingResponse
+from typing import List, Optional, AsyncGenerator
 from pydantic import BaseModel, Field
 import json
 import logging
+import asyncio
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -214,6 +216,119 @@ async def get_faq(faq_id: str, response: Response, language: Optional[str] = "DE
         )
 
 
+@router.get("/{faq_id}/stream")
+async def stream_faq(faq_id: str, request: Request, language: Optional[str] = "DE"):
+    """
+    Stream a specific FAQ response with typing delay.
+
+    This endpoint:
+    1. Shows typing indicator for 200-300ms
+    2. Streams the answer word-by-word
+    3. Makes the interaction feel more natural
+
+    Args:
+        faq_id: FAQ identifier (e.g., "services", "pricing")
+        language: Language code (DE, EN, FR). Default: DE
+
+    Returns:
+        Server-Sent Events (SSE) stream with JSON chunks
+    """
+
+    async def generate_stream() -> AsyncGenerator[str, None]:
+        """Generate streaming response with typing delay"""
+        try:
+            logger.info(f"Streaming FAQ request: {faq_id}, language={language}")
+
+            # Get FAQ data
+            faq = get_faq_by_id(faq_id, language)
+
+            if faq is None:
+                error_msg = {
+                    "type": "error",
+                    "error": f"FAQ with ID '{faq_id}' not found"
+                }
+                yield f"data: {json.dumps(error_msg)}\n\n"
+                return
+
+            # Send typing indicator
+            typing_indicator = {
+                "type": "typing",
+                "message": "typing"
+            }
+            yield f"data: {json.dumps(typing_indicator)}\n\n"
+
+            # Wait 200-300ms to simulate typing
+            await asyncio.sleep(0.25)
+
+            # Check if client disconnected
+            if await request.is_disconnected():
+                logger.info("Client disconnected before streaming FAQ answer")
+                return
+
+            # Send metadata first
+            metadata = {
+                "type": "metadata",
+                "id": faq.id,
+                "question": faq.question,
+                "category": faq.category,
+                "confidence_score": faq.confidence_score,
+                "language": faq.language
+            }
+            yield f"data: {json.dumps(metadata)}\n\n"
+
+            # Stream the answer word by word
+            words = faq.answer.split()
+            for i, word in enumerate(words):
+                # Check for client disconnect
+                if await request.is_disconnected():
+                    logger.info(f"Client disconnected at word {i}/{len(words)}")
+                    yield f"data: {json.dumps({'type': 'cancelled', 'partial_text': ' '.join(words[:i])})}\n\n"
+                    return
+
+                # Send word chunk
+                chunk = {
+                    "type": "chunk",
+                    "text": word + (" " if i < len(words) - 1 else ""),
+                    "index": i,
+                    "total": len(words)
+                }
+                yield f"data: {json.dumps(chunk)}\n\n"
+
+                # Small delay between words
+                await asyncio.sleep(0.03)
+
+            # Send completion signal
+            completion = {
+                "type": "done",
+                "full_text": faq.answer
+            }
+            yield f"data: {json.dumps(completion)}\n\n"
+
+            logger.info("FAQ streaming completed successfully")
+
+        except asyncio.CancelledError:
+            logger.info("FAQ stream cancelled by client")
+            yield f"data: {json.dumps({'type': 'cancelled'})}\n\n"
+
+        except Exception as e:
+            logger.error(f"FAQ streaming failed: {type(e).__name__}: {e}")
+            error_msg = {
+                "type": "error",
+                "error": str(e)
+            }
+            yield f"data: {json.dumps(error_msg)}\n\n"
+
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )
+
+
 @router.get("/category/{category}", response_model=List[FAQResponse])
 async def get_faqs_by_category(category: str, response: Response, language: Optional[str] = "DE") -> List[FAQResponse]:
     """
@@ -304,8 +419,11 @@ curl -X GET "http://localhost:8000/api/v1/faqs/"
 # Get all FAQs in English
 curl -X GET "http://localhost:8000/api/v1/faqs/?language=EN"
 
-# Get specific FAQ by ID
+# Get specific FAQ by ID (instant response)
 curl -X GET "http://localhost:8000/api/v1/faqs/services?language=DE"
+
+# Stream FAQ with typing delay (natural interaction)
+curl -X GET "http://localhost:8000/api/v1/faqs/services/stream?language=DE"
 
 # Get FAQs by category
 curl -X GET "http://localhost:8000/api/v1/faqs/category/pricing?language=EN"
