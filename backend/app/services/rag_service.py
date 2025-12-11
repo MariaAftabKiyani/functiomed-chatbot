@@ -331,90 +331,90 @@ class RAGService:
             logger.error(f"RAG pipeline failed: {type(e).__name__}: {e}")
             raise RuntimeError(f"RAG pipeline failed: {e}")
     
-    def _retrieve_context(
-        self,
-        query: str,
-        top_k: int,
-        category: Optional[List[str]],
-        language: Optional[str],
-        source_type: Optional[str],
-        min_score: float
-    ) -> RetrievalResponse:
-        """Retrieve relevant document chunks"""
-        return self.retrieval_service.retrieve(
-            query=query,
-            top_k=top_k,
-            category=category,
-            language=language,
-            source_type=source_type,
-            min_score=min_score
-        )
+    # def _retrieve_context(
+    #     self,
+    #     query: str,
+    #     top_k: int,
+    #     category: Optional[List[str]],
+    #     language: Optional[str],
+    #     source_type: Optional[str],
+    #     min_score: float
+    # ) -> RetrievalResponse:
+    #     """Retrieve relevant document chunks"""
+    #     return self.retrieval_service.retrieve(
+    #         query=query,
+    #         top_k=top_k,
+    #         category=category,
+    #         language=language,
+    #         source_type=source_type,
+    #         min_score=min_score
+    #     )
     
-    def _build_prompt(
-        self,
-        retrieval_response: RetrievalResponse,
-        query: str,
-        language: str,
-        style: str
-    ) -> str:
-        """Build prompt from retrieval results"""
-        # Convert results to context format
-        context = [
-            {
-                "text": result.text,
-                "source_document": result.source_document,
-                "score": result.score,
-                "category": result.category
-            }
-            for result in retrieval_response.results
-        ]
-
-        # Log query token count
-        query_tokens = self.llm_service.count_tokens(query)
-        logger.info(f"📝 Query tokens: {query_tokens}")
-
-        # Log context details
-        context_text = "\n\n".join([c["text"] for c in context])
-        context_tokens = self.llm_service.count_tokens(context_text)
-        logger.info(f"📚 Retrieved context: {len(context)} chunks, {context_tokens} tokens")
-        logger.info(f"📄 Context preview (first 200 chars): {context_text[:200]}...")
-
-        # Get appropriate template
-        template = get_template(language=language, style=style)
-        self.prompt_builder.template = template
-
-        # Build prompt with token management
-        prompt = self.prompt_builder.build_prompt(
-            context=context,
-            query=query,
-            language=language,
-            token_counter=self.llm_service.count_tokens
-        )
-
-        # Log final prompt details
-        prompt_tokens = self.llm_service.count_tokens(prompt)
-        logger.info(f"🔧 Final prompt: {prompt_tokens} tokens")
-        logger.info(f"📋 Full prompt:\n{'='*80}\n{prompt}\n{'='*80}")
-
-        return prompt
+    # def _build_prompt(
+    #     self,
+    #     retrieval_response: RetrievalResponse,
+    #     query: str,
+    #     language: str,
+    #     style: str
+    # ) -> str:
+    #     """Build prompt from retrieval results"""
+    #     # Convert results to context format
+    #     context = [
+    #         {
+    #             "text": result.text,
+    #             "source_document": result.source_document,
+    #             "score": result.score,
+    #             "category": result.category
+    #         }
+    #         for result in retrieval_response.results
+    #     ]
+    #
+    #     # Log query token count
+    #     query_tokens = self.llm_service.count_tokens(query)
+    #     logger.info(f"📝 Query tokens: {query_tokens}")
+    #
+    #     # Log context details
+    #     context_text = "\n\n".join([c["text"] for c in context])
+    #     context_tokens = self.llm_service.count_tokens(context_text)
+    #     logger.info(f"📚 Retrieved context: {len(context)} chunks, {context_tokens} tokens")
+    #     logger.info(f"📄 Context preview (first 200 chars): {context_text[:200]}...")
+    #
+    #     # Get appropriate template
+    #     template = get_template(language=language, style=style)
+    #     self.prompt_builder.template = template
+    #
+    #     # Build prompt with token management
+    #     prompt = self.prompt_builder.build_prompt(
+    #         context=context,
+    #         query=query,
+    #         language=language,
+    #         token_counter=self.llm_service.count_tokens
+    #     )
+    #
+    #     # Log final prompt details
+    #     prompt_tokens = self.llm_service.count_tokens(prompt)
+    #     logger.info(f"🔧 Final prompt: {prompt_tokens} tokens")
+    #     logger.info(f"📋 Full prompt:\n{'='*80}\n{prompt}\n{'='*80}")
+    #
+    #     return prompt
     
-    def _generate_response(self, prompt: str) -> Dict[str, Any]:
-        """Generate response using LLM"""
-        logger.info(f"🤖 Generating LLM response (max_tokens={settings.LLM_MAX_TOKENS}, temp={settings.LLM_TEMPERATURE})...")
-
-        response = self.llm_service.generate(
-            prompt=prompt,
-            max_tokens=settings.LLM_MAX_TOKENS,
-            temperature=settings.LLM_TEMPERATURE
-        )
-
-        # Log response details
-        response_tokens = response.get('response_tokens', 0)
-        response_text = response.get('text', '')
-        logger.info(f"✅ LLM generated {response_tokens} tokens")
-        logger.info(f"📝 Raw LLM response:\n{'='*80}\n{response_text}\n{'='*80}")
-
-        return response
+    # def _generate_response(self, prompt: str) -> Dict[str, Any]:
+    #     """Generate response using LLM"""
+    #     logger.info(f"🤖 Generating LLM response (max_tokens={settings.LLM_MAX_TOKENS}, temp={settings.LLM_TEMPERATURE})...")
+    #
+    #     response = self.llm_service.generate(
+    #         prompt=prompt,
+    #         max_tokens=settings.LLM_MAX_TOKENS,
+    #         temperature=settings.LLM_TEMPERATURE
+    #     )
+    #
+    #     # Log response details
+    #     response_tokens = response.get('response_tokens', 0)
+    #     response_text = response.get('text', '')
+    #     logger.info(f"✅ LLM generated {response_tokens} tokens")
+    #     logger.info(f"📝 Raw LLM response:\n{'='*80}\n{response_text}\n{'='*80}")
+    #
+    #     return response
     
     def _post_process_response(
         self,

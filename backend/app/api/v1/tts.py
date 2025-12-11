@@ -46,54 +46,54 @@ class TTSResponse(BaseModel):
 # Endpoints
 # ============================================================================
 
-@router.post("/generate", response_model=TTSResponse)
-async def generate_tts(request: TTSRequest) -> TTSResponse:
-    """
-    Generate speech from text.
-
-    This endpoint:
-    1. Validates text and language
-    2. Generates audio using Google TTS (gTTS)
-    3. Returns audio file URL for download
-    4. Automatically deletes previous audio
-    """
-    try:
-        logger.info(f"TTS request: {request.language} - '{request.text[:50]}...'")
-
-        # Get TTS service
-        tts_service: TTSService = get_tts_service()
-
-        # Generate audio
-        result = tts_service.generate_speech(
-            text=request.text,
-            language=request.language,
-            output_format="mp3",
-            bitrate="128k"
-        )
-
-        # Extract filename for URL
-        filename = os.path.basename(result["audio_path"])
-
-        return TTSResponse(
-            audio_url=f"/api/v1/tts/audio/{filename}",
-            duration_sec=result["duration_sec"],
-            generation_time_ms=result["generation_time_ms"],
-            language=result["language"],
-            format=result["format"]
-        )
-
-    except ValueError as e:
-        logger.error(f"Invalid TTS request: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid request: {str(e)}"
-        )
-    except Exception as e:
-        logger.error(f"TTS generation failed: {type(e).__name__}: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to generate speech. Please try again."
-        )
+# @router.post("/generate", response_model=TTSResponse)
+# async def generate_tts(request: TTSRequest) -> TTSResponse:
+#     """
+#     Generate speech from text.
+#
+#     This endpoint:
+#     1. Validates text and language
+#     2. Generates audio using Google TTS (gTTS)
+#     3. Returns audio file URL for download
+#     4. Automatically deletes previous audio
+#     """
+#     try:
+#         logger.info(f"TTS request: {request.language} - '{request.text[:50]}...'")
+#
+#         # Get TTS service
+#         tts_service: TTSService = get_tts_service()
+#
+#         # Generate audio
+#         result = tts_service.generate_speech(
+#             text=request.text,
+#             language=request.language,
+#             output_format="mp3",
+#             bitrate="128k"
+#         )
+#
+#         # Extract filename for URL
+#         filename = os.path.basename(result["audio_path"])
+#
+#         return TTSResponse(
+#             audio_url=f"/api/v1/tts/audio/{filename}",
+#             duration_sec=result["duration_sec"],
+#             generation_time_ms=result["generation_time_ms"],
+#             language=result["language"],
+#             format=result["format"]
+#         )
+#
+#     except ValueError as e:
+#         logger.error(f"Invalid TTS request: {e}")
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail=f"Invalid request: {str(e)}"
+#         )
+#     except Exception as e:
+#         logger.error(f"TTS generation failed: {type(e).__name__}: {e}")
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail="Failed to generate speech. Please try again."
+#         )
 
 
 @router.get("/audio/{filename}")
