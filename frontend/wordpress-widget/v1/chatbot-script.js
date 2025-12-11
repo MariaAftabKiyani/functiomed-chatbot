@@ -149,9 +149,9 @@ const HARDCODED_FAQS = {
             FR: "Quelles maladies sont traitées par le service de rhumatologie ?"
         },
         answer: {
-            EN: "Our rheumatology department specializes in the diagnosis and treatment of a wide range of rheumatic conditions. This includes **inflammatory joint** diseases, **soft tissue rheumatism**, and other conditions that affect the joints, muscles, and connective tissues.",
-            DE: "Unsere Rheumatologie-Abteilung ist auf die Diagnose und Behandlung einer Vielzahl rheumatischer Erkrankungen spezialisiert. Dazu gehören **entzündliche Gelenkerkrankungen**, **Weichteilrheuma** und andere Erkrankungen, die die Gelenke, Muskeln und Bindegewebe betreffen.",
-            FR: "Notre service de rhumatologie est spécialisé dans le diagnostic et le traitement d'un large éventail de conditions rhumatismales. Cela inclut les **maladies articulaires inflammatoires**, le **rhumatisme des tissus mous** et d'autres affections qui touchent les articulations, les muscles et les tissus conjonctifs."
+            EN: "Our rheumatology department specializes in the diagnosis and treatment of a wide range of rheumatic conditions.",
+            DE: "Unsere Rheumatologie-Abteilung ist auf die Diagnose und Behandlung einer Vielzahl rheumatischer Erkrankungen spezialisiert.",
+            FR: "Notre service de rhumatologie est spécialisé dans le diagnostic et le traitement d'un large éventail de conditions rhumatismales."
         },
         category: "services"
     },
@@ -1385,10 +1385,10 @@ async function handleFAQClick(faqId) {
         // Update the message with accumulated text
         updateStreamingMessage(messageDiv, fullText);
 
-        // Small delay between words (30ms for natural streaming)
+        // Delay between words for smooth streaming (50ms for nice consistent speed)
         // Skip delay for whitespace-only tokens
         if (words[i].trim().length > 0) {
-            await new Promise(resolve => setTimeout(resolve, 30));
+            await new Promise(resolve => setTimeout(resolve, 50));
         }
     }
 
