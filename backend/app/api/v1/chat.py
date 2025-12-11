@@ -94,49 +94,49 @@ class HealthResponse(BaseModel):
 # Endpoints
 # ============================================================================
 
-# @router.post("/", response_model=ChatResponse)
-# async def chat(request: ChatRequest) -> ChatResponse:
-#     """
-#     Chat endpoint with RAG-based response generation.
-    
-#     This endpoint:
-#     1. Retrieves relevant document chunks
-#     2. Generates contextual response with LLM
-#     3. Includes source citations
-#     4. Returns confidence score and metrics
-#     """
-#     try:
-#         logger.info(f"Chat request: '{request.query[:50]}...', language={request.language}")
+@router.post("/", response_model=ChatResponse)
+async def chat(request: ChatRequest) -> ChatResponse:
+    """
+    Chat endpoint with RAG-based response generation.
 
-#         # Get RAG service
-#         rag_service: RAGService = get_rag_service()
+    This endpoint:
+    1. Retrieves relevant document chunks
+    2. Generates contextual response with LLM
+    3. Includes source citations
+    4. Returns confidence score and metrics
+    """
+    try:
+        logger.info(f"Chat request: '{request.query[:50]}...', language={request.language}")
 
-#         # Generate answer
-#         response = rag_service.generate_answer(
-#             query=request.query,
-#             top_k=request.top_k,
-#             category=request.category,
-#             language=request.language,
-#             source_type=request.source_type,
-#             min_score=request.min_score,
-#             response_style=request.style
-#         )
-        
-#         # Convert to API response
-#         return ChatResponse(**response.to_dict())
-        
-#     except ValueError as e:
-#         logger.error(f"Invalid request: {e}")
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail=f"Invalid request: {str(e)}"
-#         )
-#     except Exception as e:
-#         logger.error(f"Chat failed: {type(e).__name__}: {e}")
-#         raise HTTPException(
-#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#             detail="An error occurred while processing your request. Please try again."
-#         )
+        # Get RAG service
+        rag_service: RAGService = get_rag_service()
+
+        # Generate answer
+        response = rag_service.generate_answer(
+            query=request.query,
+            top_k=request.top_k,
+            category=request.category,
+            language=request.language,
+            source_type=request.source_type,
+            min_score=request.min_score,
+            response_style=request.style
+        )
+
+        # Convert to API response
+        return ChatResponse(**response.to_dict())
+
+    except ValueError as e:
+        logger.error(f"Invalid request: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid request: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Chat failed: {type(e).__name__}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while processing your request. Please try again."
+        )
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -205,93 +205,93 @@ async def chat_stream(request_body: ChatRequest, request: Request):
     Returns: Server-Sent Events (SSE) stream with JSON chunks
     """
 
-    # async def generate_stream() -> AsyncGenerator[str, None]:
-    #     """Generate streaming response with cancellation support"""
-    #     try:
-    #         logger.info(f"Streaming chat request: '{request_body.query[:50]}...'")
+    async def generate_stream() -> AsyncGenerator[str, None]:
+        """Generate streaming response with cancellation support"""
+        try:
+            logger.info(f"Streaming chat request: '{request_body.query[:50]}...'")
 
-    #         # Get RAG service
-    #         rag_service: RAGService = get_rag_service()
+            # Get RAG service
+            rag_service: RAGService = get_rag_service()
 
-    #         # Generate answer (non-streaming for now, we'll chunk it)
-    #         # In a production system, you'd modify RAG service to support true streaming
-    #         response = rag_service.generate_answer(
-    #             query=request_body.query,
-    #             top_k=request_body.top_k or 5,
-    #             category=request_body.category,
-    #             language=request_body.language,
-    #             source_type=request_body.source_type,
-    #             min_score=request_body.min_score or 0.5,
-    #             response_style=request_body.style or "standard"
-    #         )
+            # Generate answer (non-streaming for now, we'll chunk it)
+            # In a production system, you'd modify RAG service to support true streaming
+            response = rag_service.generate_answer(
+                query=request_body.query,
+                top_k=request_body.top_k or 5,
+                category=request_body.category,
+                language=request_body.language,
+                source_type=request_body.source_type,
+                min_score=request_body.min_score or 0.5,
+                response_style=request_body.style or "standard"
+            )
 
-    #         # Send metadata first
-    #         metadata = {
-    #             "type": "metadata",
-    #             "query": response.query,
-    #             "sources": response.sources,  # sources are already dictionaries
-    #             "confidence_score": response.confidence_score,
-    #             "detected_language": response.detected_language
-    #         }
-    #         yield f"data: {json.dumps(metadata)}\n\n"
+            # Send metadata first
+            metadata = {
+                "type": "metadata",
+                "query": response.query,
+                "sources": response.sources,  # sources are already dictionaries
+                "confidence_score": response.confidence_score,
+                "detected_language": response.detected_language
+            }
+            yield f"data: {json.dumps(metadata)}\n\n"
 
-    #         # Check if client disconnected
-    #         if await request.is_disconnected():
-    #             logger.info("Client disconnected before streaming answer")
-    #             return
+            # Check if client disconnected
+            if await request.is_disconnected():
+                logger.info("Client disconnected before streaming answer")
+                return
 
-    #         # Stream the answer word by word
-    #         words = response.answer.split()
-    #         for i, word in enumerate(words):
-    #             # Check for client disconnect
-    #             if await request.is_disconnected():
-    #                 logger.info(f"Client disconnected at word {i}/{len(words)}")
-    #                 yield f"data: {json.dumps({'type': 'cancelled', 'partial_text': ' '.join(words[:i])})}\n\n"
-    #                 return
+            # Stream the answer word by word
+            words = response.answer.split()
+            for i, word in enumerate(words):
+                # Check for client disconnect
+                if await request.is_disconnected():
+                    logger.info(f"Client disconnected at word {i}/{len(words)}")
+                    yield f"data: {json.dumps({'type': 'cancelled', 'partial_text': ' '.join(words[:i])})}\n\n"
+                    return
 
-    #             # Send word chunk
-    #             chunk = {
-    #                 "type": "chunk",
-    #                 "text": word + (" " if i < len(words) - 1 else ""),
-    #                 "index": i,
-    #                 "total": len(words)
-    #             }
-    #             yield f"data: {json.dumps(chunk)}\n\n"
+                # Send word chunk
+                chunk = {
+                    "type": "chunk",
+                    "text": word + (" " if i < len(words) - 1 else ""),
+                    "index": i,
+                    "total": len(words)
+                }
+                yield f"data: {json.dumps(chunk)}\n\n"
 
-    #             # Small delay to simulate streaming (adjust as needed)
-    #             await asyncio.sleep(0.03)
+                # Small delay to simulate streaming (adjust as needed)
+                await asyncio.sleep(0.03)
 
-    #         # Send completion signal
-    #         completion = {
-    #             "type": "done",
-    #             "full_text": response.answer,
-    #             "metrics": response.to_dict()["metrics"]
-    #         }
-    #         yield f"data: {json.dumps(completion)}\n\n"
+            # Send completion signal
+            completion = {
+                "type": "done",
+                "full_text": response.answer,
+                "metrics": response.to_dict()["metrics"]
+            }
+            yield f"data: {json.dumps(completion)}\n\n"
 
-    #         logger.info("Streaming completed successfully")
+            logger.info("Streaming completed successfully")
 
-    #     except asyncio.CancelledError:
-    #         logger.info("Stream cancelled by client")
-    #         yield f"data: {json.dumps({'type': 'cancelled'})}\n\n"
+        except asyncio.CancelledError:
+            logger.info("Stream cancelled by client")
+            yield f"data: {json.dumps({'type': 'cancelled'})}\n\n"
 
-    #     except Exception as e:
-    #         logger.error(f"Streaming failed: {type(e).__name__}: {e}")
-    #         error_msg = {
-    #             "type": "error",
-    #             "error": str(e)
-    #         }
-    #         yield f"data: {json.dumps(error_msg)}\n\n"
+        except Exception as e:
+            logger.error(f"Streaming failed: {type(e).__name__}: {e}")
+            error_msg = {
+                "type": "error",
+                "error": str(e)
+            }
+            yield f"data: {json.dumps(error_msg)}\n\n"
 
-    # return StreamingResponse(
-    #     generate_stream(),
-    #     media_type="text/event-stream",
-    #     headers={
-    #         "Cache-Control": "no-cache",
-    #         "Connection": "keep-alive",
-    #         "X-Accel-Buffering": "no"  # Disable nginx buffering
-    #     }
-    # )
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"  # Disable nginx buffering
+        }
+    )
 
 
 # ============================================================================
