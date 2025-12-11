@@ -1300,8 +1300,8 @@ function setupFAQButtons() {
     });
 }
 
-// Handle FAQ button click - instant response from hardcoded data
-function handleFAQClick(faqId) {
+// Handle FAQ button click - response with typing indicator delay
+async function handleFAQClick(faqId) {
     // Get FAQ from hardcoded cache (always available, instant response)
     const faq = faqCache[faqId];
 
@@ -1327,16 +1327,23 @@ function handleFAQClick(faqId) {
     // Display question as user message (with auto-scroll to show the question)
     const questionElement = addMessage(question, 'user', null, null, true);
 
-    // Display answer as bot message (instant response, NO auto-scroll)
-    setTimeout(() => {
-        addMessage(answer, 'bot', null, null, false);
+    // Show typing indicator
+    showTypingIndicator();
 
-        // Scroll to show the question at the top of the chat
-        if (questionElement) {
-            questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-        // Don't hide FAQs - keep them visible like inspiration widget
-    }, 100); // Small delay for UX (feels more natural)
+    // Wait 200ms to simulate natural typing delay
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Hide typing indicator
+    hideTypingIndicator();
+
+    // Display answer as bot message (NO auto-scroll)
+    addMessage(answer, 'bot', null, null, false);
+
+    // Scroll to show the question at the top of the chat
+    if (questionElement) {
+        questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    // Don't hide FAQs - keep them visible like inspiration widget
 }
 
 // Hide FAQ buttons after first interaction
