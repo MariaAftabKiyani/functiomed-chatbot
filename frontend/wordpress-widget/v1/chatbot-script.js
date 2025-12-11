@@ -468,7 +468,7 @@ const HARDCODED_FAQS = {
 // Language-specific messages
 const MESSAGES = {
     EN: {
-        initialGreeting: "Hi there! 👋 I'm FUNIA, your friendly assistant at Functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?",
+        initialGreeting: "Hi there! 👋 I'm FUNIA, your friendly assistant at functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?",
         placeholder: "Type your message...",
         errorMessage: "Sorry, there was an error. Please try again.",
         typingIndicator: "Typing...",
@@ -478,7 +478,7 @@ const MESSAGES = {
         demoMessage: "Please click on FAQs below to get instant answers to common questions."
     },
     DE: {
-        initialGreeting: "Hallo! 👋 Ich bin FUNIA, Ihre freundliche Assistentin bei Functiomed. Ich bin hier, um Ihnen bei allem zu helfen, was Sie brauchen - ob es darum geht, Informationen über unsere Dienstleistungen, Ärzte zu finden oder Ihre Fragen zu beantworten. Womit kann ich Ihnen heute helfen?",
+        initialGreeting: "Hallo! 👋 Ich bin FUNIA, Ihre freundliche Assistentin bei functiomed. Ich bin hier, um Ihnen bei allem zu helfen, was Sie brauchen - ob es darum geht, Informationen über unsere Dienstleistungen, Ärzte zu finden oder Ihre Fragen zu beantworten. Womit kann ich Ihnen heute helfen?",
         placeholder: "Geben Sie Ihre Nachricht ein...",
         errorMessage: "Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.",
         typingIndicator: "Tippt...",
@@ -488,7 +488,7 @@ const MESSAGES = {
         demoMessage: "Bitte klicken Sie auf FAQs unten, um sofortige Antworten auf häufig gestellte Fragen zu erhalten."
     },
     FR: {
-        initialGreeting: "Bonjour ! 👋 Je suis FUNIA, votre assistante amicale chez Functiomed. Je suis là pour vous aider avec tout ce dont vous avez besoin - que ce soit pour trouver des informations sur nos services, nos médecins ou répondre à vos questions. En quoi puis-je vous aider aujourd'hui ?",
+        initialGreeting: "Bonjour ! 👋 Je suis FUNIA, votre assistante amicale chez functiomed. Je suis là pour vous aider avec tout ce dont vous avez besoin - que ce soit pour trouver des informations sur nos services, nos médecins ou répondre à vos questions. En quoi puis-je vous aider aujourd'hui ?",
         placeholder: "Tapez votre message...",
         errorMessage: "Désolé, une erreur s'est produite. Veuillez réessayer.",
         typingIndicator: "Écrit...",
