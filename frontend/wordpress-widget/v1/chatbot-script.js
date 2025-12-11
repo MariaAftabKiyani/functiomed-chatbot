@@ -1330,14 +1330,32 @@ async function handleFAQClick(faqId) {
     // Show typing indicator
     showTypingIndicator();
 
-    // Wait 200ms to simulate natural typing delay
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // Wait 1500ms to simulate natural typing delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     // Hide typing indicator
     hideTypingIndicator();
 
-    // Display answer as bot message (NO auto-scroll)
-    addMessage(answer, 'bot', null, null, false);
+    // Create streaming message container
+    const messageDiv = createStreamingMessage();
+
+    // Stream the answer word by word
+    const words = answer.split(' ');
+    let fullText = '';
+
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        fullText += word + (i < words.length - 1 ? ' ' : '');
+
+        // Update the message with accumulated text
+        updateStreamingMessage(messageDiv, fullText);
+
+        // Small delay between words (30ms for natural streaming)
+        await new Promise(resolve => setTimeout(resolve, 30));
+    }
+
+    // Finalize the streaming message
+    finalizeStreamingMessage(messageDiv, fullText);
 
     // Scroll to show the question at the top of the chat
     if (questionElement) {
