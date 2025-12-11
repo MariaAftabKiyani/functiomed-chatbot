@@ -735,22 +735,7 @@
     fill: white;
 }
 
-/* Streaming message indicator */
+/* Streaming message indicator - removed for cleaner look */
 .message.streaming .message-content {
     position: relative;
-}
-
-.message.streaming .message-content::after {
-    content: "▋";
-    animation: blink 1s infinite;
-    margin-left: 2px;
-}
-
-@keyframes blink {
-    0%, 50% {
-        opacity: 1;
-    }
-    51%, 100% {
-        opacity: 0;
-    }
 }
