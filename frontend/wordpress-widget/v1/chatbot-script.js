@@ -661,7 +661,11 @@ function setupEventListeners() {
     stopButton.addEventListener('click', stopGeneration);
     // Global voice toggle removed - using per-message speaker buttons
     // voiceToggle.addEventListener('click', toggleVoice);
-    micButton.addEventListener('click', toggleMicrophone);
+
+    // Only add mic button listener if it exists
+    if (micButton) {
+        micButton.addEventListener('click', toggleMicrophone);
+    }
 
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -1895,7 +1899,15 @@ function initSpeechRecognition() {
 
     if (!SpeechRecognition) {
         console.log('Speech recognition not supported');
-        micButton.style.display = 'none';
+        if (micButton) {
+            micButton.style.display = 'none';
+        }
+        return;
+    }
+
+    // If mic button doesn't exist in DOM, don't initialize speech recognition
+    if (!micButton) {
+        console.log('Microphone button not found in DOM');
         return;
     }
 
@@ -1906,7 +1918,9 @@ function initSpeechRecognition() {
 
     recognition.onstart = () => {
         isListening = true;
-        micButton.classList.add('listening');
+        if (micButton) {
+            micButton.classList.add('listening');
+        }
         console.log('Speech recognition started');
     };
 
@@ -1926,7 +1940,9 @@ function initSpeechRecognition() {
     recognition.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
         isListening = false;
-        micButton.classList.remove('listening');
+        if (micButton) {
+            micButton.classList.remove('listening');
+        }
 
         if (event.error === 'no-speech') {
             alert('No speech detected. Please try again.');
@@ -1937,7 +1953,9 @@ function initSpeechRecognition() {
 
     recognition.onend = () => {
         isListening = false;
-        micButton.classList.remove('listening');
+        if (micButton) {
+            micButton.classList.remove('listening');
+        }
         console.log('Speech recognition ended');
     };
 }
