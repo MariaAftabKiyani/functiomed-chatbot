@@ -1127,7 +1127,7 @@ function updateStreamingMessage(messageDiv, text) {
     if (contentDiv) {
         const formattedText = markdownToHtml(text);
         contentDiv.innerHTML = formattedText;
-        scrollToBottom();
+        // Don't auto-scroll - let user control scroll position
     }
 }
 
@@ -1340,18 +1340,21 @@ async function handleFAQClick(faqId) {
     const messageDiv = createStreamingMessage();
 
     // Stream the answer word by word
-    const words = answer.split(' ');
+    // Split by spaces but preserve newlines and markdown formatting
+    const words = answer.split(/(\s+)/); // Keep whitespace including newlines
     let fullText = '';
 
     for (let i = 0; i < words.length; i++) {
-        const word = words[i];
-        fullText += word + (i < words.length - 1 ? ' ' : '');
+        fullText += words[i];
 
         // Update the message with accumulated text
         updateStreamingMessage(messageDiv, fullText);
 
         // Small delay between words (30ms for natural streaming)
-        await new Promise(resolve => setTimeout(resolve, 30));
+        // Skip delay for whitespace-only tokens
+        if (words[i].trim().length > 0) {
+            await new Promise(resolve => setTimeout(resolve, 30));
+        }
     }
 
     // Finalize the streaming message
