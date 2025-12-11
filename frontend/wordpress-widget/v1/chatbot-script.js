@@ -9,6 +9,9 @@ let currentStreamingMessage = null; // Reference to the message being streamed
 let isVoiceEnabled = false; // Voice toggle state
 let recognition = null; // Speech recognition instance
 let isListening = false; // Microphone listening state
+let userHasScrolled = false; // Track if user has manually scrolled up during streaming
+let lastScrollTop = 0; // Track last scroll position to detect user scroll
+let scrollPending = false; // Throttle scroll updates
 
 // Audio player state for TTS
 let currentAudio = null;  // HTML5 Audio instance
@@ -132,9 +135,9 @@ const HARDCODED_FAQS = {
             FR: "Pour qui le traitement ostéopathique est-il adapté ?"
         },
         answer: {
-            EN: "Osteopathy is suitable for people of **all ages**, from newborn babies to elderly patients. It is designed to support the body's natural ability to heal itself, improve mobility, relieve pain, and enhance overall well-being.",
-            DE: "Osteopathie ist für Menschen **jeden Alters** geeignet, von neugeborenen Babys bis zu älteren Patienten. Sie wurde entwickelt, um die natürliche Selbstheilungsfähigkeit des Körpers zu unterstützen, die Mobilität zu verbessern, Schmerzen zu lindern und das allgemeine Wohlbefinden zu steigern.",
-            FR: "L'ostéopathie convient aux personnes de **tout âge**, des nouveau-nés aux patients âgés. Elle est conçue pour soutenir la capacité naturelle du corps à se guérir, améliorer la mobilité, soulager la douleur et améliorer le bien-être général."
+            EN: "Osteopathy is suitable for people of **all ages**, from newborn babies to elderly patients. ",
+            DE: "Osteopathie ist für Menschen **jeden Alters** geeignet, von neugeborenen Babys bis zu älteren Patienten.",
+            FR: "L'ostéopathie convient aux personnes de **tout âge**, des nouveau-nés aux patients âgés."
         },
         category: "services"
     },
@@ -672,6 +675,24 @@ function setupEventListeners() {
         sendButton.disabled = chatInput.value.trim() === '';
     });
 
+    // Track user scroll behavior during streaming
+    chatMessages.addEventListener('scroll', () => {
+        const currentScroll = chatMessages.scrollTop;
+        const maxScroll = chatMessages.scrollHeight - chatMessages.clientHeight;
+
+        // Detect if user scrolled UP (not down or auto-scroll to bottom)
+        if (currentScroll < lastScrollTop && currentScroll < maxScroll - 50) {
+            // User scrolled up - disable auto-scroll
+            userHasScrolled = true;
+        } else if (currentScroll >= maxScroll - 10) {
+            // User is at bottom - re-enable auto-scroll
+            userHasScrolled = false;
+        }
+
+        // Update last position
+        lastScrollTop = currentScroll;
+    });
+
     // Initialize speech recognition
     initSpeechRecognition();
 }
@@ -877,6 +898,8 @@ async function fetchBotResponseStreaming(query, signal) {
                         // Create message container on first chunk
                         if (!firstChunkReceived) {
                             hideTypingIndicator();
+                            // Reset user scroll flag for new message (allow auto-scroll for new response)
+                            userHasScrolled = false;
                             messageDiv = createStreamingMessage();
                             currentStreamingMessage = messageDiv;
                             firstChunkReceived = true;
@@ -1085,11 +1108,16 @@ function hideTypingIndicator() {
     chatInput.disabled = false;
 }
 
-// Scroll to bottom of messages
+// Scroll to bottom of messages (throttled for smooth streaming)
 function scrollToBottom() {
-    setTimeout(() => {
+    if (scrollPending) return;
+
+    scrollPending = true;
+    requestAnimationFrame(() => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
-    }, 100);
+        lastScrollTop = chatMessages.scrollTop;
+        scrollPending = false;
+    });
 }
 
 // Escape HTML to prevent XSS
@@ -1127,7 +1155,11 @@ function updateStreamingMessage(messageDiv, text) {
     if (contentDiv) {
         const formattedText = markdownToHtml(text);
         contentDiv.innerHTML = formattedText;
-        // Don't auto-scroll - let user control scroll position
+
+        // Only auto-scroll if user hasn't manually scrolled up
+        if (!userHasScrolled) {
+            scrollToBottom();
+        }
     }
 }
 
@@ -1335,6 +1367,9 @@ async function handleFAQClick(faqId) {
 
     // Hide typing indicator
     hideTypingIndicator();
+
+    // Reset user scroll flag for new message (allow auto-scroll for new response)
+    userHasScrolled = false;
 
     // Create streaming message container
     const messageDiv = createStreamingMessage();
