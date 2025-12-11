@@ -151,11 +151,11 @@ class RAGService:
         lang_to_use = language.upper() if language else "EN"
 
         if lang_to_use == "DE":
-            answer = "Hallo! Willkommen bei Functiomed. Wie kann ich Ihnen helfen?"
+            answer = "Hallo! Willkommen bei functiomed. Wie kann ich Ihnen helfen?"
         elif lang_to_use == "FR":
-            answer = "Bonjour ! Bienvenue chez Functiomed. Comment puis-je vous aider ?"
+            answer = "Bonjour ! Bienvenue chez functiomed. Comment puis-je vous aider ?"
         else:
-            answer = "Hello! Welcome to Functiomed. How can I help you?"
+            answer = "Hello! Welcome to functiomed. How can I help you?"
 
         return RAGResponse(
             answer=answer,
@@ -177,11 +177,11 @@ class RAGService:
         lang_to_use = language.upper() if language else "EN"
 
         if lang_to_use == "DE":
-            answer = "Gerne! Lassen Sie mich wissen, wenn Sie weitere Fragen zu Functiomed haben."
+            answer = "Gerne! Lassen Sie mich wissen, wenn Sie weitere Fragen zu functiomed haben."
         elif lang_to_use == "FR":
-            answer = "D'accord ! N'hésitez pas si vous avez d'autres questions sur Functiomed."
+            answer = "D'accord ! N'hésitez pas si vous avez d'autres questions sur functiomed."
         else:
-            answer = "Alright! Let me know if you have any other questions about Functiomed."
+            answer = "Alright! Let me know if you have any other questions about functiomed."
 
         return RAGResponse(
             answer=answer,
