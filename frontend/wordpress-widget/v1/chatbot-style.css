@@ -471,7 +471,8 @@
     align-items: center;
 }
 
-.mic-button {
+/* Microphone button styles commented out */
+/* .mic-button {
     width: 44px;
     height: 44px;
     border-radius: 50%;
@@ -507,7 +508,7 @@
         opacity: 0.8;
         transform: scale(1.1);
     }
-}
+} */
 
 .chat-input {
     flex: 1;
