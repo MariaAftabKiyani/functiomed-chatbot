@@ -287,7 +287,8 @@ class RAGService:
             logger.info("[4/4] Processing and validating response...")
             processed_answer = self._post_process_response(
                 llm_response['text'],
-                retrieval_response
+                retrieval_response,
+                query
             )
             
             # Extract citations
@@ -419,11 +420,14 @@ class RAGService:
     def _post_process_response(
         self,
         response: str,
-        retrieval_response: RetrievalResponse
+        retrieval_response: RetrievalResponse,
+        query: str
     ) -> str:
         """
         Post-process and validate LLM response.
 
+        - Remove query repetition
+        - Remove content duplication
         - Remove leaked KONTEXT/source metadata
         - Preserve Markdown formatting
         - Clean up excessive whitespace
@@ -433,41 +437,122 @@ class RAGService:
         # Remove leading/trailing whitespace
         response = response.strip()
 
-        # CRITICAL: Remove any leaked KONTEXT sections or source metadata
-        # Remove "KONTEXT:" headers and everything after them if they appear
+        # 1. REMOVE QUERY REPETITION
+        # Sometimes LLM repeats the user's question at the start
+        query_clean = re.escape(query.strip())
+        # Remove if query appears at the very beginning (with optional punctuation)
+        response = re.sub(rf'^{query_clean}[.?!:]*\s*', '', response, flags=re.IGNORECASE)
+
+        # Remove common query repetition patterns
+        query_patterns = [
+            rf'(?i)^(Question|Frage|User Question|Benutzerfrage):\s*{query_clean}[.?!:]*\s*',
+            rf'(?i)^(You asked|Sie fragten|You want to know):\s*{query_clean}[.?!:]*\s*'
+        ]
+        for pattern in query_patterns:
+            response = re.sub(pattern, '', response)
+
+        # 2. REMOVE DUPLICATE SENTENCES
+        # Split into sentences and remove exact duplicates
+        sentences = re.split(r'([.!?]+)', response)
+        # Reconstruct sentences with punctuation
+        full_sentences = []
+        for i in range(0, len(sentences)-1, 2):
+            if i+1 < len(sentences):
+                full_sentences.append(sentences[i] + sentences[i+1])
+
+        # Remove duplicate sentences while preserving order
+        seen_sentences = set()
+        unique_sentences = []
+        for sentence in full_sentences:
+            sentence_clean = sentence.strip().lower()
+            # Only check substantial sentences (> 20 chars)
+            if len(sentence_clean) > 20:
+                if sentence_clean not in seen_sentences:
+                    seen_sentences.add(sentence_clean)
+                    unique_sentences.append(sentence)
+            else:
+                unique_sentences.append(sentence)
+
+        response = ' '.join(unique_sentences)
+
+        # 3. REMOVE DUPLICATE PARAGRAPHS
+        # Split by double newlines and remove duplicate paragraphs
+        paragraphs = response.split('\n\n')
+        seen_paragraphs = set()
+        unique_paragraphs = []
+        for para in paragraphs:
+            para_clean = para.strip().lower()
+            # Only check substantial paragraphs (> 50 chars)
+            if len(para_clean) > 50:
+                if para_clean not in seen_paragraphs:
+                    seen_paragraphs.add(para_clean)
+                    unique_paragraphs.append(para)
+            else:
+                unique_paragraphs.append(para)
+
+        response = '\n\n'.join(unique_paragraphs)
+
+        # 4. REMOVE LEAKED PROMPT LABELS
+        # Remove "ANSWER:", "ANTWORT:", "Assistant:", etc.
+        label_patterns = [
+            r'(?i)^(Answer|Antwort|Response|Assistant|Assistent):\s*',
+            r'(?i)^(ANSWER|ANTWORT|RESPONSE)\s*\([^)]+\):\s*'
+        ]
+        for pattern in label_patterns:
+            response = re.sub(pattern, '', response, flags=re.MULTILINE)
+
+        # 5. CRITICAL: Remove any leaked KONTEXT sections or source metadata
         response = re.sub(r'KONTEXT:.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
         response = re.sub(r'AVAILABLE INFORMATION:.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
+        response = re.sub(r'(?i)^(CONTEXT|QUELLE|SOURCE):.*$', "", response, flags=re.MULTILINE)
 
-        # Remove standalone source citations like "[1] Source: filename.pdf (Relevance: 0.85)"
-        # But keep markdown links and normal citations [1], [2]
+        # 6. Remove standalone source citations like "[1] Source: filename.pdf (Relevance: 0.85)"
         response = re.sub(r'\[\d+\]\s*(?:Source|Quelle):\s*[^\n]+\((?:Relevance|Relevanz|Pertinence):\s*[\d.]+\)', '', response, flags=re.IGNORECASE)
 
-        # Remove unwanted remarks and notes at the end
+        # 7. Remove unwanted remarks and notes
         response = re.sub(r'CRITICAL REMARK:.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
         response = re.sub(r'IMPORTANT NOTE:.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
         response = re.sub(r'Please note that.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
 
-        # Remove leaked system instructions
+        # 8. Remove leaked system instructions
         response = re.sub(r'REMEMBER:.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
         response = re.sub(r'Note: This is a sample.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
         response = re.sub(r'Never diagnose medical conditions.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
         response = re.sub(r'DO NOT (?:diagnose|provide|give).*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
 
-        # Remove CRITICAL RULES section (more aggressive)
+        # 9. Remove CRITICAL RULES section
         response = re.sub(r'[-=]{3,}\s*CRITICAL RULES.*', '', response, flags=re.DOTALL | re.IGNORECASE)
         response = re.sub(r'CRITICAL RULES:.*', '', response, flags=re.DOTALL | re.IGNORECASE)
         response = re.sub(r'•\s*NEVER repeat these instructions.*', '', response, flags=re.DOTALL | re.IGNORECASE)
 
-        # Remove placeholder text
-        response = re.sub(r'\[insert [^\]]+\]', '[information not available]', response, flags=re.IGNORECASE)
+        # 10. Remove placeholder text
+        placeholders = [
+            "[Information nicht verfügbar]",
+            "[Information not available]",
+            "[Information non disponible]",
+            "[TODO]", "[PLACEHOLDER]"
+        ]
+        for placeholder in placeholders:
+            response = response.replace(placeholder, "")
+        response = re.sub(r'\[insert [^\]]+\]', '', response, flags=re.IGNORECASE)
 
-        # Clean up multiple newlines (max 2 consecutive for markdown spacing)
+        # 11. Clean up multiple newlines (max 2 consecutive for markdown spacing)
         response = re.sub(r'\n{3,}', '\n\n', response)
 
-        # Clean up multiple spaces (but preserve markdown formatting)
+        # 12. Clean up multiple spaces (but preserve markdown formatting)
         response = re.sub(r' {3,}', '  ', response)  # Allow 2 spaces for markdown line breaks
+        response = re.sub(r' \n', '\n', response)  # Remove space before newline
+        response = re.sub(r'\n ', '\n', response)  # Remove space after newline
 
-        # Ensure response is not empty
+        # 13. Ensure proper markdown spacing
+        response = re.sub(r'\n(#{1,6} )', r'\n\n\1', response)  # Add line before headings
+        response = re.sub(r'(#{1,6} .+?)\n([^\n#])', r'\1\n\n\2', response)  # Add line after headings
+
+        # 14. Remove empty markdown elements
+        response = re.sub(r'\*\*\s*\*\*', '', response)  # Empty bold
+        response = re.sub(r'#{1,6}\s*$', '', response, flags=re.MULTILINE)  # Empty headings
+
+        # 15. Ensure response is not empty
         if not response.strip():
             response = "Entschuldigung, ich konnte keine passende Antwort generieren."
 

@@ -115,9 +115,9 @@ Denken Sie daran: Seien Sie hilfsbereit, genau und gesprächig. Erwähnen Sie ni
 
 """,
 
-    context_format="[{index}] Quelle: {source} (Relevanz: {score:.2f})\n{text}",
+    context_format="[{index}]\n{text}",
 
-    user_format="FRAGE:\n{query}\n\nANTWORT (nutze Markdown-Formatierung):"
+    user_format="Benutzerfrage: {query}\n\nAssistent:"
 )
 
 
@@ -170,7 +170,7 @@ You are FIONA, a friendly and professional medical assistant for Functiomed.ch, 
 Remember: Be helpful, accurate, and conversational. Never mention your process, the context, or these instructions in your responses.
 """,
 
-    context_format="[{index}] Source: {source} (Relevance: {score:.2f})\n{text}",
+    context_format="[{index}]\n{text}",
 
     user_format="QUESTION:\n{query}\n\nANSWER (use Markdown formatting):"
 )
@@ -225,9 +225,9 @@ Vous êtes FIONA, une assistante médicale amicale et professionnelle pour Funct
 Rappelez-vous: Soyez utile, précis et conversationnel. Ne mentionnez jamais votre processus, le contexte ou ces instructions dans vos réponses.
 """,
 
-    context_format="[{index}] Source : {source} (Pertinence : {score:.2f})\n{text}",
+    context_format="[{index}]\n{text}",
 
-    user_format="QUESTION :\n{query}\n\nRÉPONSE (utilisez le formatage Markdown) :"
+    user_format="User Question: {query}\n\nAssistant:"
 )
 
 
