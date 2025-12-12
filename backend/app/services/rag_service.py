@@ -475,20 +475,46 @@ class RAGService:
 
         response = ' '.join(unique_sentences)
 
-        # 3. REMOVE DUPLICATE PARAGRAPHS
+        # 3. REMOVE DUPLICATE PARAGRAPHS AND SECTIONS
         # Split by double newlines and remove duplicate paragraphs
         paragraphs = response.split('\n\n')
         seen_paragraphs = set()
+        seen_headings = set()
         unique_paragraphs = []
+
         for para in paragraphs:
-            para_clean = para.strip().lower()
-            # Only check substantial paragraphs (> 50 chars)
-            if len(para_clean) > 50:
-                if para_clean not in seen_paragraphs:
-                    seen_paragraphs.add(para_clean)
-                    unique_paragraphs.append(para)
-            else:
+            para_stripped = para.strip()
+
+            # Skip empty paragraphs
+            if not para_stripped:
+                continue
+
+            # Check if it's a markdown heading
+            is_heading = para_stripped.startswith('#')
+
+            if is_heading:
+                # Normalize heading for comparison (remove # and lowercase)
+                heading_text = re.sub(r'^#{1,6}\s*', '', para_stripped).lower().strip()
+
+                # Skip duplicate headings
+                if heading_text in seen_headings:
+                    logger.debug(f"Skipping duplicate heading: {heading_text}")
+                    continue
+                seen_headings.add(heading_text)
                 unique_paragraphs.append(para)
+            else:
+                # For regular paragraphs, check for duplicates
+                para_clean = para_stripped.lower()
+
+                # Only check substantial paragraphs (> 30 chars)
+                if len(para_clean) > 30:
+                    if para_clean not in seen_paragraphs:
+                        seen_paragraphs.add(para_clean)
+                        unique_paragraphs.append(para)
+                    else:
+                        logger.debug(f"Skipping duplicate paragraph: {para_clean[:50]}...")
+                else:
+                    unique_paragraphs.append(para)
 
         response = '\n\n'.join(unique_paragraphs)
 
@@ -552,14 +578,27 @@ class RAGService:
         response = re.sub(r'\*\*\s*\*\*', '', response)  # Empty bold
         response = re.sub(r'#{1,6}\s*$', '', response, flags=re.MULTILINE)  # Empty headings
 
-        # 15. Ensure response is not empty
-        if not response.strip():
+        # 15. Final validation
+        response = response.strip()
+
+        # Check if response is empty
+        if not response:
             response = "Entschuldigung, ich konnte keine passende Antwort generieren."
+
+        # Check if response is too short (likely incomplete)
+        if len(response) < 50:
+            logger.warning(f"Response too short ({len(response)} chars): {response}")
+
+        # Log deduplication stats
+        original_para_count = len(paragraphs)
+        final_para_count = len(unique_paragraphs)
+        if original_para_count > final_para_count:
+            logger.info(f"🔍 Removed {original_para_count - final_para_count} duplicate paragraphs/sections")
 
         logger.info(f"✅ Post-processing complete ({len(response)} chars after cleaning)")
         logger.info(f"📝 Final response:\n{'='*80}\n{response}\n{'='*80}")
 
-        return response.strip()
+        return response
     
     def _extract_citations(self, text: str) -> List[str]:
         """
