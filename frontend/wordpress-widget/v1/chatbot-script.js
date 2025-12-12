@@ -989,7 +989,7 @@ function markdownToHtml(text) {
                 inParagraph = false;
             }
 
-            output.push(`<h${level} style="margin-top: 16px; margin-bottom: 8px; font-weight: bold;">${headingText}</h${level}>`);
+            output.push(`<h${level} style="margin-top: 8px; margin-bottom: 4px; font-weight:600; font-size:14px;">${headingText}</h${level}>`);
             continue;
         }
 
