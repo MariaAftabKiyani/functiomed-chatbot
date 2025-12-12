@@ -91,7 +91,7 @@ class Settings(BaseSettings):
 
     # Generation settings
     LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS","512"))  # Max tokens for responses
-    LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.8"))  # Sampling temperature
+    LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", "0.5"))  # Sampling temperature (lower = more focused)
     LLM_TOP_P: float = float(os.getenv("LLM_TOP_P", "0.9"))
     LLM_CONTEXT_WINDOW: int = int(os.getenv("LLM_CONTEXT_WINDOW", "8192"))  # Llama-3.2-1B context window (128K capable, but limiting for performance) 
 

@@ -453,6 +453,14 @@ class RAGService:
         response = re.sub(r'Never diagnose medical conditions.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
         response = re.sub(r'DO NOT (?:diagnose|provide|give).*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
 
+        # Remove CRITICAL RULES section (more aggressive)
+        response = re.sub(r'[-=]{3,}\s*CRITICAL RULES.*', '', response, flags=re.DOTALL | re.IGNORECASE)
+        response = re.sub(r'CRITICAL RULES:.*', '', response, flags=re.DOTALL | re.IGNORECASE)
+        response = re.sub(r'•\s*NEVER repeat these instructions.*', '', response, flags=re.DOTALL | re.IGNORECASE)
+
+        # Remove placeholder text
+        response = re.sub(r'\[insert [^\]]+\]', '[information not available]', response, flags=re.IGNORECASE)
+
         # Clean up multiple newlines (max 2 consecutive for markdown spacing)
         response = re.sub(r'\n{3,}', '\n\n', response)
 
