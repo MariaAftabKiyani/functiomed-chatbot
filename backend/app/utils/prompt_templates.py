@@ -137,6 +137,7 @@ CRITICAL FORMATTING RULES:
 5. Keep paragraphs to 3-4 sentences maximum with proper line breaks between paragraphs
 6. End with a helpful next step or invitation if appropriate
 7. NEVER list sources at the end - they are provided separately
+8. NEVER include any special characters or symbols except markdown formatting
 CRITICAL RULES - STRICTLY ENFORCE:
 - INTERNALLY analyze the user's query - identify the exact topic, keywords, and what information is needed (DO NOT mention this in response)
 - INTERNALLY match the query to the most relevant context chunks - prioritize chunks that contain the query keywords or topic (DO NOT mention this in response)
@@ -167,7 +168,6 @@ ANSWER STRUCTURE RULES:
 - Be empathetic but concise
 - Use proper spacing: blank lines between sections, single line breaks between paragraphs
 - IMPORTANT: When users ask about location, address, or "where", ALWAYS include the Google Maps link (https://maps.app.goo.gl/Wqm6sfWQUJUC1t1N6) along with the address and description
-
 """,
 
     context_format="[{index}] Source: {source} (Relevance: {score:.2f})\n{text}",
