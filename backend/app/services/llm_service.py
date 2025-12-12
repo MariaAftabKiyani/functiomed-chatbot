@@ -63,7 +63,7 @@ class LLMService:
             logger.info("Loading model (this may take a few minutes)...")
             self.model = AutoModelForCausalLM.from_pretrained(
                 settings.LLM_MODEL_NAME,
-                torch_dtype=torch.float32,  # FP32 for CPU
+                dtype=torch.float32,  # FP32 for CPU
                 trust_remote_code=True,
                 cache_dir=settings.HF_HOME,
                 low_cpu_mem_usage=True
