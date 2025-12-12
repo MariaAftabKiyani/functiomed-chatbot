@@ -71,7 +71,7 @@ class Settings(BaseSettings):
     )
 
     RETRIEVAL_MIN_SCORE: float = Field(
-        default=0.9,
+        default=0.5,
         env="RETRIEVAL_MIN_SCORE",
         description="Minimum similarity score threshold (0-1)"
     )
