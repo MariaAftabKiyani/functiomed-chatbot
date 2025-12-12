@@ -468,7 +468,7 @@ const HARDCODED_FAQS = {
 // Language-specific messages
 const MESSAGES = {
     EN: {
-        initialGreeting: "Hi there! 👋 I'm FUNIA, your friendly assistant at Functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?",
+        initialGreeting: "Hi there! 👋 I'm FUNIA, your friendly assistant at functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?",
         placeholder: "Type your message...",
         errorMessage: "Sorry, there was an error. Please try again.",
         typingIndicator: "Typing...",
@@ -478,7 +478,7 @@ const MESSAGES = {
         demoMessage: "Please click on FAQs below to get instant answers to common questions."
     },
     DE: {
-        initialGreeting: "Hallo! 👋 Ich bin FUNIA, Ihre freundliche Assistentin bei Functiomed. Ich bin hier, um Ihnen bei allem zu helfen, was Sie brauchen - ob es darum geht, Informationen über unsere Dienstleistungen, Ärzte zu finden oder Ihre Fragen zu beantworten. Womit kann ich Ihnen heute helfen?",
+        initialGreeting: "Hallo! 👋 Ich bin FUNIA, Ihre freundliche Assistentin bei functiomed. Ich bin hier, um Ihnen bei allem zu helfen, was Sie brauchen - ob es darum geht, Informationen über unsere Dienstleistungen, Ärzte zu finden oder Ihre Fragen zu beantworten. Womit kann ich Ihnen heute helfen?",
         placeholder: "Geben Sie Ihre Nachricht ein...",
         errorMessage: "Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.",
         typingIndicator: "Tippt...",
@@ -488,7 +488,7 @@ const MESSAGES = {
         demoMessage: "Bitte klicken Sie auf FAQs unten, um sofortige Antworten auf häufig gestellte Fragen zu erhalten."
     },
     FR: {
-        initialGreeting: "Bonjour ! 👋 Je suis FUNIA, votre assistante amicale chez Functiomed. Je suis là pour vous aider avec tout ce dont vous avez besoin - que ce soit pour trouver des informations sur nos services, nos médecins ou répondre à vos questions. En quoi puis-je vous aider aujourd'hui ?",
+        initialGreeting: "Bonjour ! 👋 Je suis FUNIA, votre assistante amicale chez functiomed. Je suis là pour vous aider avec tout ce dont vous avez besoin - que ce soit pour trouver des informations sur nos services, nos médecins ou répondre à vos questions. En quoi puis-je vous aider aujourd'hui ?",
         placeholder: "Tapez votre message...",
         errorMessage: "Désolé, une erreur s'est produite. Veuillez réessayer.",
         typingIndicator: "Écrit...",
@@ -602,29 +602,13 @@ function setInitialTime() {
         // Store text in data attribute
         initialMessage.setAttribute('data-message-text', messageText);
 
-        // Convert old structure to new footer structure - action buttons commented out
+        // Convert old structure to new footer structure with action buttons
         const footerDiv = document.createElement('div');
         footerDiv.className = 'message-footer';
         footerDiv.innerHTML = `
             <div class="message-time">${time}</div>
+            ${getActionButtonsHTML()}
         `;
-        // COMMENTED OUT: Action buttons for initial message
-        // <div class="message-actions">
-        //     <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
-        //         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        //             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-        //             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        //         </svg>
-        //         <span class="btn-text">Copy</span>
-        //     </button>
-        //     <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
-        //         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        //             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-        //             <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-        //         </svg>
-        //         <span class="btn-text">Listen</span>
-        //     </button>
-        // </div>
 
         // Remove old time element
         timeElement.remove();
@@ -632,14 +616,8 @@ function setInitialTime() {
         // Append new footer
         initialMessage.appendChild(footerDiv);
 
-        // COMMENTED OUT: Event listeners for initial message action buttons
-        // const copyBtn = footerDiv.querySelector('.copy-btn');
-        // const speakerBtn = footerDiv.querySelector('.speaker-btn');
-        //
-        // if (copyBtn && speakerBtn) {
-        //     copyBtn.addEventListener('click', () => copyMessageText(messageText, copyBtn));
-        //     speakerBtn.addEventListener('click', () => toggleMessageAudio(initialMessage, speakerBtn));
-        // }
+        // Attach event listeners for action buttons
+        attachActionButtonListeners(footerDiv, messageText, initialMessage);
     }
 }
 
@@ -760,23 +738,40 @@ async function sendMessage() {
 async function sendMessageRegular(message) {
     showTypingIndicator();
 
-    // Simulate a short delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    hideTypingIndicator();
-
     // Check if user query matches any FAQ question exactly
     const matchedFAQ = findMatchingFAQ(message);
 
     if (matchedFAQ) {
+        // Simulate a short delay for better UX
+        await new Promise(resolve => setTimeout(resolve, 800));
+        hideTypingIndicator();
+
         // Return FAQ answer immediately
         const answer = matchedFAQ.answer[currentLanguage];
         addMessage(answer, 'bot');
     } else {
-        // Return demo message in the selected language
-        const messages = MESSAGES[currentLanguage];
-        addMessage(messages.demoMessage, 'bot');
+        // Not a FAQ - use LLM/RAG pipeline
+        try {
+            const data = await fetchBotResponse(message);
+            hideTypingIndicator();
+
+            if (data && data.answer) {
+                addMessage(data.answer, 'bot');
+            } else {
+                throw new Error('Invalid response format');
+            }
+        } catch (error) {
+            hideTypingIndicator();
+            console.error('Error fetching bot response:', error);
+
+            // Show error message in the selected language
+            const messages = MESSAGES[currentLanguage];
+            const errorMessage = messages.errorMessage || 'Sorry, I encountered an error. Please try again.';
+            addMessage(errorMessage, 'bot');
+        }
     }
+
+    sendButton.disabled = false;
 }
 
 // Streaming message with stop capability
@@ -784,22 +779,47 @@ async function sendMessageStreaming(message) {
     // Show typing indicator while preparing response
     showTypingIndicator();
 
-    // Simulate a short delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    hideTypingIndicator();
-
     // Check if user query matches any FAQ question exactly
     const matchedFAQ = findMatchingFAQ(message);
 
     if (matchedFAQ) {
+        // Simulate a short delay for better UX
+        await new Promise(resolve => setTimeout(resolve, 800));
+        hideTypingIndicator();
+
         // Return FAQ answer immediately
         const answer = matchedFAQ.answer[currentLanguage];
         addMessage(answer, 'bot');
+        sendButton.disabled = false;
     } else {
-        // Return demo message in the selected language
-        const messages = MESSAGES[currentLanguage];
-        addMessage(messages.demoMessage, 'bot');
+        // Not a FAQ - use LLM/RAG pipeline with streaming
+        try {
+            // Create abort controller for this request
+            currentAbortController = new AbortController();
+
+            // Call streaming API
+            await fetchBotResponseStreaming(message, currentAbortController.signal);
+
+            // Clear abort controller after successful completion
+            currentAbortController = null;
+            sendButton.disabled = false;
+        } catch (error) {
+            hideTypingIndicator();
+            console.error('Error fetching streaming response:', error);
+
+            // Check if it was an abort (user cancelled)
+            if (error.name === 'AbortError') {
+                console.log('Request was cancelled by user');
+            } else {
+                // Show error message in the selected language
+                const messages = MESSAGES[currentLanguage];
+                const errorMessage = messages.errorMessage || 'Sorry, I encountered an error. Please try again.';
+                addMessage(errorMessage, 'bot');
+            }
+
+            currentAbortController = null;
+            sendButton.disabled = false;
+        }
     }
 }
 
@@ -1020,8 +1040,49 @@ function markdownToHtml(text) {
     return output.join('');
 }
 
+// ============================================================================
+// Helper Functions for Action Buttons
+// ============================================================================
+
+// Generate HTML for copy and speaker action buttons
+function getActionButtonsHTML() {
+    return `
+        <div class="message-actions">
+            <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span class="btn-text">Copy</span>
+            </button>
+            <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <span class="btn-text">Listen</span>
+            </button>
+        </div>
+    `;
+}
+
+// Attach event listeners to action buttons in a container
+function attachActionButtonListeners(container, text, messageDiv) {
+    const copyBtn = container.querySelector('.copy-btn');
+    const speakerBtn = container.querySelector('.speaker-btn');
+
+    if (copyBtn && speakerBtn) {
+        copyBtn.addEventListener('click', () => copyMessageText(text, copyBtn));
+        speakerBtn.addEventListener('click', () => toggleMessageAudio(messageDiv, speakerBtn));
+    }
+}
+
+// ============================================================================
+// Message Functions
+// ============================================================================
+
 // Add message to chat
-function addMessage(text, sender, sources = null, confidence = null, autoScroll = true) {
+function addMessage(text, sender, autoScroll = true) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${sender}`;
 
@@ -1034,30 +1095,14 @@ function addMessage(text, sender, sources = null, confidence = null, autoScroll 
     messageDiv.setAttribute('data-message-text', text);
 
     if (sender === 'bot') {
-        // Bot messages - action buttons commented out
+        // Bot messages with action buttons
         messageDiv.innerHTML = `
             <div class="message-content">${formattedText}</div>
             <div class="message-footer">
                 <div class="message-time">${time}</div>
+                ${getActionButtonsHTML()}
             </div>
         `;
-        // COMMENTED OUT: Action buttons (Copy & Listen)
-        // <div class="message-actions">
-        //     <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
-        //         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        //             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-        //             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        //         </svg>
-        //         <span class="btn-text">Copy</span>
-        //     </button>
-        //     <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
-        //         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        //             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-        //             <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-        //         </svg>
-        //         <span class="btn-text">Listen</span>
-        //     </button>
-        // </div>
     } else {
         // User messages without action buttons
         messageDiv.innerHTML = `
@@ -1068,14 +1113,10 @@ function addMessage(text, sender, sources = null, confidence = null, autoScroll 
 
     chatMessages.appendChild(messageDiv);
 
-    // COMMENTED OUT: Event listeners for action buttons
-    // if (sender === 'bot') {
-    //     const copyBtn = messageDiv.querySelector('.copy-btn');
-    //     const speakerBtn = messageDiv.querySelector('.speaker-btn');
-    //
-    //     copyBtn.addEventListener('click', () => copyMessageText(text, copyBtn));
-    //     speakerBtn.addEventListener('click', () => toggleMessageAudio(messageDiv, speakerBtn));
-    // }
+    // Attach event listeners for bot message action buttons
+    if (sender === 'bot') {
+        attachActionButtonListeners(messageDiv, text, messageDiv);
+    }
 
     // Only auto-scroll if requested (default: true)
     if (autoScroll) {
@@ -1191,34 +1232,18 @@ function finalizeStreamingMessage(messageDiv, text, wasCancelled = false, hasErr
         }
     }
 
-    // Add message footer - action buttons commented out
+    // Add message footer with action buttons
     if (!messageDiv.querySelector('.message-footer') && !hasError) {
         const timeDiv = messageDiv.querySelector('.message-time');
         const time = timeDiv ? timeDiv.textContent : getCurrentTime();
 
-        // Create footer with time only
+        // Create footer with action buttons
         const footerDiv = document.createElement('div');
         footerDiv.className = 'message-footer';
         footerDiv.innerHTML = `
             <div class="message-time">${time}</div>
+            ${getActionButtonsHTML()}
         `;
-        // COMMENTED OUT: Action buttons for streaming messages
-        // <div class="message-actions">
-        //     <button class="action-btn copy-btn" aria-label="Copy message to clipboard" title="Copy">
-        //         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        //             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-        //             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        //         </svg>
-        //         <span class="btn-text">Copy</span>
-        //     </button>
-        //     <button class="action-btn speaker-btn" aria-label="Listen to message" title="Listen">
-        //         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        //             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-        //             <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-        //         </svg>
-        //         <span class="btn-text">Listen</span>
-        //     </button>
-        // </div>
 
         // Remove old time div if exists
         if (timeDiv) {
@@ -1228,12 +1253,8 @@ function finalizeStreamingMessage(messageDiv, text, wasCancelled = false, hasErr
         // Append footer
         messageDiv.appendChild(footerDiv);
 
-        // COMMENTED OUT: Event listeners for streaming message action buttons
-        // const copyBtn = footerDiv.querySelector('.copy-btn');
-        // const speakerBtn = footerDiv.querySelector('.speaker-btn');
-        //
-        // copyBtn.addEventListener('click', () => copyMessageText(text, copyBtn));
-        // speakerBtn.addEventListener('click', () => toggleMessageAudio(messageDiv, speakerBtn));
+        // Attach event listeners for action buttons
+        attachActionButtonListeners(footerDiv, text, messageDiv);
     }
 
     scrollToBottom();
@@ -1357,7 +1378,7 @@ async function handleFAQClick(faqId) {
     }
 
     // Display question as user message (with auto-scroll to show the question)
-    const questionElement = addMessage(question, 'user', null, null, true);
+    const questionElement = addMessage(question, 'user', true);
 
     // Show typing indicator
     showTypingIndicator();
