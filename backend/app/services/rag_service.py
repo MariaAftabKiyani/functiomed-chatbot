@@ -447,6 +447,12 @@ class RAGService:
         response = re.sub(r'IMPORTANT NOTE:.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
         response = re.sub(r'Please note that.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
 
+        # Remove leaked system instructions
+        response = re.sub(r'REMEMBER:.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
+        response = re.sub(r'Note: This is a sample.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
+        response = re.sub(r'Never diagnose medical conditions.*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
+        response = re.sub(r'DO NOT (?:diagnose|provide|give).*?(?=\n\n|\Z)', '', response, flags=re.DOTALL | re.IGNORECASE)
+
         # Clean up multiple newlines (max 2 consecutive for markdown spacing)
         response = re.sub(r'\n{3,}', '\n\n', response)
 
