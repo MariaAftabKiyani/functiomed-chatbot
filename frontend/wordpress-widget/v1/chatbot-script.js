@@ -164,7 +164,7 @@ const HARDCODED_FAQS = {
         },
         answer: {
             EN: "Integrative medicine combines **conventional medical treatments** with **complementary therapies** for a holistic approach.",
-            DE: "Integrative Medizin kombiniert schulmedizinische Verfahren** mit **komplementären Therapien** für eine ganzheitliche Behandlung.",
+            DE: "Integrative Medizin kombiniert **schulmedizinische Verfahren** mit **komplementären Therapien** für eine ganzheitliche Behandlung.",
             FR: "La médecine intégrative combine les **traitements médicaux conventionnels** avec des **thérapies complémentaires** pour une prise en charge globale."
         },
         category: "services"
@@ -178,7 +178,7 @@ const HARDCODED_FAQS = {
         },
         answer: {
             EN: "Integrative medicine combines **conventional medical treatments** with **complementary therapies** for a holistic approach.",
-            DE: "Integrative Medizin kombiniert schulmedizinische Verfahren** mit **komplementären Therapien** für eine ganzheitliche Behandlung.",
+            DE: "Integrative Medizin kombiniert **schulmedizinische Verfahren** mit **komplementären Therapien** für eine ganzheitliche Behandlung.",
             FR: "La médecine intégrative combine les **traitements médicaux conventionnels** avec des **thérapies complémentaires** pour une prise en charge globale."
         },
         category: "services"
