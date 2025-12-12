@@ -973,6 +973,26 @@ function markdownToHtml(text) {
         const nextLine = i < lines.length - 1 ? lines[i + 1] : '';
         const isBlank = line.trim() === '';
 
+        // Handle headings (##, ###, ####)
+        const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+        if (headingMatch) {
+            const level = headingMatch[1].length;
+            const headingText = headingMatch[2];
+
+            // Close any open tags
+            if (inList) {
+                output.push('</ul>');
+                inList = false;
+            }
+            if (inParagraph) {
+                output.push('</p>');
+                inParagraph = false;
+            }
+
+            output.push(`<h${level} style="margin-top: 16px; margin-bottom: 8px; font-weight: bold;">${headingText}</h${level}>`);
+            continue;
+        }
+
         // Handle bullet points (•, -, or *)
         const bulletMatch = line.match(/^[\s]*[•\-\*]\s+(.+)$/);
 
