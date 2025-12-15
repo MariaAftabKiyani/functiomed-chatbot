@@ -1,11 +1,12 @@
 """
 Embedding service using BGE-M3 via sentence-transformers.
-Windows-compatible, no build dependencies required.
+GPU-accelerated with FP16 support for faster inference.
 """
 import logging
 import time
 from typing import List, Dict, Tuple
 import numpy as np
+import torch
 from sentence_transformers import SentenceTransformer
 from functools import lru_cache
 import hashlib
@@ -22,31 +23,42 @@ logger = logging.getLogger(__name__)
 class EmbeddingService:
     """
     BGE-M3 embedding service with:
+    - GPU acceleration with FP16 support
     - Input validation
     - Error handling with retries
     - Progress tracking
-    - Windows-compatible
+    - Embedding caching
     """
-    
+
     def __init__(self):
-        """Initialize BGE-M3 model"""
+        """Initialize BGE-M3 model with GPU support"""
         self.model = None
+        self.device = settings.EMBEDDING_DEVICE
+        self.use_fp16 = settings.EMBEDDING_USE_FP16 and self.device == "cuda"
         self._embedding_cache: Dict[str, np.ndarray] = {}
         self._cache_hits = 0
         self._cache_misses = 0
         self._initialize()
     
     def _initialize(self):
-        """Load model with error handling"""
+        """Load model with GPU acceleration and FP16 support"""
         logger.info(f"Loading {settings.EMBEDDING_MODEL}...")
-        
+        logger.info(f"  Device: {self.device}")
+        logger.info(f"  FP16: {self.use_fp16}")
+
         try:
-            # Use sentence-transformers (Windows-friendly)
+            # Load model to specified device
             self.model = SentenceTransformer(
                 settings.EMBEDDING_MODEL,
-                device=settings.EMBEDDING_DEVICE
+                device=self.device
             )
-            
+
+            # Convert to FP16 if using GPU
+            if self.use_fp16:
+                logger.info("Converting model to FP16...")
+                self.model.half()  # Convert all model parameters to float16
+                logger.info("✓ Model converted to FP16")
+
             # Warmup
             logger.info("Warming up model...")
             _ = self.model.encode(
@@ -55,9 +67,9 @@ class EmbeddingService:
                 show_progress_bar=False,
                 convert_to_numpy=True
             )
-            
-            logger.info("✓ Model loaded and ready")
-            
+
+            logger.info("✓ Embedding model loaded and ready")
+
         except Exception as e:
             logger.error(f"Failed to load model: {e}")
             raise RuntimeError(f"Model initialization failed: {e}")

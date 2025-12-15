@@ -39,25 +39,29 @@ class CrossEncoderReranker:
         self,
         model_name: str = "BAAI/bge-reranker-v2-m3",
         device: str = "cpu",
-        batch_size: int = 16
+        batch_size: int = 16,
+        use_fp16: bool = False
     ):
         """
-        Initialize cross-encoder reranker.
+        Initialize cross-encoder reranker with GPU support.
 
         Args:
             model_name: HuggingFace cross-encoder model
             device: Device to use ('cpu' or 'cuda')
             batch_size: Batch size for inference
+            use_fp16: Use FP16 precision for GPU inference
         """
         self.model_name = model_name
         self.device = device
         self.batch_size = batch_size
+        self.use_fp16 = use_fp16 and device == "cuda"
         self.model = None
         self.is_bge_reranker = "bge-reranker" in model_name.lower()
 
         logger.info(f"Initializing CrossEncoderReranker with model: {model_name}")
         logger.info(f"  Device: {device}")
         logger.info(f"  Batch size: {batch_size}")
+        logger.info(f"  FP16: {self.use_fp16}")
         logger.info(f"  Model type: {'BGE Reranker' if self.is_bge_reranker else 'Cross-Encoder'}")
 
         self._load_model()
@@ -75,30 +79,45 @@ class CrossEncoderReranker:
 
                     self.model = FlagReranker(
                         self.model_name,
-                        use_fp16=False  # Use FP32 for CPU, FP16 for CUDA if needed
+                        use_fp16=self.use_fp16  # Enable FP16 on GPU
                     )
-                    logger.info("  Using FlagReranker (optimized for BGE models)")
+                    logger.info(f"  Using FlagReranker (optimized for BGE models)")
+                    if self.use_fp16:
+                        logger.info("  ✓ FP16 enabled for faster inference")
 
                 except ImportError:
                     # Fallback to CrossEncoder if FlagEmbedding not available
                     logger.warning("FlagEmbedding not installed, falling back to CrossEncoder")
                     from sentence_transformers import CrossEncoder
+                    import torch
 
                     self.model = CrossEncoder(
                         self.model_name,
                         device=self.device,
                         max_length=512
                     )
+
+                    # Convert to FP16 if requested
+                    if self.use_fp16:
+                        self.model.model.half()
+                        logger.info("  ✓ Model converted to FP16")
+
                     self.is_bge_reranker = False  # Treat as regular cross-encoder
             else:
                 # Standard cross-encoder model
                 from sentence_transformers import CrossEncoder
+                import torch
 
                 self.model = CrossEncoder(
                     self.model_name,
                     device=self.device,
                     max_length=512
                 )
+
+                # Convert to FP16 if using GPU
+                if self.use_fp16:
+                    self.model.model.half()
+                    logger.info("  ✓ Model converted to FP16")
 
             load_time = (time.time() - start_time) * 1000
             logger.info(f"✓ Reranker model loaded in {load_time:.0f}ms")
@@ -289,7 +308,8 @@ _reranker_instance = None
 
 def get_reranker(
     model_name: Optional[str] = None,
-    device: Optional[str] = None
+    device: Optional[str] = None,
+    use_fp16: Optional[bool] = None
 ) -> CrossEncoderReranker:
     """
     Get or create singleton CrossEncoderReranker instance.
@@ -297,6 +317,7 @@ def get_reranker(
     Args:
         model_name: Optional model name (uses config default if None)
         device: Optional device (uses config default if None)
+        use_fp16: Optional FP16 flag (uses config default if None)
 
     Returns:
         Initialized CrossEncoderReranker
@@ -307,13 +328,15 @@ def get_reranker(
         from app.config import settings
 
         model_name = model_name or settings.RERANKER_MODEL
-        device = device or settings.EMBEDDING_DEVICE  # Use same device as embeddings
+        device = device or settings.RERANKER_DEVICE
+        use_fp16 = use_fp16 if use_fp16 is not None else settings.RERANKER_USE_FP16
 
         logger.info("Creating new CrossEncoderReranker instance")
         _reranker_instance = CrossEncoderReranker(
             model_name=model_name,
             device=device,
-            batch_size=settings.RERANKER_BATCH_SIZE
+            batch_size=settings.RERANKER_BATCH_SIZE,
+            use_fp16=use_fp16
         )
 
     return _reranker_instance

@@ -9,7 +9,8 @@ import torch
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
-    pipeline
+    pipeline,
+    BitsAndBytesConfig
 )
 import sys
 from pathlib import Path
@@ -24,7 +25,8 @@ logger = logging.getLogger(__name__)
 class LLMService:
     """
     LLM service supporting Llama 3.2 1B Instruct with:
-    - CPU-only inference
+    - GPU-accelerated inference with quantization (INT8/INT4/FP16)
+    - CPU fallback support
     - Automatic input truncation for long contexts
     - Robust error handling
     - Token management
@@ -32,17 +34,20 @@ class LLMService:
     """
 
     def __init__(self):
-        """Initialize LLM model for CPU inference"""
+        """Initialize LLM model with GPU acceleration and quantization"""
         self.model = None
         self.tokenizer = None
         self.pipeline = None
+        self.device = settings.LLM_DEVICE
+        self.quantization_type = settings.LLM_QUANTIZATION_TYPE if settings.LLM_USE_QUANTIZATION else "none"
         self._initialize()
     
     def _initialize(self):
-        """Load model for CPU inference"""
+        """Load model with GPU acceleration and quantization"""
         logger.info(f"Loading {settings.LLM_MODEL_NAME}...")
-        logger.info(f"  Device: CPU")
-        logger.info(f"  Mode: Full precision (FP32)")
+        logger.info(f"  Device: {self.device}")
+        logger.info(f"  Quantization: {self.quantization_type}")
+        logger.info(f"  Compute dtype: {settings.LLM_COMPUTE_DTYPE}")
 
         try:
             # Load tokenizer
@@ -59,19 +64,80 @@ class LLMService:
 
             logger.info("✓ Tokenizer loaded")
 
-            # Load model for CPU
+            # Prepare model loading configuration
+            model_kwargs = {
+                "trust_remote_code": True,
+                "cache_dir": settings.HF_HOME,
+                "low_cpu_mem_usage": settings.LLM_LOW_CPU_MEM_USAGE
+            }
+
+            # Configure quantization if enabled
+            if settings.LLM_USE_QUANTIZATION and self.device == "cuda":
+                logger.info(f"Configuring {self.quantization_type.upper()} quantization...")
+
+                # Determine compute dtype
+                if settings.LLM_COMPUTE_DTYPE == "float16":
+                    compute_dtype = torch.float16
+                elif settings.LLM_COMPUTE_DTYPE == "bfloat16":
+                    compute_dtype = torch.bfloat16
+                else:
+                    compute_dtype = torch.float32
+
+                if self.quantization_type == "int8":
+                    # INT8 quantization
+                    quantization_config = BitsAndBytesConfig(
+                        load_in_8bit=True,
+                        llm_int8_threshold=6.0,
+                        llm_int8_has_fp16_weight=False
+                    )
+                    model_kwargs["quantization_config"] = quantization_config
+                    model_kwargs["device_map"] = settings.LLM_DEVICE_MAP
+                    logger.info("  Using INT8 quantization (8-bit)")
+
+                elif self.quantization_type == "int4":
+                    # INT4 quantization (4-bit with NormalFloat4)
+                    quantization_config = BitsAndBytesConfig(
+                        load_in_4bit=True,
+                        bnb_4bit_compute_dtype=compute_dtype,
+                        bnb_4bit_use_double_quant=settings.LLM_USE_DOUBLE_QUANT,
+                        bnb_4bit_quant_type="nf4"  # NormalFloat4 for LLMs
+                    )
+                    model_kwargs["quantization_config"] = quantization_config
+                    model_kwargs["device_map"] = settings.LLM_DEVICE_MAP
+                    logger.info("  Using INT4 quantization (4-bit NF4)")
+
+                elif self.quantization_type == "fp16":
+                    # FP16 without quantization
+                    model_kwargs["torch_dtype"] = torch.float16
+                    model_kwargs["device_map"] = settings.LLM_DEVICE_MAP
+                    logger.info("  Using FP16 (half precision)")
+
+            elif self.device == "cpu":
+                # CPU inference - use FP32
+                model_kwargs["torch_dtype"] = torch.float32
+                logger.info("  Using FP32 for CPU inference")
+            else:
+                # GPU without quantization
+                if settings.LLM_COMPUTE_DTYPE == "float16":
+                    model_kwargs["torch_dtype"] = torch.float16
+                    model_kwargs["device_map"] = settings.LLM_DEVICE_MAP
+                    logger.info("  Using FP16 on GPU")
+                else:
+                    model_kwargs["torch_dtype"] = torch.float32
+                    logger.info("  Using FP32 on GPU")
+
+            # Load model
             logger.info("Loading model (this may take a few minutes)...")
             self.model = AutoModelForCausalLM.from_pretrained(
                 settings.LLM_MODEL_NAME,
-                dtype=torch.float32,  # FP32 for CPU
-                trust_remote_code=True,
-                cache_dir=settings.HF_HOME,
-                low_cpu_mem_usage=True
+                **model_kwargs
             )
 
-            # Move to CPU
-            self.model = self.model.to("cpu")
-            
+            # Move to device if not using device_map
+            if "device_map" not in model_kwargs:
+                logger.info(f"Moving model to {self.device}...")
+                self.model = self.model.to(self.device)
+
             logger.info("✓ Model loaded")
             
             # Create pipeline

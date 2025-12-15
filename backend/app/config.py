@@ -3,6 +3,7 @@ from typing import ClassVar, Optional, List, Union
 from pydantic_settings import BaseSettings
 from pydantic import Field, field_validator
 import logging
+import torch
 
 class Settings(BaseSettings):
     """Application settings with environment variable support"""
@@ -34,10 +35,11 @@ class Settings(BaseSettings):
 
     # Embedding Model (BGE-M3)
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
-    EMBEDDING_DEVICE: str = os.getenv("EMBEDDING_DEVICE", "cpu")
+    EMBEDDING_DEVICE: str = os.getenv("EMBEDDING_DEVICE", "cuda" if torch.cuda.is_available() else "cpu")
     EMBEDDING_BATCH_SIZE: int = int(os.getenv("EMBEDDING_BATCH_SIZE", "16"))
     EMBEDDING_MAX_LENGTH: int = int(os.getenv("EMBEDDING_MAX_LENGTH", "8192"))
     EMBEDDING_NORMALIZE: bool = os.getenv("EMBEDDING_NORMALIZE", "True").lower() == "true"
+    EMBEDDING_USE_FP16: bool = os.getenv("EMBEDDING_USE_FP16", "True").lower() == "true"  # Use FP16 on GPU
 
     # Hugging Face
     HF_HUB_TOKEN: str = os.getenv("HF_HUB_TOKEN", "")
@@ -87,6 +89,8 @@ class Settings(BaseSettings):
     RERANKER_MODEL: str = os.getenv("RERANKER_MODEL", "BAAI/bge-reranker-v2-m3")
     RERANKER_TOP_K: int = int(os.getenv("RERANKER_TOP_K", "3"))  # Re-rank top 3 results
     RERANKER_BATCH_SIZE: int = int(os.getenv("RERANKER_BATCH_SIZE", "16"))
+    RERANKER_DEVICE: str = os.getenv("RERANKER_DEVICE", "cuda" if torch.cuda.is_available() else "cpu")
+    RERANKER_USE_FP16: bool = os.getenv("RERANKER_USE_FP16", "True").lower() == "true"  # Use FP16 on GPU
 
     # Hybrid Search Settings (BM25 + Semantic)
     HYBRID_SEARCH_ENABLED: bool = os.getenv("HYBRID_SEARCH_ENABLED", "true").lower() == "true"
@@ -95,11 +99,26 @@ class Settings(BaseSettings):
     BM25_B: float = float(os.getenv("BM25_B", "0.75"))  # Length normalization parameter
 
     # ============================================================================
-    # LLM Configuration (CPU-only inference)
+    # LLM Configuration (GPU-accelerated inference with quantization)
     # ============================================================================
 
     # Model settings
     LLM_MODEL_NAME: str = os.getenv("LLM_MODEL_NAME", "meta-llama/Llama-3.2-1B-Instruct")
+
+    # Device configuration
+    LLM_DEVICE: str = os.getenv("LLM_DEVICE", "cuda" if torch.cuda.is_available() else "cpu")
+
+    # Quantization settings
+    LLM_USE_QUANTIZATION: bool = os.getenv("LLM_USE_QUANTIZATION", "True").lower() == "true"
+    LLM_QUANTIZATION_TYPE: str = os.getenv("LLM_QUANTIZATION_TYPE", "int8")  # Options: "int8", "int4", "fp16", "none"
+    LLM_USE_DOUBLE_QUANT: bool = os.getenv("LLM_USE_DOUBLE_QUANT", "True").lower() == "true"  # Double quantization for better quality
+
+    # Compute dtype for inference
+    LLM_COMPUTE_DTYPE: str = os.getenv("LLM_COMPUTE_DTYPE", "float16")  # Options: "float16", "bfloat16", "float32"
+
+    # Memory optimization
+    LLM_LOW_CPU_MEM_USAGE: bool = os.getenv("LLM_LOW_CPU_MEM_USAGE", "True").lower() == "true"
+    LLM_DEVICE_MAP: str = os.getenv("LLM_DEVICE_MAP", "auto")  # Options: "auto", "balanced", "sequential"
 
     # Generation settings
     LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS","512"))  # Max tokens for responses

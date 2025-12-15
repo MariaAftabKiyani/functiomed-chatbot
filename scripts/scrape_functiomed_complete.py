@@ -1,5 +1,5 @@
 """
-Complete Web Scraper for functiomed.ch
+Complete Web Scraper for functiomed
 Extracts ALL content: services, team, notfall, wissenswertes, kontakt, shop
 """
 import requests
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class FunctiOMedScraperComplete:
-    """Complete scraper for functiomed.ch website - all sections"""
+    """Complete scraper for functiomed website - all sections"""
     
     def __init__(self, output_dir: str = "output/scraped_content"):
         self.base_url = "https://www.functiomed.ch"
