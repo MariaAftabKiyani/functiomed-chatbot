@@ -149,7 +149,7 @@ def run():
         response = service.retrieve(
             query=tq.query,
             language=tq.language,
-            top_k=settings.RAG_MAX_CHUNKS,
+            top_k=settings.RETRIEVAL_TOP_K,
             min_score=tq.min_score,
         )
         duration = round((time.time() - start) * 1000, 1)
