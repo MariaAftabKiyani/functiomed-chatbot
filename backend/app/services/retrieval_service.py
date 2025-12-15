@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from app.config import settings
 from app.utils.embeddings import EmbeddingService
 from app.utils.qdrant_client import QdrantService
+from app.utils.reranker import CrossEncoderReranker, get_reranker
 from app.services.query_normalizer import QueryNormalizer, NormalizedQuery
 from app.schemas.retrieval import (
     RetrievalRequest,
@@ -42,15 +43,17 @@ class RetrievalService:
         self,
         embedding_service: Optional[EmbeddingService] = None,
         qdrant_service: Optional[QdrantService] = None,
-        query_normalizer: Optional[QueryNormalizer] = None
+        query_normalizer: Optional[QueryNormalizer] = None,
+        reranker: Optional[CrossEncoderReranker] = None
     ):
         """
         Initialize retrieval service.
-        
+
         Args:
             embedding_service: Optional pre-initialized embedding service
             qdrant_service: Optional pre-initialized Qdrant service
             query_normalizer: Optional pre-initialized query normalizer
+            reranker: Optional pre-initialized cross-encoder reranker
         """
         # Initialize or use provided services
         self.embedding_service = embedding_service or EmbeddingService()
@@ -58,7 +61,23 @@ class RetrievalService:
         self.query_normalizer = query_normalizer or QueryNormalizer(
             max_length=settings.RETRIEVAL_MAX_QUERY_LENGTH
         )
-        
+
+        # Initialize reranker if enabled
+        self.reranker_enabled = settings.RERANKER_ENABLED
+        self.reranker = None
+        if self.reranker_enabled:
+            try:
+                self.reranker = reranker or get_reranker()
+                logger.info("  Cross-encoder re-ranking: ENABLED")
+                logger.info(f"    Model: {settings.RERANKER_MODEL}")
+                logger.info(f"    Re-rank top-K: {settings.RERANKER_TOP_K}")
+            except Exception as e:
+                logger.warning(f"Failed to initialize reranker: {e}")
+                logger.warning("Re-ranking will be disabled")
+                self.reranker_enabled = False
+        else:
+            logger.info("  Cross-encoder re-ranking: DISABLED")
+
         logger.info("RetrievalService initialized")
         logger.info(f"  Default top_k: {settings.RETRIEVAL_TOP_K}")
         logger.info(f"  Min score threshold: {settings.RETRIEVAL_MIN_SCORE}")
@@ -74,7 +93,12 @@ class RetrievalService:
     ) -> RetrievalResponse:
         """
         Retrieve relevant document chunks for a query.
-        
+
+        Pipeline with re-ranking:
+        1. Retrieve larger candidate set with bi-encoder (fast)
+        2. Re-rank candidates with cross-encoder (accurate)
+        3. Return top-K re-ranked results
+
         Args:
             query: User query text
             top_k: Number of results to return (default from config)
@@ -82,37 +106,48 @@ class RetrievalService:
             language: Filter by language (DE/EN)
             source_type: Filter by source type (pdf/text)
             min_score: Minimum similarity score threshold
-            
+
         Returns:
             RetrievalResponse with results and metadata
-            
+
         Raises:
             ValueError: If query is invalid
             RuntimeError: If retrieval pipeline fails
         """
         start_time = time.time()
-        
+
         # Use defaults from config
         top_k = top_k or settings.RETRIEVAL_TOP_K
         min_score = min_score if min_score is not None else settings.RETRIEVAL_MIN_SCORE
-        
+
+        # Determine candidate retrieval size
+        # If re-ranking is enabled, retrieve more candidates (10x top_k or at least 15)
+        if self.reranker_enabled and self.reranker:
+            candidate_top_k = max(top_k * 10, 15)
+            rerank_top_k = min(top_k, settings.RERANKER_TOP_K)  # Re-rank top 3 (or user's top_k if smaller)
+            logger.info(f"Re-ranking enabled: retrieving {candidate_top_k} candidates, re-ranking top {rerank_top_k}")
+        else:
+            candidate_top_k = top_k
+            rerank_top_k = 0
+            logger.info(f"Re-ranking disabled: retrieving {candidate_top_k} results directly")
+
         logger.info(f"Retrieving for query: '{query[:50]}...'")
         logger.debug(f"  top_k={top_k}, category={category}, language={language}, min_score={min_score}")
-        
+
         try:
             # Step 1: Normalize query
             normalized = self._normalize_query(query)
             logger.debug(f"  Normalized: '{normalized.normalized[:50]}...' (lang: {normalized.detected_language})")
-            
+
             # Auto-detect language if not specified
             if not language and normalized.detected_language:
                 language = normalized.detected_language
                 logger.debug(f"  Auto-detected language: {language}")
-            
+
             # Step 2: Generate query embedding
             query_embedding = self._embed_query(normalized.normalized)
             logger.debug(f"  Embedding shape: {query_embedding.shape}")
-            
+
             # Step 3: Build filters
             filters = RetrievalFilters(
                 category=category,
@@ -120,21 +155,48 @@ class RetrievalService:
                 source_type=source_type
             )
             logger.debug(f"  Filters: {filters}")
-            
-            # Step 4: Search in Qdrant
+
+            # Step 4: Search in Qdrant (retrieve candidates)
             search_results = self._search_vectors(
                 query_vector=query_embedding,
-                top_k=top_k,
+                top_k=candidate_top_k,
                 filters=filters,
                 min_score=min_score
             )
-            
-            # Step 5: Format results
+
+            # Step 5: Re-rank results if enabled
+            if self.reranker_enabled and self.reranker and len(search_results) > 0:
+                logger.info(f"[Re-ranking] Processing {len(search_results)} candidates...")
+                rerank_start = time.time()
+
+                # Re-rank using cross-encoder
+                reranked = self.reranker.rerank(
+                    query=normalized.normalized,
+                    results=search_results,
+                    top_k=rerank_top_k
+                )
+
+                rerank_time_ms = (time.time() - rerank_start) * 1000
+                logger.info(f"[Re-ranking] Completed in {rerank_time_ms:.0f}ms, selected top {len(reranked)}")
+
+                # Convert reranked results back to search result format
+                search_results = [r.metadata for r in reranked]
+
+                # Update scores with cross-encoder scores
+                for i, ranked_result in enumerate(reranked):
+                    search_results[i]["score"] = ranked_result.final_score
+                    search_results[i]["original_score"] = ranked_result.bi_encoder_score
+                    search_results[i]["cross_encoder_score"] = ranked_result.cross_encoder_score
+
+            # Step 6: Format results
             formatted_results = self._format_results(search_results)
-            
-            # Calculate retrieval time
+
+            # Take only top_k results (in case re-ranking returned more)
+            formatted_results = formatted_results[:top_k]
+
+            # Calculate total retrieval time
             retrieval_time_ms = (time.time() - start_time) * 1000
-            
+
             # Build response
             response = RetrievalResponse(
                 query=query,
@@ -146,17 +208,18 @@ class RetrievalService:
                     "category": category,
                     "language": language,
                     "source_type": source_type,
-                    "min_score": min_score
+                    "min_score": min_score,
+                    "reranking_enabled": self.reranker_enabled
                 },
                 retrieval_time_ms=retrieval_time_ms
             )
-            
+
             logger.info(
                 f"✓ Retrieved {len(formatted_results)} results in {retrieval_time_ms:.1f}ms"
             )
-            
+
             return response
-            
+
         except ValueError as e:
             logger.error(f"Invalid input: {e}")
             raise
@@ -236,7 +299,7 @@ class RetrievalService:
     def health_check(self) -> Dict[str, Any]:
         """
         Check health of retrieval service components.
-        
+
         Returns:
             Health status dictionary
         """
@@ -245,7 +308,7 @@ class RetrievalService:
             "status": "healthy",
             "components": {}
         }
-        
+
         # Check Qdrant connection
         try:
             collection_info = self.qdrant_service.get_collection_info()
@@ -260,7 +323,7 @@ class RetrievalService:
                 "error": str(e)
             }
             health["status"] = "degraded"
-        
+
         # Check embedding service
         try:
             test_embedding = self.embedding_service.embed_documents(["test"])
@@ -274,7 +337,7 @@ class RetrievalService:
                 "error": str(e)
             }
             health["status"] = "degraded"
-        
+
         # Check query normalizer
         try:
             self.query_normalizer.normalize("test query")
@@ -287,7 +350,26 @@ class RetrievalService:
                 "error": str(e)
             }
             health["status"] = "degraded"
-        
+
+        # Check reranker (if enabled)
+        if self.reranker_enabled and self.reranker:
+            try:
+                reranker_health = self.reranker.health_check()
+                health["components"]["reranker"] = reranker_health
+                if reranker_health["status"] != "healthy":
+                    health["status"] = "degraded"
+            except Exception as e:
+                health["components"]["reranker"] = {
+                    "status": "unhealthy",
+                    "error": str(e)
+                }
+                health["status"] = "degraded"
+        else:
+            health["components"]["reranker"] = {
+                "status": "disabled",
+                "enabled": False
+            }
+
         return health
 
 
