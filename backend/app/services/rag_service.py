@@ -264,15 +264,15 @@ class RAGService:
 
         elif question_type == 'identity':
             if lang_to_use == "DE":
-                answer = ("Ich bin der Functiomed-KI-Assistent. Ich wurde entwickelt, um Ihnen Informationen "
+                answer = ("Ich bin FUNIA, der Functiomed-KI-Assistent. Ich bin darauf ausgelegt, Ihnen Informationen "
                          "über die Functiomed-Praxis zu geben, einschließlich unserer medizinischen Behandlungen, "
                          "Öffnungszeiten, Therapeuten und mehr. Wie kann ich Ihnen heute helfen?")
             elif lang_to_use == "FR":
-                answer = ("Je suis l'assistant IA de Functiomed. J'ai été conçu pour vous fournir des informations "
+                answer = ("Je suis FUNIA, l'assistant IA de Functiomed. Je suis conçu pour vous fournir des informations "
                          "sur le cabinet Functiomed, y compris nos traitements médicaux, nos horaires d'ouverture, "
                          "nos thérapeutes et plus encore. Comment puis-je vous aider aujourd'hui ?")
             else:
-                answer = ("I'm the Functiomed AI assistant. I was designed to provide you with information "
+                answer = ("I'm FUNIA, the Functiomed AI assistant. I am designed to provide you with information "
                          "about the Functiomed practice, including our medical treatments, opening hours, "
                          "therapists, and more. How can I help you today?")
 
