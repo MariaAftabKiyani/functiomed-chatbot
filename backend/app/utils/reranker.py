@@ -37,7 +37,7 @@ class CrossEncoderReranker:
 
     def __init__(
         self,
-        model_name: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
+        model_name: str = "BAAI/bge-reranker-v2-m3",
         device: str = "cpu",
         batch_size: int = 16
     ):
@@ -53,36 +53,64 @@ class CrossEncoderReranker:
         self.device = device
         self.batch_size = batch_size
         self.model = None
+        self.is_bge_reranker = "bge-reranker" in model_name.lower()
 
         logger.info(f"Initializing CrossEncoderReranker with model: {model_name}")
         logger.info(f"  Device: {device}")
         logger.info(f"  Batch size: {batch_size}")
+        logger.info(f"  Model type: {'BGE Reranker' if self.is_bge_reranker else 'Cross-Encoder'}")
 
         self._load_model()
 
     def _load_model(self):
-        """Load cross-encoder model"""
+        """Load cross-encoder or BGE reranker model"""
         try:
-            from sentence_transformers import CrossEncoder
-
-            logger.info(f"Loading cross-encoder model: {self.model_name}...")
+            logger.info(f"Loading reranker model: {self.model_name}...")
             start_time = time.time()
 
-            self.model = CrossEncoder(
-                self.model_name,
-                device=self.device,
-                max_length=512  # Max sequence length
-            )
+            if self.is_bge_reranker:
+                # BGE reranker uses FlagReranker class
+                try:
+                    from FlagEmbedding import FlagReranker
+
+                    self.model = FlagReranker(
+                        self.model_name,
+                        use_fp16=False  # Use FP32 for CPU, FP16 for CUDA if needed
+                    )
+                    logger.info("  Using FlagReranker (optimized for BGE models)")
+
+                except ImportError:
+                    # Fallback to CrossEncoder if FlagEmbedding not available
+                    logger.warning("FlagEmbedding not installed, falling back to CrossEncoder")
+                    from sentence_transformers import CrossEncoder
+
+                    self.model = CrossEncoder(
+                        self.model_name,
+                        device=self.device,
+                        max_length=512
+                    )
+                    self.is_bge_reranker = False  # Treat as regular cross-encoder
+            else:
+                # Standard cross-encoder model
+                from sentence_transformers import CrossEncoder
+
+                self.model = CrossEncoder(
+                    self.model_name,
+                    device=self.device,
+                    max_length=512
+                )
 
             load_time = (time.time() - start_time) * 1000
-            logger.info(f"✓ Cross-encoder model loaded in {load_time:.0f}ms")
+            logger.info(f"✓ Reranker model loaded in {load_time:.0f}ms")
 
         except ImportError as e:
-            logger.error("sentence-transformers not installed. Run: pip install sentence-transformers")
-            raise RuntimeError("sentence-transformers required for cross-encoder re-ranking") from e
+            logger.error("Required package not installed.")
+            logger.error("Run: pip install sentence-transformers")
+            logger.error("For BGE reranker, also run: pip install FlagEmbedding")
+            raise RuntimeError("sentence-transformers (and optionally FlagEmbedding) required for re-ranking") from e
         except Exception as e:
-            logger.error(f"Failed to load cross-encoder model: {e}")
-            raise RuntimeError(f"Cross-encoder initialization failed: {e}") from e
+            logger.error(f"Failed to load reranker model: {e}")
+            raise RuntimeError(f"Reranker initialization failed: {e}") from e
 
     def rerank(
         self,
@@ -125,15 +153,27 @@ class CrossEncoderReranker:
 
             # Get cross-encoder scores
             logger.debug(f"Computing cross-encoder scores for {len(pairs)} pairs...")
-            cross_scores = self.model.predict(
-                pairs,
-                batch_size=self.batch_size,
-                show_progress_bar=False
-            )
 
-            # Normalize cross-encoder scores to [0, 1] range using sigmoid
-            # Cross-encoder scores are typically unbounded logits
-            cross_scores_normalized = self._sigmoid(cross_scores)
+            if self.is_bge_reranker:
+                # BGE reranker returns scores directly (already normalized)
+                cross_scores = self.model.compute_score(
+                    pairs,
+                    batch_size=self.batch_size
+                )
+                # Convert to numpy array if needed
+                if not isinstance(cross_scores, np.ndarray):
+                    cross_scores = np.array(cross_scores)
+                # BGE scores are already in reasonable range, normalize to [0, 1]
+                cross_scores_normalized = self._sigmoid(cross_scores)
+            else:
+                # Standard cross-encoder
+                cross_scores = self.model.predict(
+                    pairs,
+                    batch_size=self.batch_size,
+                    show_progress_bar=False
+                )
+                # Normalize cross-encoder scores to [0, 1] range using sigmoid
+                cross_scores_normalized = self._sigmoid(cross_scores)
 
             # Combine bi-encoder and cross-encoder scores
             ranked_results = []

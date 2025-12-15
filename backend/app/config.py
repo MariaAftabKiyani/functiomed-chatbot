@@ -84,7 +84,7 @@ class Settings(BaseSettings):
 
     # Cross-Encoder Re-ranking Settings
     RERANKER_ENABLED: bool = os.getenv("RERANKER_ENABLED", "true").lower() == "true"
-    RERANKER_MODEL: str = os.getenv("RERANKER_MODEL", "cross-encoder/ms-marco-MiniLM-L-6-v2")
+    RERANKER_MODEL: str = os.getenv("RERANKER_MODEL", "BAAI/bge-reranker-v2-m3")
     RERANKER_TOP_K: int = int(os.getenv("RERANKER_TOP_K", "3"))  # Re-rank top 3 results
     RERANKER_BATCH_SIZE: int = int(os.getenv("RERANKER_BATCH_SIZE", "16"))
 
@@ -108,7 +108,7 @@ class Settings(BaseSettings):
     # Context settings
     RAG_MAX_CONTEXT_TOKENS: int = int(os.getenv("RAG_MAX_CONTEXT_TOKENS", "1024"))  # Reserve space for response (prompt + context)
     RAG_MAX_CHUNKS: int = int(os.getenv("RAG_MAX_CHUNKS", "10"))  # Number of chunks to retrieve (increased for better context)
-    RAG_MIN_CHUNK_SCORE: float = float(os.getenv("RAG_MIN_CHUNK_SCORE", "0.5"))  # Minimum similarity
+    RAG_MIN_CHUNK_SCORE: float = float(os.getenv("RAG_MIN_CHUNK_SCORE", "0.3"))  # Lower threshold - let reranker filter (was 0.5)
 
     # Response settings
     RAG_ENABLE_CITATIONS: bool = os.getenv("RAG_ENABLE_CITATIONS", "true").lower() == "true"
