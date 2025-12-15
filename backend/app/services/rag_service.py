@@ -197,6 +197,133 @@ class RAGService:
             tokens_used=0
         )
 
+    def _is_casual_question(self, query: str) -> Optional[str]:
+        """
+        Check if query is a casual/conversational question about the bot itself.
+
+        Returns:
+            Question type if detected ('alive', 'identity', 'capabilities'), None otherwise
+        """
+        query_lower = query.lower().strip().rstrip('?!.')
+
+        # "Are you alive?" / "Are you real?" type questions
+        alive_patterns = [
+            'are you alive', 'are you real', 'are you there', 'are you online',
+            'bist du lebendig', 'bist du echt', 'bist du da', 'bist du online',
+            'es-tu vivant', 'es-tu réel', 'es-tu là', 'es-tu en ligne'
+        ]
+        for pattern in alive_patterns:
+            if pattern in query_lower:
+                return 'alive'
+
+        # "Who are you?" / "What are you?" type questions
+        identity_patterns = [
+            'who are you', 'what are you', 'tell me about yourself',
+            'wer bist du', 'was bist du', 'erzähl mir über dich',
+            'qui es-tu', 'qu\'est-ce que tu es', 'parle-moi de toi'
+        ]
+        for pattern in identity_patterns:
+            if pattern in query_lower:
+                return 'identity'
+
+        # "What can you do?" / "How can you help?" type questions
+        capability_patterns = [
+            'what can you do', 'what do you do', 'how can you help',
+            'what can you help with', 'what are your capabilities',
+            'was kannst du', 'was machst du', 'wie kannst du helfen',
+            'womit kannst du helfen', 'was sind deine fähigkeiten',
+            'que peux-tu faire', 'que fais-tu', 'comment peux-tu aider',
+            'avec quoi peux-tu aider', 'quelles sont tes capacités'
+        ]
+        for pattern in capability_patterns:
+            if pattern in query_lower:
+                return 'capabilities'
+
+        return None
+
+    def _create_casual_response(self, query: str, question_type: str, language: Optional[str]) -> RAGResponse:
+        """Create response for casual conversational questions without retrieval"""
+        lang_to_use = language.upper() if language else "EN"
+
+        if question_type == 'alive':
+            if lang_to_use == "DE":
+                answer = ("Ich bin kein lebendiges Wesen, sondern ein KI-Assistent, der entwickelt wurde, "
+                         "um Ihnen zu helfen. Ich bin hier, um Ihre Fragen zu Functiomed zu beantworten - "
+                         "zu unseren Behandlungen, Öffnungszeiten, Therapeuten und mehr. "
+                         "Was möchten Sie wissen?")
+            elif lang_to_use == "FR":
+                answer = ("Je ne suis pas un être vivant, mais un assistant IA conçu pour vous aider. "
+                         "Je suis là pour répondre à vos questions sur Functiomed - "
+                         "nos traitements, nos horaires, nos thérapeutes et bien plus encore. "
+                         "Que souhaitez-vous savoir ?")
+            else:
+                answer = ("I'm not a living being, but an AI assistant designed to help you. "
+                         "I'm here to answer your questions about Functiomed - "
+                         "our treatments, opening hours, therapists, and more. "
+                         "What would you like to know?")
+
+        elif question_type == 'identity':
+            if lang_to_use == "DE":
+                answer = ("Ich bin der Functiomed-KI-Assistent. Ich wurde entwickelt, um Ihnen Informationen "
+                         "über die Functiomed-Praxis zu geben, einschließlich unserer medizinischen Behandlungen, "
+                         "Öffnungszeiten, Therapeuten und mehr. Wie kann ich Ihnen heute helfen?")
+            elif lang_to_use == "FR":
+                answer = ("Je suis l'assistant IA de Functiomed. J'ai été conçu pour vous fournir des informations "
+                         "sur le cabinet Functiomed, y compris nos traitements médicaux, nos horaires d'ouverture, "
+                         "nos thérapeutes et plus encore. Comment puis-je vous aider aujourd'hui ?")
+            else:
+                answer = ("I'm the Functiomed AI assistant. I was designed to provide you with information "
+                         "about the Functiomed practice, including our medical treatments, opening hours, "
+                         "therapists, and more. How can I help you today?")
+
+        elif question_type == 'capabilities':
+            if lang_to_use == "DE":
+                answer = ("Ich kann Ihnen helfen mit:\n\n"
+                         "• Informationen über Functiomed-Behandlungen (Osteopathie, Akupunktur, etc.)\n"
+                         "• Öffnungszeiten und Kontaktinformationen\n"
+                         "• Details zu unserem Therapeuten-Team\n"
+                         "• Standort und Anfahrt\n"
+                         "• Allgemeine Fragen zur Praxis\n\n"
+                         "Was möchten Sie wissen?")
+            elif lang_to_use == "FR":
+                answer = ("Je peux vous aider avec :\n\n"
+                         "• Informations sur les traitements Functiomed (ostéopathie, acupuncture, etc.)\n"
+                         "• Horaires d'ouverture et coordonnées\n"
+                         "• Détails sur notre équipe de thérapeutes\n"
+                         "• Emplacement et accès\n"
+                         "• Questions générales sur le cabinet\n\n"
+                         "Que souhaitez-vous savoir ?")
+            else:
+                answer = ("I can help you with:\n\n"
+                         "• Information about Functiomed treatments (osteopathy, acupuncture, etc.)\n"
+                         "• Opening hours and contact information\n"
+                         "• Details about our therapist team\n"
+                         "• Location and directions\n"
+                         "• General questions about the practice\n\n"
+                         "What would you like to know?")
+        else:
+            # Fallback
+            if lang_to_use == "DE":
+                answer = "Wie kann ich Ihnen heute helfen?"
+            elif lang_to_use == "FR":
+                answer = "Comment puis-je vous aider aujourd'hui ?"
+            else:
+                answer = "How can I help you today?"
+
+        return RAGResponse(
+            answer=answer,
+            sources=[],
+            query=query,
+            detected_language=lang_to_use,
+            retrieval_results=0,
+            citations=[],
+            confidence_score=1.0,
+            total_time_ms=0.0,
+            retrieval_time_ms=0.0,
+            generation_time_ms=0.0,
+            tokens_used=0
+        )
+
     def generate_answer(
         self,
         query: str,
@@ -237,6 +364,12 @@ class RAGService:
         if self._is_acknowledgment(query):
             logger.info(f"Detected acknowledgment - returning direct response in language={language}")
             return self._create_acknowledgment_response(query, language)
+
+        # Check for casual/conversational questions (are you alive?, who are you?, etc.)
+        casual_type = self._is_casual_question(query)
+        if casual_type:
+            logger.info(f"Detected casual question (type={casual_type}) - returning direct response in language={language}")
+            return self._create_casual_response(query, casual_type, language)
 
         # Use defaults
         top_k = top_k or settings.RAG_MAX_CHUNKS

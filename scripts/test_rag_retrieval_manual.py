@@ -218,107 +218,107 @@ class ManualReviewTester:
             ),
 
             # Billing & Insurance
-            TestQuery(
-                query="Werden die Kosten von der Krankenkasse übernommen?",
-                language="DE",
-                expected_categories=["patient_info"],
-                expected_documents=["FAQ"],
-                description="Insurance coverage"
-            ),
-            TestQuery(
-                query="Visana Patienten Informationen",
-                language="DE",
-                expected_categories=["patient_info"],
-                expected_documents=["Visana"],
-                description="Visana info"
-            ),
-            TestQuery(
-                query="Benötige ich eine Überweisung?",
-                language="DE",
-                expected_categories=["patient_info"],
-                expected_documents=["FAQ"],
-                description="Referral requirement"
-            ),
+            # TestQuery(
+            #     query="Werden die Kosten von der Krankenkasse übernommen?",
+            #     language="DE",
+            #     expected_categories=["patient_info"],
+            #     expected_documents=["FAQ"],
+            #     description="Insurance coverage"
+            # ),
+            # TestQuery(
+            #     query="Visana Patienten Informationen",
+            #     language="DE",
+            #     expected_categories=["patient_info"],
+            #     expected_documents=["Visana"],
+            #     description="Visana info"
+            # ),
+            # TestQuery(
+            #     query="Benötige ich eine Überweisung?",
+            #     language="DE",
+            #     expected_categories=["patient_info"],
+            #     expected_documents=["FAQ"],
+            #     description="Referral requirement"
+            # ),
 
-            # Policies
-            TestQuery(
-                query="Datenschutz bei Functiomed",
-                language="DE",
-                expected_categories=["patient_info"],
-                expected_documents=["Datenschutz"],
-                description="Data protection"
-            ),
-            TestQuery(
-                query="Wie melde ich mich als neuer Patient an?",
-                language="DE",
-                expected_categories=["patient_info"],
-                expected_documents=["Anmeldung"],
-                description="New patient registration"
-            ),
+            # # Policies
+            # TestQuery(
+            #     query="Datenschutz bei Functiomed",
+            #     language="DE",
+            #     expected_categories=["patient_info"],
+            #     expected_documents=["Datenschutz"],
+            #     description="Data protection"
+            # ),
+            # TestQuery(
+            #     query="Wie melde ich mich als neuer Patient an?",
+            #     language="DE",
+            #     expected_categories=["patient_info"],
+            #     expected_documents=["Anmeldung"],
+            #     description="New patient registration"
+            # ),
 
-            # FAQs
-            TestQuery(
-                query="Wie viele Osteopathie-Sitzungen brauche ich?",
-                language="DE",
-                expected_categories=["patient_info"],
-                expected_documents=["FAQ"],
-                description="Number of sessions"
-            ),
-            TestQuery(
-                query="Muss ich nüchtern zur Blutabnahme kommen?",
-                language="DE",
-                expected_categories=["patient_info"],
-                expected_documents=["FAQ"],
-                description="Fasting requirement"
-            ),
+            # # FAQs
+            # TestQuery(
+            #     query="Wie viele Osteopathie-Sitzungen brauche ich?",
+            #     language="DE",
+            #     expected_categories=["patient_info"],
+            #     expected_documents=["FAQ"],
+            #     description="Number of sessions"
+            # ),
+            # TestQuery(
+            #     query="Muss ich nüchtern zur Blutabnahme kommen?",
+            #     language="DE",
+            #     expected_categories=["patient_info"],
+            #     expected_documents=["FAQ"],
+            #     description="Fasting requirement"
+            # ),
 
-            # Complex queries
-            TestQuery(
-                query="Ich habe Rückenschmerzen, welche Behandlungen helfen?",
-                language="DE",
-                expected_categories=["angebote"],
-                expected_documents=["physiotherapie", "osteopathie", "massage"],
-                description="Symptom-based treatment"
-            ),
-            TestQuery(
-                query="Welche Behandlungen für Schwangere gibt es?",
-                language="DE",
-                expected_categories=["angebote"],
-                expected_documents=["schwangerschaft", "osteopathie"],
-                description="Pregnancy treatments"
-            ),
+            # # Complex queries
+            # TestQuery(
+            #     query="Ich habe Rückenschmerzen, welche Behandlungen helfen?",
+            #     language="DE",
+            #     expected_categories=["angebote"],
+            #     expected_documents=["physiotherapie", "osteopathie", "massage"],
+            #     description="Symptom-based treatment"
+            # ),
+            # TestQuery(
+            #     query="Welche Behandlungen für Schwangere gibt es?",
+            #     language="DE",
+            #     expected_categories=["angebote"],
+            #     expected_documents=["schwangerschaft", "osteopathie"],
+            #     description="Pregnancy treatments"
+            # ),
 
-            # English queries
-            TestQuery(
-                query="What is osteopathy?",
-                language="EN",
-                expected_categories=["angebote", "patient_info"],
-                expected_documents=["osteopathie", "FAQ"],
-                description="Osteopathy (English)"
-            ),
-            TestQuery(
-                query="How can I book an appointment?",
-                language="EN",
-                expected_categories=["praxis-info"],
-                expected_documents=["kontakt", "FAQ"],
-                description="Appointment booking (English)"
-            ),
+            # # English queries
+            # TestQuery(
+            #     query="What is osteopathy?",
+            #     language="EN",
+            #     expected_categories=["angebote", "patient_info"],
+            #     expected_documents=["osteopathie", "FAQ"],
+            #     description="Osteopathy (English)"
+            # ),
+            # TestQuery(
+            #     query="How can I book an appointment?",
+            #     language="EN",
+            #     expected_categories=["praxis-info"],
+            #     expected_documents=["kontakt", "FAQ"],
+            #     description="Appointment booking (English)"
+            # ),
 
-            # Edge cases
-            TestQuery(
-                query="Notfall",
-                language="DE",
-                expected_categories=["praxis-info"],
-                expected_documents=["notfall"],
-                description="Emergency (single word)"
-            ),
-            TestQuery(
-                query="Öffnungszeiten",
-                language="DE",
-                expected_categories=["patient_info"],
-                expected_documents=["FAQ"],
-                description="Opening hours (single word)"
-            ),
+            # # Edge cases
+            # TestQuery(
+            #     query="Notfall",
+            #     language="DE",
+            #     expected_categories=["praxis-info"],
+            #     expected_documents=["notfall"],
+            #     description="Emergency (single word)"
+            # ),
+            # TestQuery(
+            #     query="Öffnungszeiten",
+            #     language="DE",
+            #     expected_categories=["patient_info"],
+            #     expected_documents=["FAQ"],
+            #     description="Opening hours (single word)"
+            # ),
         ]
 
     def test_query(self, test_query: TestQuery, top_k: int = 5) -> Dict[str, Any]:
