@@ -127,7 +127,7 @@ def run():
 
     print_separator()
     print("RAG MANUAL RETRIEVAL REVIEW (TERMINAL)")
-    print(f"Top-K: {settings.RAG_MAX_CHUNKS}")
+    print(f"Top-K: {settings.RETRIEVAL_TOP_K}")
     print(f"Min score: {settings.RAG_MIN_CHUNK_SCORE}")
     print_separator()
 

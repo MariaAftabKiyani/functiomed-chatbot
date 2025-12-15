@@ -65,7 +65,7 @@ class Settings(BaseSettings):
     # Retrieval Settings
     # ============================================================================
     RETRIEVAL_TOP_K: int = Field(
-        default=1,
+        default=3,
         env="RETRIEVAL_TOP_K",
         description="Default number of chunks to retrieve"
     )
