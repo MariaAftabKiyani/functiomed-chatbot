@@ -376,15 +376,25 @@ class RetrievalService:
         return fused_results
     
     def _format_results(self, search_results: List[Dict[str, Any]]) -> List[RetrievalResult]:
-        """Format Qdrant search results into RetrievalResult objects"""
+        """Format search results into RetrievalResult objects (handles both Qdrant and BM25 results)"""
         formatted = []
-        
+
         for result in search_results:
-            payload = result["payload"]
-            
+            # Handle both Qdrant and BM25 result structures
+            if 'payload' in result:
+                # Qdrant result structure
+                payload = result['payload']
+                text = payload.get("text", "")
+            else:
+                # BM25 result structure: {'text': ..., 'score': ..., 'metadata': {...}}
+                payload = result.get('metadata', {})
+                text = result.get('text', "")
+                # Add text to payload for consistency
+                payload['text'] = text
+
             # Extract all fields from payload
             retrieval_result = RetrievalResult(
-                text=payload.get("text", ""),
+                text=text,
                 score=result["score"],
                 chunk_id=payload.get("chunk_id", ""),
                 source_document=payload.get("source_document", ""),
@@ -395,9 +405,9 @@ class RetrievalService:
                 source_type=payload.get("source_type", ""),
                 metadata=payload  # Store full payload
             )
-            
+
             formatted.append(retrieval_result)
-        
+
         return formatted
     
     def health_check(self) -> Dict[str, Any]:

@@ -143,10 +143,16 @@ class CrossEncoderReranker:
             # Prepare query-document pairs for cross-encoder
             pairs = []
             for result in results:
-                # Extract text from result
-                text = result.get("text", "")
+                # Extract text from result (handle both Qdrant and BM25 structures)
+                if 'payload' in result:
+                    # Qdrant result: text is in payload
+                    text = result['payload'].get("text", "")
+                else:
+                    # BM25 result: text is at top level
+                    text = result.get("text", "")
+
                 if not text:
-                    logger.warning(f"Empty text in result: {result}")
+                    logger.warning(f"Empty text in result, using empty string")
                     text = ""
 
                 pairs.append([query, text])
@@ -182,13 +188,19 @@ class CrossEncoderReranker:
             ):
                 bi_encoder_score = result.get("score", 0.0)
 
+                # Extract text (handle both Qdrant and BM25 structures)
+                if 'payload' in result:
+                    text = result['payload'].get("text", "")
+                else:
+                    text = result.get("text", "")
+
                 # Weighted combination: 70% cross-encoder, 30% bi-encoder
                 # Cross-encoder is more accurate but bi-encoder provides useful signal
                 final_score = 0.7 * cross_score_norm + 0.3 * bi_encoder_score
 
                 ranked_result = RankedResult(
                     original_index=idx,
-                    text=result.get("text", ""),
+                    text=text,
                     bi_encoder_score=bi_encoder_score,
                     cross_encoder_score=float(cross_score_norm),
                     final_score=final_score,
