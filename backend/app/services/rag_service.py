@@ -247,18 +247,18 @@ class RAGService:
 
         if question_type == 'alive':
             if lang_to_use == "DE":
-                answer = ("Ich bin kein lebendiges Wesen, sondern ein KI-Assistent, der entwickelt wurde, "
-                         "um Ihnen zu helfen. Ich bin hier, um Ihre Fragen zu Functiomed zu beantworten - "
+                answer = ("Ich bin kein lebendiges Wesen, sondern ein KI-Assistent namens FUNIA. "
+                         "Ich bin hier, um Ihre Fragen zu Functiomed zu beantworten: "
                          "zu unseren Behandlungen, Öffnungszeiten, Therapeuten und mehr. "
                          "Was möchten Sie wissen?")
             elif lang_to_use == "FR":
-                answer = ("Je ne suis pas un être vivant, mais un assistant IA conçu pour vous aider. "
-                         "Je suis là pour répondre à vos questions sur Functiomed - "
+                answer = ("Je ne suis pas un être vivant, mais un assistant IA appelé FUNIA. "
+                         "Je suis là pour répondre à vos questions sur Functiomed : "
                          "nos traitements, nos horaires, nos thérapeutes et bien plus encore. "
                          "Que souhaitez-vous savoir ?")
             else:
-                answer = ("I'm not a living being, but an AI assistant designed to help you. "
-                         "I'm here to answer your questions about Functiomed - "
+                answer = ("I'm not a living being, but an AI assistant named FUNIA. "
+                         "I'm here to answer your questions about Functiomed: "
                          "our treatments, opening hours, therapists, and more. "
                          "What would you like to know?")
 
