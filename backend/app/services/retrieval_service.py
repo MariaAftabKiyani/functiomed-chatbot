@@ -16,6 +16,7 @@ from app.config import settings
 from app.utils.embeddings import EmbeddingService
 from app.utils.qdrant_client import QdrantService
 from app.utils.reranker import CrossEncoderReranker, get_reranker
+from app.utils.bm25_search import BM25, HybridSearchFusion, get_bm25_search
 from app.services.query_normalizer import QueryNormalizer, NormalizedQuery
 from app.schemas.retrieval import (
     RetrievalRequest,
@@ -44,7 +45,8 @@ class RetrievalService:
         embedding_service: Optional[EmbeddingService] = None,
         qdrant_service: Optional[QdrantService] = None,
         query_normalizer: Optional[QueryNormalizer] = None,
-        reranker: Optional[CrossEncoderReranker] = None
+        reranker: Optional[CrossEncoderReranker] = None,
+        bm25_search: Optional[BM25] = None
     ):
         """
         Initialize retrieval service.
@@ -54,6 +56,7 @@ class RetrievalService:
             qdrant_service: Optional pre-initialized Qdrant service
             query_normalizer: Optional pre-initialized query normalizer
             reranker: Optional pre-initialized cross-encoder reranker
+            bm25_search: Optional pre-initialized BM25 search
         """
         # Initialize or use provided services
         self.embedding_service = embedding_service or EmbeddingService()
@@ -77,6 +80,27 @@ class RetrievalService:
                 self.reranker_enabled = False
         else:
             logger.info("  Cross-encoder re-ranking: DISABLED")
+
+        # Initialize BM25 hybrid search if enabled
+        self.hybrid_search_enabled = settings.HYBRID_SEARCH_ENABLED
+        self.bm25_search = None
+        if self.hybrid_search_enabled:
+            try:
+                bm25_index_path = Path(settings.DOCUMENTS_DIR).parent / "bm25_index.pkl"
+                self.bm25_search = bm25_search or get_bm25_search(index_path=str(bm25_index_path))
+                if self.bm25_search.num_docs > 0:
+                    logger.info("  Hybrid BM25 + Semantic search: ENABLED")
+                    logger.info(f"    BM25 index: {self.bm25_search.num_docs} documents")
+                    logger.info(f"    Hybrid alpha: {settings.HYBRID_ALPHA} (semantic weight)")
+                else:
+                    logger.warning("BM25 index is empty - hybrid search disabled")
+                    self.hybrid_search_enabled = False
+            except Exception as e:
+                logger.warning(f"Failed to initialize BM25 search: {e}")
+                logger.warning("Hybrid search will be disabled - using semantic only")
+                self.hybrid_search_enabled = False
+        else:
+            logger.info("  Hybrid search: DISABLED (semantic only)")
 
         logger.info("RetrievalService initialized")
         logger.info(f"  Default top_k: {settings.RETRIEVAL_TOP_K}")
@@ -156,13 +180,24 @@ class RetrievalService:
             )
             logger.debug(f"  Filters: {filters}")
 
-            # Step 4: Search in Qdrant (retrieve candidates)
-            search_results = self._search_vectors(
-                query_vector=query_embedding,
-                top_k=candidate_top_k,
-                filters=filters,
-                min_score=min_score
-            )
+            # Step 4: Search (Hybrid or Semantic only)
+            if self.hybrid_search_enabled and self.bm25_search:
+                # Hybrid search: BM25 + Semantic
+                search_results = self._hybrid_search(
+                    query=normalized.normalized,
+                    query_vector=query_embedding,
+                    top_k=candidate_top_k,
+                    filters=filters,
+                    min_score=min_score
+                )
+            else:
+                # Semantic search only
+                search_results = self._search_vectors(
+                    query_vector=query_embedding,
+                    top_k=candidate_top_k,
+                    filters=filters,
+                    min_score=min_score
+                )
 
             # Step 5: Re-rank results if enabled
             if self.reranker_enabled and self.reranker and len(search_results) > 0:
@@ -256,7 +291,7 @@ class RetrievalService:
         try:
             # Convert filters to Qdrant format
             qdrant_filter = filters.to_qdrant_filter()
-            
+
             # Perform search
             results = self.qdrant_service.search(
                 query_vector=query_vector,
@@ -264,12 +299,81 @@ class RetrievalService:
                 filters=qdrant_filter,
                 score_threshold=min_score if min_score > 0 else None
             )
-            
+
             return results
-            
+
         except Exception as e:
             logger.error(f"Vector search failed: {e}")
             raise RuntimeError(f"Search failed: {e}")
+
+    def _hybrid_search(
+        self,
+        query: str,
+        query_vector: np.ndarray,
+        top_k: int,
+        filters: RetrievalFilters,
+        min_score: float
+    ) -> List[Dict[str, Any]]:
+        """
+        Perform hybrid search combining BM25 and semantic search.
+
+        Args:
+            query: Normalized query text
+            query_vector: Query embedding vector
+            top_k: Number of results to return
+            filters: Metadata filters
+            min_score: Minimum score threshold
+
+        Returns:
+            Fused results from both search methods
+        """
+        logger.info("[Hybrid Search] Combining BM25 + Semantic search...")
+
+        # Step 1: BM25 keyword search
+        bm25_start = time.time()
+        bm25_filter_dict = {}
+        if filters.category:
+            bm25_filter_dict['category'] = filters.category
+        if filters.language:
+            bm25_filter_dict['language'] = filters.language
+
+        bm25_results = self.bm25_search.search(
+            query=query,
+            top_k=top_k * 2,  # Get more candidates for fusion
+            filters=bm25_filter_dict if bm25_filter_dict else None
+        )
+        bm25_time = (time.time() - bm25_start) * 1000
+        logger.info(f"  BM25: {len(bm25_results)} results in {bm25_time:.0f}ms")
+
+        # Step 2: Semantic vector search
+        semantic_start = time.time()
+        semantic_results = self._search_vectors(
+            query_vector=query_vector,
+            top_k=top_k * 2,  # Get more candidates for fusion
+            filters=filters,
+            min_score=min_score
+        )
+        semantic_time = (time.time() - semantic_start) * 1000
+        logger.info(f"  Semantic: {len(semantic_results)} results in {semantic_time:.0f}ms")
+
+        # Step 3: Fuse results using weighted scoring
+        fusion_start = time.time()
+        fused_results = HybridSearchFusion.weighted_fusion(
+            bm25_results=bm25_results,
+            semantic_results=semantic_results,
+            alpha=settings.HYBRID_ALPHA
+        )
+        fusion_time = (time.time() - fusion_start) * 1000
+
+        # Take top-k after fusion
+        fused_results = fused_results[:top_k]
+
+        logger.info(
+            f"  Fusion: {len(fused_results)} results in {fusion_time:.0f}ms "
+            f"(alpha={settings.HYBRID_ALPHA})"
+        )
+
+        return fused_results
     
     def _format_results(self, search_results: List[Dict[str, Any]]) -> List[RetrievalResult]:
         """Format Qdrant search results into RetrievalResult objects"""

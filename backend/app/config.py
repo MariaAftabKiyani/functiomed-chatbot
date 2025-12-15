@@ -48,7 +48,7 @@ class Settings(BaseSettings):
 
     # Document Processing
     CHUNK_SIZE: int = int(os.getenv("CHUNK_SIZE", "800"))
-    CHUNK_OVERLAP: int = int(os.getenv("CHUNK_OVERLAP", "150"))
+    CHUNK_OVERLAP: int = int(os.getenv("CHUNK_OVERLAP", "200"))  # Increased from 150 for better context continuity
     MIN_CHUNK_SIZE: int = int(os.getenv("MIN_CHUNK_SIZE", "200"))
 
     # Retry Settings
@@ -87,6 +87,12 @@ class Settings(BaseSettings):
     RERANKER_MODEL: str = os.getenv("RERANKER_MODEL", "BAAI/bge-reranker-v2-m3")
     RERANKER_TOP_K: int = int(os.getenv("RERANKER_TOP_K", "3"))  # Re-rank top 3 results
     RERANKER_BATCH_SIZE: int = int(os.getenv("RERANKER_BATCH_SIZE", "16"))
+
+    # Hybrid Search Settings (BM25 + Semantic)
+    HYBRID_SEARCH_ENABLED: bool = os.getenv("HYBRID_SEARCH_ENABLED", "true").lower() == "true"
+    HYBRID_ALPHA: float = float(os.getenv("HYBRID_ALPHA", "0.7"))  # 0.7 = 70% semantic, 30% BM25
+    BM25_K1: float = float(os.getenv("BM25_K1", "1.5"))  # Term frequency saturation parameter
+    BM25_B: float = float(os.getenv("BM25_B", "0.75"))  # Length normalization parameter
 
     # ============================================================================
     # LLM Configuration (CPU-only inference)
