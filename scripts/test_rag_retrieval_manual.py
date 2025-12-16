@@ -10,12 +10,19 @@ from pathlib import Path
 from typing import List
 from dataclasses import dataclass
 
+# Disable MPS on macOS to avoid mutex blocking issues
+os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+os.environ["PYTORCH_MPS_HIGH_WATERMARK_RATIO"] = "0.0"
+
+# Force CPU usage for sentence-transformers (avoids MPS issues on macOS)
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
 # Add backend to path
 backend_path = Path(__file__).parent.parent / "backend"
 sys.path.insert(0, str(backend_path))
 
-# Force device
-os.environ["EMBEDDING_DEVICE"] = "cuda"
+# Set device to CPU for macOS compatibility
+os.environ["EMBEDDING_DEVICE"] = "cpu"
 
 from app.services.retrieval_service import get_retrieval_service
 from app.config import settings
