@@ -150,7 +150,9 @@ class LLMService:
                 temperature=settings.LLM_TEMPERATURE,
                 top_p=settings.LLM_TOP_P,
                 do_sample=True,
-                pad_token_id=self.tokenizer.eos_token_id
+                pad_token_id=self.tokenizer.eos_token_id,
+                repetition_penalty=1.2,  # Prevent repetition loops
+                no_repeat_ngram_size=3  # Block repeating 3-word phrases
             )
             
             logger.info("✓ Pipeline created")
@@ -311,7 +313,9 @@ class LLMService:
                     return_full_text=False,  # Only return generated text
                     pad_token_id=self.tokenizer.eos_token_id,
                     truncation=True,  # Enable truncation in pipeline
-                    max_length=model_max_length  # Set explicit max length
+                    max_length=model_max_length,  # Set explicit max length
+                    repetition_penalty=1.2,  # Penalize repetition
+                    no_repeat_ngram_size=3  # Prevent 3-gram repetition
                 )
             except Exception as pipe_error:
                 logger.error(f"Pipeline execution failed: {type(pipe_error).__name__}")
