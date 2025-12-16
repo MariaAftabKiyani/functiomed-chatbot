@@ -953,13 +953,16 @@ async function fetchBotResponseStreaming(query, signal) {
     }
 }
 // Comprehensive markdown to HTML converter
-function markdownToHtml(text) {
+// isStreaming: if true, handles incomplete markdown patterns gracefully
+function markdownToHtml(text, isStreaming = false) {
     if (!text) return '';
 
     // First pass: Handle markdown links [text](url)
+    // Only convert complete patterns
     text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: underline;">$1</a>');
 
     // Second pass: Handle bold text **text**
+    // Only convert complete patterns (matching pairs of **)
     text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 
     // Split into lines for processing

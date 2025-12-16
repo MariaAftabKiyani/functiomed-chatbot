@@ -357,7 +357,7 @@ class RAGService:
                 logger.warning("No relevant documents found")
                 return self._create_fallback_response(
                     query=query,
-                    language=language or "DE",
+                    language=language or "EN",
                     retrieval_time_ms=retrieval_response.retrieval_time_ms
                 )
             
@@ -383,7 +383,8 @@ class RAGService:
             processed_answer = self._post_process_response(
                 llm_response['text'],
                 retrieval_response,
-                query
+                query,
+                language
             )
             
             # Extract citations
@@ -516,7 +517,8 @@ class RAGService:
         self,
         response: str,
         retrieval_response: RetrievalResponse,
-        query: str
+        query: str,
+        language: Optional[str] = None
     ) -> str:
         """
         Post-process and validate LLM response.
@@ -678,7 +680,13 @@ class RAGService:
 
         # Check if response is empty
         if not response:
-            response = "Entschuldigung, ich konnte keine passende Antwort generieren."
+            lang_upper = language.upper() if language else "EN"
+            if lang_upper == "DE":
+                response = "Entschuldigung, ich konnte keine passende Antwort generieren."
+            elif lang_upper == "FR":
+                response = "Désolé, je n'ai pas pu générer une réponse appropriée."
+            else:
+                response = "Sorry, I couldn't generate an appropriate response."
 
         # Check if response is too short (likely incomplete)
         if len(response) < 50:
@@ -777,7 +785,7 @@ class RAGService:
     ) -> RAGResponse:
         """Create fallback response when no context is found"""
         # Normalize language to uppercase for comparison
-        lang_upper = language.upper() if language else "DE"
+        lang_upper = language.upper() if language else "EN"
 
         if lang_upper == "EN":
             answer = settings.RAG_FALLBACK_RESPONSE_EN
@@ -785,12 +793,12 @@ class RAGService:
             answer = settings.RAG_FALLBACK_RESPONSE_FR
         else:
             answer = settings.RAG_FALLBACK_RESPONSE_DE
-        
+
         return RAGResponse(
             answer=answer,
             sources=[],
             query=query,
-            detected_language=language,
+            detected_language=lang_upper,
             retrieval_results=0,
             citations=[],
             confidence_score=0.0,
