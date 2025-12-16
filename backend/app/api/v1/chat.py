@@ -204,23 +204,6 @@ async def chat_stream(request_body: ChatRequest, request: Request):
 
     Returns: Server-Sent Events (SSE) stream with JSON chunks
     """
-    import markdown
-    import re
-
-    def markdown_to_html(text: str) -> str:
-        """Convert markdown to HTML with custom styling"""
-        # Use markdown library with extensions
-        md = markdown.Markdown(extensions=['extra', 'nl2br'])
-        html = md.convert(text)
-
-        # Add inline styles for better formatting
-        html = html.replace('<a ', '<a style="color: #007bff; text-decoration: underline;" target="_blank" rel="noopener noreferrer" ')
-        html = html.replace('<ul>', '<ul style="margin: 8px 0; padding-left: 20px;">')
-        html = html.replace('<li>', '<li style="margin: 4px 0;">')
-        html = html.replace('<p>', '<p style="margin: 4px 0;">')
-        html = re.sub(r'<h(\d)>', lambda m: f'<h{m.group(1)} style="margin-top: 8px; margin-bottom: 4px; font-weight: 600; font-size: 14px;">', html)
-
-        return html
 
     async def generate_stream() -> AsyncGenerator[str, None]:
         """Generate streaming response with cancellation support"""
@@ -242,9 +225,6 @@ async def chat_stream(request_body: ChatRequest, request: Request):
                 response_style=request_body.style or "standard"
             )
 
-            # Convert markdown to HTML
-            html_answer = markdown_to_html(response.answer)
-
             # Send metadata first
             metadata = {
                 "type": "metadata",
@@ -260,48 +240,31 @@ async def chat_stream(request_body: ChatRequest, request: Request):
                 logger.info("Client disconnected before streaming answer")
                 return
 
-            # Stream the HTML word by word (split on spaces while preserving tags)
-            # Pattern: HTML tags OR words (non-tag, non-space characters)
-            tokens = re.findall(r'<[^>]+>|[^<\s]+', html_answer)
-
-            for i, token in enumerate(tokens):
+            # Stream the answer word by word
+            words = response.answer.split()
+            for i, word in enumerate(words):
                 # Check for client disconnect
                 if await request.is_disconnected():
-                    logger.info(f"Client disconnected at token {i}/{len(tokens)}")
-                    # Reconstruct partial HTML
-                    partial_html = ''
-                    for j in range(i):
-                        partial_html += tokens[j]
-                        # Add space after non-tag tokens
-                        if not tokens[j].startswith('<'):
-                            partial_html += ' '
-                    yield f"data: {json.dumps({'type': 'cancelled', 'partial_html': partial_html})}\n\n"
+                    logger.info(f"Client disconnected at word {i}/{len(words)}")
+                    yield f"data: {json.dumps({'type': 'cancelled', 'partial_text': ' '.join(words[:i])})}\n\n"
                     return
 
-                # Send token chunk
-                # Add space after words (non-tags) but not after HTML tags
-                text_to_send = token
-                if not token.startswith('<') and i < len(tokens) - 1:
-                    text_to_send += ' '
-
+                # Send word chunk
                 chunk = {
                     "type": "chunk",
-                    "text": text_to_send,
+                    "text": word + (" " if i < len(words) - 1 else ""),
                     "index": i,
-                    "total": len(tokens),
-                    "is_html": True  # Flag to indicate HTML content
+                    "total": len(words)
                 }
                 yield f"data: {json.dumps(chunk)}\n\n"
 
-                # Small delay to simulate streaming (reduce for tags, normal for words)
-                delay = 0.01 if token.startswith('<') else 0.03
-                await asyncio.sleep(delay)
+                # Small delay to simulate streaming (adjust as needed)
+                await asyncio.sleep(0.03)
 
-            # Send completion signal with both HTML and original markdown
+            # Send completion signal
             completion = {
                 "type": "done",
-                "full_text": html_answer,  # Send HTML version
-                "original_text": response.answer,  # Keep markdown for copy/TTS
+                "full_text": response.answer,
                 "metrics": response.to_dict()["metrics"]
             }
             yield f"data: {json.dumps(completion)}\n\n"
