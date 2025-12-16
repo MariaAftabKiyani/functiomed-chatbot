@@ -2,9 +2,17 @@
 Comprehensive RAG Pipeline Test Script
 Tests retrieval, generation, and full pipeline performance.
 """
+import os
 import time
 from pathlib import Path
 import sys
+
+# Disable MPS on macOS to avoid mutex blocking issues
+os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+os.environ["PYTORCH_MPS_HIGH_WATERMARK_RATIO"] = "0.0"
+
+# Force CPU usage for sentence-transformers (avoids MPS issues on macOS)
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 # Add backend to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
