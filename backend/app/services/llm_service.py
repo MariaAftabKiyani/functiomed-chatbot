@@ -147,12 +147,11 @@ class LLMService:
                 model=self.model,
                 tokenizer=self.tokenizer,
                 max_new_tokens=settings.LLM_MAX_TOKENS,
-                temperature=settings.LLM_TEMPERATURE,
+                temperature=0.7,  # Increased from 0.5 for natural formatting
                 top_p=settings.LLM_TOP_P,
                 do_sample=True,
-                pad_token_id=self.tokenizer.eos_token_id,
-                repetition_penalty=1.2,  # Prevent repetition loops
-                no_repeat_ngram_size=3  # Block repeating 3-word phrases
+                pad_token_id=self.tokenizer.eos_token_id
+                # Removed repetition_penalty - it breaks list formatting
             )
             
             logger.info("✓ Pipeline created")
@@ -308,14 +307,13 @@ class LLMService:
                 outputs = self.pipeline(
                     prompt,
                     max_new_tokens=max_tokens,
-                    temperature=temperature,
-                    do_sample=temperature > 0,
+                    temperature=0.7 if temperature < 0.7 else temperature,  # Min 0.7 for natural text
+                    do_sample=True,  # Always sample for better formatting
                     return_full_text=False,  # Only return generated text
                     pad_token_id=self.tokenizer.eos_token_id,
                     truncation=True,  # Enable truncation in pipeline
-                    max_length=model_max_length,  # Set explicit max length
-                    repetition_penalty=1.2,  # Penalize repetition
-                    no_repeat_ngram_size=3  # Prevent 3-gram repetition
+                    max_length=model_max_length  # Set explicit max length
+                    # Removed repetition penalty - causes broken lists/formatting
                 )
             except Exception as pipe_error:
                 logger.error(f"Pipeline execution failed: {type(pipe_error).__name__}")
