@@ -227,17 +227,17 @@ class RAGService:
                 return 'identity'
 
         # "What can you do?" / "How can you help?" type questions
-        capability_patterns = [
-            'what can you do', 'what do you do', 'how can you help',
-            'what can you help with', 'what are your capabilities',
-            'was kannst du', 'was machst du', 'wie kannst du helfen',
-            'womit kannst du helfen', 'was sind deine fähigkeiten',
-            'que peux-tu faire', 'que fais-tu', 'comment peux-tu aider',
-            'avec quoi peux-tu aider', 'quelles sont tes capacités'
-        ]
-        for pattern in capability_patterns:
-            if pattern in query_lower:
-                return 'capabilities'
+        # capability_patterns = [
+        #     'what can you do', 'what do you do', 'how can you help',
+        #     'what can you help with', 'what are your capabilities',
+        #     'was kannst du', 'was machst du', 'wie kannst du helfen',
+        #     'womit kannst du helfen', 'was sind deine fähigkeiten',
+        #     'que peux-tu faire', 'que fais-tu', 'comment peux-tu aider',
+        #     'avec quoi peux-tu aider', 'quelles sont tes capacités'
+        # ]
+        # for pattern in capability_patterns:
+        #     if pattern in query_lower:
+        #         return 'capabilities'
 
         return None
 
@@ -276,31 +276,31 @@ class RAGService:
                          "about the Functiomed practice, including our medical treatments, opening hours, "
                          "therapists, and more. How can I help you today?")
 
-        elif question_type == 'capabilities':
-            if lang_to_use == "DE":
-                answer = ("Ich kann Ihnen helfen mit:\n\n"
-                         "• Informationen über Functiomed-Behandlungen (Osteopathie, Akupunktur, etc.)\n"
-                         "• Öffnungszeiten und Kontaktinformationen\n"
-                         "• Details zu unserem Therapeuten-Team\n"
-                         "• Standort und Anfahrt\n"
-                         "• Allgemeine Fragen zur Praxis\n\n"
-                         "Was möchten Sie wissen?")
-            elif lang_to_use == "FR":
-                answer = ("Je peux vous aider avec :\n\n"
-                         "• Informations sur les traitements Functiomed (ostéopathie, acupuncture, etc.)\n"
-                         "• Horaires d'ouverture et coordonnées\n"
-                         "• Détails sur notre équipe de thérapeutes\n"
-                         "• Emplacement et accès\n"
-                         "• Questions générales sur le cabinet\n\n"
-                         "Que souhaitez-vous savoir ?")
-            else:
-                answer = ("I can help you with:\n\n"
-                         "• Information about Functiomed treatments (osteopathy, acupuncture, etc.)\n"
-                         "• Opening hours and contact information\n"
-                         "• Details about our therapist team\n"
-                         "• Location and directions\n"
-                         "• General questions about the practice\n\n"
-                         "What would you like to know?")
+        # elif question_type == 'capabilities':
+        #     if lang_to_use == "DE":
+        #         answer = ("Ich kann Ihnen helfen mit:\n\n"
+        #                  "• Informationen über Functiomed-Behandlungen (Osteopathie, Akupunktur, etc.)\n"
+        #                  "• Öffnungszeiten und Kontaktinformationen\n"
+        #                  "• Details zu unserem Therapeuten-Team\n"
+        #                  "• Standort und Anfahrt\n"
+        #                  "• Allgemeine Fragen zur Praxis\n\n"
+        #                  "Was möchten Sie wissen?")
+        #     elif lang_to_use == "FR":
+        #         answer = ("Je peux vous aider avec :\n\n"
+        #                  "• Informations sur les traitements Functiomed (ostéopathie, acupuncture, etc.)\n"
+        #                  "• Horaires d'ouverture et coordonnées\n"
+        #                  "• Détails sur notre équipe de thérapeutes\n"
+        #                  "• Emplacement et accès\n"
+        #                  "• Questions générales sur le cabinet\n\n"
+        #                  "Que souhaitez-vous savoir ?")
+        #     else:
+        #         answer = ("I can help you with:\n\n"
+        #                  "• Information about Functiomed treatments (osteopathy, acupuncture, etc.)\n"
+        #                  "• Opening hours and contact information\n"
+        #                  "• Details about our therapist team\n"
+        #                  "• Location and directions\n"
+        #                  "• General questions about the practice\n\n"
+        #                  "What would you like to know?")
         else:
             # Fallback
             if lang_to_use == "DE":
