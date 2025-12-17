@@ -209,6 +209,10 @@ def translate_all_documents(source_dir: Path, target_dir: Path):
         print("No German documents found!")
         return
 
+    # Count total translations needed and skipped
+    total_translations = 0
+    skipped_translations = 0
+
     # Translate each document
     for doc_path in tqdm(german_docs, desc="Translating documents"):
         # Get relative path
@@ -220,12 +224,20 @@ def translate_all_documents(source_dir: Path, target_dir: Path):
             target_name = rel_path.name.replace('_DE.txt', f'_{lang.upper()}.txt')
             target_path = target_dir / rel_path.parent / target_name
 
+            # Check if translation already exists
+            if target_path.exists():
+                print(f"  ⏭ Skipping {target_name} (already exists)")
+                skipped_translations += 1
+                continue
+
             # Translate
+            total_translations += 1
             translator.translate_document(doc_path, target_path, lang)
 
     print("\n✓ Translation complete!")
-    print(f"  English documents: {target_dir}")
-    print(f"  French documents: {target_dir}")
+    print(f"  Total translations: {total_translations}")
+    print(f"  Skipped (already exist): {skipped_translations}")
+    print(f"  Location: {target_dir}")
 
 
 def main():
