@@ -145,10 +145,10 @@ class RetrievalService:
         min_score = min_score if min_score is not None else settings.RETRIEVAL_MIN_SCORE
 
         # Determine candidate retrieval size
-        # If re-ranking is enabled, retrieve more candidates (10x top_k or at least 15)
+        # If re-ranking is enabled, retrieve 15 candidates and re-rank to get top 7
         if self.reranker_enabled and self.reranker:
-            candidate_top_k = max(top_k * 10, 15)
-            rerank_top_k = min(top_k, settings.RERANKER_TOP_K)  # Re-rank top 3 (or user's top_k if smaller)
+            candidate_top_k = 15  # Always retrieve 15 candidates for re-ranking
+            rerank_top_k = 7  # Re-rank to get top 7 results
             logger.info(f"Re-ranking enabled: retrieving {candidate_top_k} candidates, re-ranking top {rerank_top_k}")
         else:
             candidate_top_k = top_k
