@@ -239,41 +239,31 @@ async def chat_stream(request_body: ChatRequest, request: Request):
                 logger.info("Client disconnected before streaming answer")
                 return
 
-            # Stream the markdown character by character (frontend will render it)
-            answer_text = response.answer
-
-            # Stream word by word for smooth rendering
-            words = answer_text.split()
-
+            # Stream the answer word by word
+            words = response.answer.split()
             for i, word in enumerate(words):
                 # Check for client disconnect
                 if await request.is_disconnected():
                     logger.info(f"Client disconnected at word {i}/{len(words)}")
-                    # Reconstruct partial text
-                    partial_text = ' '.join(words[:i])
-                    yield f"data: {json.dumps({'type': 'cancelled', 'partial_text': partial_text})}\n\n"
+                    yield f"data: {json.dumps({'type': 'cancelled', 'partial_text': ' '.join(words[:i])})}\n\n"
                     return
 
-                # Send word chunk with space
-                text_to_send = word + ' '
-
+                # Send word chunk
                 chunk = {
                     "type": "chunk",
-                    "text": text_to_send,
+                    "text": word + (" " if i < len(words) - 1 else ""),
                     "index": i,
-                    "total": len(words),
-                    "is_html": False  # Plain markdown, not HTML
+                    "total": len(words)
                 }
                 yield f"data: {json.dumps(chunk)}\n\n"
 
-                # Small delay to simulate streaming
-                await asyncio.sleep(0.02)
+                # Small delay to simulate streaming (adjust as needed)
+                await asyncio.sleep(0.03)
 
-            # Send completion signal with markdown text
+            # Send completion signal
             completion = {
                 "type": "done",
-                "full_text": response.answer,  # Send markdown
-                "original_text": response.answer,  # Same as full_text for markdown
+                "full_text": response.answer,
                 "metrics": response.to_dict()["metrics"]
             }
             yield f"data: {json.dumps(completion)}\n\n"

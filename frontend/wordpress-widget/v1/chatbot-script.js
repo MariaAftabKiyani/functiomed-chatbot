@@ -925,28 +925,16 @@ async function fetchBotResponseStreaming(query, signal) {
                             firstChunkReceived = true;
                         }
 
-                        // Append text chunk (HTML or markdown)
+                        // Append text chunk
                         fullText += data.text;
-                        // Use is_html flag from backend
-                        const isHtml = data.is_html === true;
-                        updateStreamingMessage(messageDiv, fullText, isHtml);
+                        updateStreamingMessage(messageDiv, fullText);
                     } else if (data.type === 'done') {
-                        // Stream complete with HTML and original text
-                        const isHtml = data.full_text !== data.original_text;
-                        finalizeStreamingMessage(
-                            messageDiv,
-                            data.full_text,           // HTML version for display
-                            data.original_text,       // Original markdown for copy/TTS
-                            false,                    // not cancelled
-                            false,                    // no error
-                            isHtml                    // is HTML flag
-                        );
+                        // Stream complete
+                        finalizeStreamingMessage(messageDiv, data.full_text);
                         console.log('Stream complete. Metrics:', data.metrics);
                     } else if (data.type === 'cancelled') {
                         // Stream was cancelled
-                        const partialText = data.partial_html || data.partial_text || fullText;
-                        const isHtml = data.partial_html !== undefined;
-                        finalizeStreamingMessage(messageDiv, partialText, null, true, false, isHtml);
+                        finalizeStreamingMessage(messageDiv, data.partial_text || fullText, true);
                         console.log('Stream cancelled');
                     } else if (data.type === 'error') {
                         // Error occurred
@@ -959,7 +947,7 @@ async function fetchBotResponseStreaming(query, signal) {
     } catch (error) {
         hideTypingIndicator();
         if (currentStreamingMessage) {
-            finalizeStreamingMessage(currentStreamingMessage, '', null, false, true, false);
+            finalizeStreamingMessage(currentStreamingMessage, '', false, true);
         }
         throw error;
     }
@@ -1226,11 +1214,11 @@ function createStreamingMessage() {
 }
 
 // Update streaming message with new text
-function updateStreamingMessage(messageDiv, text, isHtml = false) {
+function updateStreamingMessage(messageDiv, text) {
     const contentDiv = messageDiv.querySelector('.message-content');
     if (contentDiv) {
-        // If backend sends HTML, use it directly; otherwise convert markdown with streaming mode
-        const formattedText = isHtml ? text : markdownToHtml(text, true);
+        // Convert markdown to HTML with streaming mode enabled
+        const formattedText = markdownToHtml(text, true);
         contentDiv.innerHTML = formattedText;
 
         // Only auto-scroll if user hasn't manually scrolled up
@@ -1241,13 +1229,11 @@ function updateStreamingMessage(messageDiv, text, isHtml = false) {
 }
 
 // Finalize streaming message (remove streaming class)
-function finalizeStreamingMessage(messageDiv, text, originalText = null, wasCancelled = false, hasError = false, isHtml = false) {
+function finalizeStreamingMessage(messageDiv, text, wasCancelled = false, hasError = false) {
     messageDiv.classList.remove('streaming');
 
-    // Store original markdown text for copy/TTS functionality
-    // If originalText is provided (from backend), use it; otherwise use text
-    const textForActions = originalText || text;
-    messageDiv.setAttribute('data-message-text', textForActions);
+    // Store original text in data attribute for copy/TTS functionality
+    messageDiv.setAttribute('data-message-text', text);
 
     const contentDiv = messageDiv.querySelector('.message-content');
     if (contentDiv) {
@@ -1255,8 +1241,7 @@ function finalizeStreamingMessage(messageDiv, text, originalText = null, wasCanc
             const messages = MESSAGES[currentLanguage];
             contentDiv.innerHTML = messages.errorMessage;
         } else if (text) {
-            // If text is already HTML, use it directly; otherwise convert markdown
-            const formattedText = isHtml ? text : markdownToHtml(text);
+            const formattedText = markdownToHtml(text);
             contentDiv.innerHTML = formattedText;
 
             // Add cancelled indicator if needed
@@ -1292,15 +1277,15 @@ function finalizeStreamingMessage(messageDiv, text, originalText = null, wasCanc
         // Append footer
         messageDiv.appendChild(footerDiv);
 
-        // Attach event listeners for action buttons (use original text for copy/TTS)
-        attachActionButtonListeners(footerDiv, textForActions, messageDiv);
+        // Attach event listeners for action buttons
+        attachActionButtonListeners(footerDiv, text, messageDiv);
     }
 
     scrollToBottom();
 
-    // Store in conversation history (use original text)
+    // Store in conversation history
     conversationHistory.push({
-        text: textForActions,
+        text: text,
         sender: 'bot',
         timestamp: new Date().toISOString(),
         wasCancelled: wasCancelled
@@ -1452,8 +1437,8 @@ async function handleFAQClick(faqId) {
         }
     }
 
-    // Finalize the streaming message (this is for FAQ, not HTML streaming)
-    finalizeStreamingMessage(messageDiv, fullText, null, false, false, false);
+    // Finalize the streaming message
+    finalizeStreamingMessage(messageDiv, fullText);
 
     // Scroll to show the question at the top of the chat
     if (questionElement) {
