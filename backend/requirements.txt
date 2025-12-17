@@ -16,3 +16,5 @@ pydantic>=2.5.0
 pydantic-settings>=2.0.0
 python-dotenv>=1.0.0
 requests>=2.31.0
+sentencepiece>=0.1.99  # For MarianMT translation models
+sacremoses>=0.0.53  # For MarianMT tokenization

@@ -154,7 +154,7 @@ def run():
         start = time.time()
         response = service.retrieve(
             query=tq.query,
-            language=tq.language,
+            language=None,  # Cross-lingual: match FR queries to DE/EN docs
             top_k=settings.RETRIEVAL_TOP_K,
             min_score=tq.min_score,
         )
