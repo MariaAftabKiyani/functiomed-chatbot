@@ -129,9 +129,19 @@ class DocumentTranslator:
             target_path: Path to save translated document
             target_lang: Target language (en or fr)
         """
-        # Read source document
-        with open(source_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+        # Read source document with fallback encodings
+        content = None
+        for encoding in ['utf-8', 'latin-1', 'cp1252', 'iso-8859-1']:
+            try:
+                with open(source_path, 'r', encoding=encoding) as f:
+                    content = f.read()
+                break
+            except UnicodeDecodeError:
+                continue
+
+        if content is None:
+            print(f"  ⚠ Skipping {source_path.name} - unable to decode file")
+            return
 
         # Extract metadata header (first 5 lines) and body
         lines = content.split('\n')
@@ -157,17 +167,23 @@ class DocumentTranslator:
 
         # Translate body
         print(f"  Translating {source_path.name} to {target_lang.upper()}...")
-        translated_body = self.translate_text(body_text, 'de', target_lang)
+        try:
+            translated_body = self.translate_text(body_text, 'de', target_lang)
+        except Exception as e:
+            print(f"  ⚠ Translation failed for {source_path.name}: {e}")
+            return
 
         # Combine header and translated body
         final_content = header_text + '\n' + translated_body
 
         # Save translated document
-        target_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(target_path, 'w', encoding='utf-8') as f:
-            f.write(final_content)
-
-        print(f"  ✓ Saved to {target_path}")
+        try:
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(target_path, 'w', encoding='utf-8') as f:
+                f.write(final_content)
+            print(f"  ✓ Saved to {target_path}")
+        except Exception as e:
+            print(f"  ⚠ Failed to save {target_path}: {e}")
 
 
 def find_german_documents(base_path: Path) -> List[Path]:
