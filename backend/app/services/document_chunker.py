@@ -433,17 +433,17 @@ class DocumentChunker:
         logger.info(f"  Target: {self.chunk_size} (±{self.chunk_overlap})")
         
         logger.info(f"\nChunks by Category:")
-        for category in sorted(chunks_by_category.keys()):
+        for category in sorted(chunks_by_category.keys(), key=lambda x: (x is None, x)):
             count = chunks_by_category[category]
             logger.info(f"  {category}: {count}")
-        
+
         logger.info(f"\nChunks by Language:")
-        for language in sorted(chunks_by_language.keys()):
+        for language in sorted(chunks_by_language.keys(), key=lambda x: (x is None, x)):
             count = chunks_by_language[language]
             logger.info(f"  {language}: {count}")
-        
+
         logger.info(f"\nChunks by Source Type:")
-        for source in sorted(chunks_by_source.keys()):
+        for source in sorted(chunks_by_source.keys(), key=lambda x: (x is None, x)):
             count = chunks_by_source[source]
             logger.info(f"  {source}: {count}")
         
