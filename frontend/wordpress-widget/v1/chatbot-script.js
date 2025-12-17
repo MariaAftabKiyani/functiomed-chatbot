@@ -1229,8 +1229,8 @@ function createStreamingMessage() {
 function updateStreamingMessage(messageDiv, text, isHtml = false) {
     const contentDiv = messageDiv.querySelector('.message-content');
     if (contentDiv) {
-        // If backend sends HTML, use it directly; otherwise convert markdown
-        const formattedText = isHtml ? text : markdownToHtml(text);
+        // If backend sends HTML, use it directly; otherwise convert markdown with streaming mode
+        const formattedText = isHtml ? text : markdownToHtml(text, true);
         contentDiv.innerHTML = formattedText;
 
         // Only auto-scroll if user hasn't manually scrolled up

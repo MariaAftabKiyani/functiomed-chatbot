@@ -199,29 +199,11 @@ async def chat_stream(request_body: ChatRequest, request: Request):
     """
     Streaming chat endpoint - allows real-time response generation with ability to stop.
 
-    This endpoint streams the response word-by-word and can be cancelled mid-generation
-    by the client closing the connection.
+    This endpoint streams the response word-by-word as plain markdown.
+    Frontend handles markdown-to-HTML conversion for rendering.
 
     Returns: Server-Sent Events (SSE) stream with JSON chunks
     """
-    import markdown
-    import re
-
-    def markdown_to_html(text: str) -> str:
-        """Convert markdown to HTML with custom styling"""
-        # Use markdown library with extensions
-        md = markdown.Markdown(extensions=['extra', 'nl2br'])
-        html = md.convert(text)
-
-        # Add inline styles for better formatting
-        html = html.replace('<a ', '<a style="color: #007bff; text-decoration: underline;" target="_blank" rel="noopener noreferrer" ')
-        html = html.replace('<ul>', '<ul style="margin: 8px 0; padding-left: 20px;">')
-        html = html.replace('<li>', '<li style="margin: 4px 0;">')
-        html = html.replace('<p>', '<p style="margin: 4px 0;">')
-        html = re.sub(r'<h(\d)>', lambda m: f'<h{m.group(1)} style="margin-top: 8px; margin-bottom: 4px; font-weight: 600; font-size: 14px;">', html)
-
-        return html
-
     async def generate_stream() -> AsyncGenerator[str, None]:
         """Generate streaming response with cancellation support"""
         try:
@@ -242,9 +224,6 @@ async def chat_stream(request_body: ChatRequest, request: Request):
                 response_style=request_body.style or "standard"
             )
 
-            # Convert markdown to HTML
-            html_answer = markdown_to_html(response.answer)
-
             # Send metadata first
             metadata = {
                 "type": "metadata",
@@ -260,48 +239,41 @@ async def chat_stream(request_body: ChatRequest, request: Request):
                 logger.info("Client disconnected before streaming answer")
                 return
 
-            # Stream the HTML word by word (split on spaces while preserving tags)
-            # Pattern: HTML tags OR words (non-tag, non-space characters)
-            tokens = re.findall(r'<[^>]+>|[^<\s]+', html_answer)
+            # Stream the markdown character by character (frontend will render it)
+            answer_text = response.answer
 
-            for i, token in enumerate(tokens):
+            # Stream word by word for smooth rendering
+            words = answer_text.split()
+
+            for i, word in enumerate(words):
                 # Check for client disconnect
                 if await request.is_disconnected():
-                    logger.info(f"Client disconnected at token {i}/{len(tokens)}")
-                    # Reconstruct partial HTML
-                    partial_html = ''
-                    for j in range(i):
-                        partial_html += tokens[j]
-                        # Add space after non-tag tokens
-                        if not tokens[j].startswith('<'):
-                            partial_html += ' '
-                    yield f"data: {json.dumps({'type': 'cancelled', 'partial_html': partial_html})}\n\n"
+                    logger.info(f"Client disconnected at word {i}/{len(words)}")
+                    # Reconstruct partial text
+                    partial_text = ' '.join(words[:i])
+                    yield f"data: {json.dumps({'type': 'cancelled', 'partial_text': partial_text})}\n\n"
                     return
 
-                # Send token chunk
-                # Add space after words (non-tags) but not after HTML tags
-                text_to_send = token
-                if not token.startswith('<') and i < len(tokens) - 1:
-                    text_to_send += ' '
+                # Send word chunk with space
+                text_to_send = word + ' '
 
                 chunk = {
                     "type": "chunk",
                     "text": text_to_send,
                     "index": i,
-                    "total": len(tokens),
-                    "is_html": True  # Flag to indicate HTML content
+                    "total": len(words),
+                    "is_html": False  # Plain markdown, not HTML
                 }
                 yield f"data: {json.dumps(chunk)}\n\n"
 
-                # Small delay to simulate streaming (reduce for tags, normal for words)
-                delay = 0.01 if token.startswith('<') else 0.03
-                await asyncio.sleep(delay)
+                # Small delay to simulate streaming
+                await asyncio.sleep(0.02)
 
-            # Send completion signal with both HTML and original markdown
+            # Send completion signal with markdown text
             completion = {
                 "type": "done",
-                "full_text": html_answer,  # Send HTML version
-                "original_text": response.answer,  # Keep markdown for copy/TTS
+                "full_text": response.answer,  # Send markdown
+                "original_text": response.answer,  # Same as full_text for markdown
                 "metrics": response.to_dict()["metrics"]
             }
             yield f"data: {json.dumps(completion)}\n\n"
