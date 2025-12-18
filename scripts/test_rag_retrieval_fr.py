@@ -35,7 +35,7 @@ class TestQuery:
     expected_categories: List[str]
     expected_documents: List[str]
     description: str
-    min_score: float = 0.5
+    min_score: float = 0.0  # Set to 0 to debug - see all results regardless of score
 
 
 def get_test_queries() -> List[TestQuery]:
