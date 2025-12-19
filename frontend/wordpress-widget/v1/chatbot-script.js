@@ -31,10 +31,38 @@ const USE_STREAMING = true; // Toggle streaming vs regular
 const HARDCODED_FAQS = {
     services: {
         id: "services",
-        question: {
-            EN: "What services do you provide?",
-            DE: "Welche Leistungen bieten Sie an?",
-            FR: "Quels services proposez-vous ?"
+        questions: {
+            EN: [
+                "What services do you provide?",
+                "What are your services?",
+                "What services are available?",
+                "What services do you offer?",
+                "Tell me about your services",
+                "What kind of services do you have?",
+                "What services can I get?",
+                "What do you offer?"
+            ],
+            DE: [
+                "Welche Leistungen bieten Sie an?",
+                "Was sind Ihre Leistungen?",
+                "Welche Leistungen haben Sie?",
+                "Welche Leistungen bieten Sie?",
+                "Welche Leistungen sind verfügbar?",
+                "Erzählen Sie mir von Ihren Leistungen",
+                "Welche Art von Leistungen haben Sie?",
+                "Welche Leistungen kann ich erhalten?",
+                "Was bieten Sie an?"
+            ],
+            FR: [
+                "Quels services proposez-vous ?",
+                "Quels sont vos services ?",
+                "Quels services offrez-vous ?",
+                "Quels services sont disponibles ?",
+                "Parlez-moi de vos services",
+                "Quel type de services proposez-vous ?",
+                "Quels services puis-je obtenir ?",
+                "Que proposez-vous ?"
+            ]
         },
         answer: {
             EN: "We offer a comprehensive range of medical, therapeutic, and integrative health services designed to support diagnostics, treatment, rehabilitation, and long-term wellbeing. Our core service areas include:\n\n**1. Osteopathy:** Classical osteopathy, pediatric osteopathy, osteopathy for pregnant women, and sports osteopathy to support functional balance, healthy development, relief during pregnancy, and performance enhancement for athletes.\n\n**2. Physiotherapy:** Classic physiotherapy for musculoskeletal conditions, pediatric physiotherapy for motor development, and flexible self-pay physiotherapy to reduce pain, improve mobility, and enhance performance at all ages.\n\n**3. Medicine:** Specialized services in orthopedics & traumatology, rheumatology, internal medicine, occupational therapy, and stem cell therapy for precise diagnostics, targeted treatment, functional rehabilitation, and long-term health support.\n\n**4. Complementary Medicine:** Acupuncture, homeopathy, medical massages, and colon hydrotherapy to promote natural regeneration, relaxation, inner balance, and complement conventional treatments.\n\n**5. Integrative Medicine:** Combines medical diagnostics with therapies such as orthomolecular medicine, phytotherapy, functional myodiagnostics, neural therapy, ozone therapy, and colon hydrotherapy to activate self-healing and support gut health, hormones, detoxification, mitochondria, micronutrients, and mental resilience.\n\n**6. FunctioTraining:** Personalized, structured training programs for rehabilitation, performance, and long-term fitness. Flexible memberships allow independent, professionally guided training, with optional outdoor functiowalks for extra activity and energy.",
@@ -45,10 +73,35 @@ const HARDCODED_FAQS = {
     },
     physiotherapy: {
         id: "physiotherapy",
-        question: {
-            EN: "Tell me about physiotherapy",
-            DE: "Erzählen Sie mir etwas über Physiotherapie",
-            FR: "Parlez-moi de la physiothérapie"
+        questions: {
+            EN: [
+                "Tell me about physiotherapy",
+                "What is physiotherapy?",
+                "Do you offer physiotherapy?",
+                "Tell me about your physiotherapy services",
+                "What does physiotherapy involve?",
+                "How does physiotherapy work?",
+                "What can physiotherapy help with?"
+            ],
+            DE: [
+                "Erzählen Sie mir etwas über Physiotherapie",
+                "Was ist Physiotherapie?",
+                "Bieten Sie Physiotherapie an?",
+                "Erzählen Sie mir von Ihren Physiotherapie-Dienstleistungen",
+                "Worum geht es bei Physiotherapie?",
+                "Wie funktioniert Physiotherapie?",
+                "Wobei kann Physiotherapie helfen?",
+                "Was beinhaltet Physiotherapie?"
+            ],
+            FR: [
+                "Parlez-moi de la physiothérapie",
+                "Qu'est-ce que la physiothérapie ?",
+                "Proposez-vous de la physiothérapie ?",
+                "Parlez-moi de vos services de physiothérapie",
+                "En quoi consiste la physiothérapie ?",
+                "Comment fonctionne la physiothérapie ?",
+                "À quoi peut servir la physiothérapie ?"
+            ]
         },
         answer: {
             EN: "Our physiotherapy services focus on restoring and improving physical function through targeted, evidence-based treatments tailored to your individual needs.\n\n**1. Physiotherapy:** Enhance mobility, strength, and functional capacity while sustainably reducing pain. Treatments are active, personalized, and evidence-based for long-term recovery and improved quality of life.\n\n**2. Child Physiotherapy:** Supports children's physical development through playful exercises, promoting motor skills, movement quality, coordination, and independence during key growth phases.\n\n**3. Self-Pay Physiotherapy:** Offers goal-oriented treatments and precise testing procedures for individualized care, allowing you to actively manage your health and achieve optimal results.",
@@ -59,10 +112,38 @@ const HARDCODED_FAQS = {
     },
     appointment: {
         id: "appointment",
-        question: {
-            EN: "How to book an appointment?",
-            DE: "Wie buche ich einen Termin?",
-            FR: "Comment prendre rendez-vous ?"
+        questions: {
+            EN: [
+                "How to book an appointment?",
+                "How can I book an appointment?",
+                "How do I make an appointment?",
+                "How to schedule an appointment?",
+                "How to make a booking?",
+                "I want to book an appointment",
+                "Can I book an appointment?",
+                "How do I schedule a visit?"
+            ],
+            DE: [
+                "Wie buche ich einen Termin?",
+                "Wie kann ich einen Termin buchen?",
+                "Wie kann ich einen Termin vereinbaren?",
+                "Wie mache ich einen Termin?",
+                "Wie kann ich einen Termin planen?",
+                "Ich möchte einen Termin buchen",
+                "Kann ich einen Termin buchen?",
+                "Wie kann ich einen Besuch planen?",
+                "Wie vereinbare ich einen Termin?"
+            ],
+            FR: [
+                "Comment prendre rendez-vous ?",
+                "Comment puis-je prendre rendez-vous ?",
+                "Comment réserver un rendez-vous ?",
+                "Comment planifier un rendez-vous ?",
+                "Comment faire une réservation ?",
+                "Je veux prendre rendez-vous",
+                "Puis-je prendre rendez-vous ?",
+                "Comment puis-je planifier une visite ?"
+            ]
         },
         answer: {
             EN: "**Booking link:** [Click here to book online](https://functiomed.thefotoloft.ch/pages/online-termin-buchen/)\n\n**Step-by-Step Guide:**\n**1. Select Treatment & Reason:** Choose your specialty and reason for consultation.\n**2. Choose Practitioner:** Pick your preferred doctor or therapist or view all available appointments.\n**3. Select Time Slot:** Browse the calendar and select a suitable date and time.\n**4. Enter Email:** Provide a valid email to continue and confirm booking.\n**5. Medicosearch Registration:** Enter first name, last name, and password to create an account, and accept Privacy Policy and Terms & Conditions.\n**6. Confirm Booking:** Submit email and account details to finalize your appointment.",
@@ -73,10 +154,37 @@ const HARDCODED_FAQS = {
     },
     contact: {
         id: "contact",
-        question: {
-            EN: "How to contact you?",
-            DE: "Wie kann ich Sie kontaktieren?",
-            FR: "Comment puis-je vous contacter ?"
+        questions: {
+            EN: [
+                "How to contact you?",
+                "How can I contact you?",
+                "What is your contact information?",
+                "How do I get in touch?",
+                "What is your phone number?",
+                "What is your email?",
+                "How can I reach you?",
+                "Contact details please"
+            ],
+            DE: [
+                "Wie kann ich Sie kontaktieren?",
+                "Wie kann ich Sie erreichen?",
+                "Wie kann ich mit Ihnen in Kontakt treten?",
+                "Was sind Ihre Kontaktdaten?",
+                "Wie ist Ihre Telefonnummer?",
+                "Wie ist Ihre E-Mail-Adresse?",
+                "Kontaktdaten bitte",
+                "Wie lautet Ihre Telefonnummer?"
+            ],
+            FR: [
+                "Comment puis-je vous contacter ?",
+                "Comment vous contacter ?",
+                "Quelles sont vos coordonnées ?",
+                "Comment puis-je vous joindre ?",
+                "Quel est votre numéro de téléphone ?",
+                "Quelle est votre adresse e-mail ?",
+                "Comment puis-je vous atteindre ?",
+                "Vos coordonnées s'il vous plaît"
+            ]
         },
         answer: {
             EN: "You can contact us by phone or email:\n\n**Phone:** +41 (0)44 401 15 15\n**Email:** functiomed@hin.ch\n\nWe usually respond to inquiries within **24 hours** on **weekdays**.",
@@ -87,10 +195,38 @@ const HARDCODED_FAQS = {
     },
     hours: {
         id: "hours",
-        question: {
-            EN: "What are your hours?",
-            DE: "Wie sind Ihre Öffnungszeiten?",
-            FR: "Quels sont vos horaires ?"
+        questions: {
+            EN: [
+                "What are your hours?",
+                "What are your opening hours?",
+                "What are your opening times?",
+                "When are you open?",
+                "What time do you open?",
+                "What are your business hours?",
+                "When can I visit?",
+                "What are your office hours?"
+            ],
+            DE: [
+                "Wie sind Ihre Öffnungszeiten?",
+                "Wann haben Sie geöffnet?",
+                "Wann sind Sie geöffnet?",
+                "Zu welchen Zeiten haben Sie geöffnet?",
+                "Wann kann ich Sie besuchen?",
+                "Was sind Ihre Geschäftszeiten?",
+                "Wie lauten Ihre Öffnungszeiten?",
+                "Wann haben Sie auf?",
+                "Zu welchen Zeiten sind Sie erreichbar?"
+            ],
+            FR: [
+                "Quels sont vos horaires ?",
+                "Quelles sont vos heures d'ouverture ?",
+                "Quand êtes-vous ouverts ?",
+                "À quelle heure ouvrez-vous ?",
+                "Quels sont vos horaires d'ouverture ?",
+                "Quand puis-je venir ?",
+                "Quels sont vos horaires de bureau ?",
+                "À quelles heures êtes-vous disponibles ?"
+            ]
         },
         answer: {
             EN: "Our regular opening hours are **Monday to Friday, from 08:00 to 18:00**. Appointments outside these hours are possible by arrangement.",
@@ -101,10 +237,35 @@ const HARDCODED_FAQS = {
     },
     orthopedics: {
         id: "orthopedics",
-        question: {
-            EN: "What does your orthopedics department treat?",
-            DE: "Was behandelt die Orthopädie bei functiomed?",
-            FR: "Que traite le département d'orthopédie de functiomed ?"
+        questions: {
+            EN: [
+                "What does your orthopedics department treat?",
+                "What does orthopedics treat?",
+                "What conditions does orthopedics handle?",
+                "What does the orthopedics department do?",
+                "What can orthopedics help with?",
+                "What does an orthopedist treat?",
+                "What problems does orthopedics address?"
+            ],
+            DE: [
+                "Was behandelt die Orthopädie bei functiomed?",
+                "Was behandelt die Orthopädie?",
+                "Welche Erkrankungen behandelt die Orthopädie?",
+                "Was macht die Orthopädie-Abteilung?",
+                "Wobei kann die Orthopädie helfen?",
+                "Was behandelt ein Orthopäde?",
+                "Welche Probleme behandelt die Orthopädie?",
+                "Was umfasst die Orthopädie?"
+            ],
+            FR: [
+                "Que traite le département d'orthopédie de functiomed ?",
+                "Que traite l'orthopédie ?",
+                "Quelles conditions l'orthopédie traite-t-elle ?",
+                "Que fait le département d'orthopédie ?",
+                "À quoi peut servir l'orthopédie ?",
+                "Que traite un orthopédiste ?",
+                "Quels problèmes l'orthopédie traite-t-elle ?"
+            ]
         },
         answer: {
             EN: "Orthopedics at functiomed deals with diseases and injuries of the **musculoskeletal system**, including **bones**, **joints**, **muscles**, and **tendons**.",
@@ -115,10 +276,29 @@ const HARDCODED_FAQS = {
     },
     orthopedics_functiomed: {
         id: "orthopedics_functiomed",
-        question: {
-            EN: "What does the orthopedics department at functiomed treat?",
-            DE: "Was behandelt die Orthopädie-Abteilung bei functiomed?",
-            FR: "Que traite le département d'orthopédie chez functiomed ?"
+        questions: {
+            EN: [
+                "What does the orthopedics department at functiomed treat?",
+                "What does functiomed orthopedics treat?",
+                "What conditions does functiomed orthopedics handle?",
+                "What can functiomed orthopedics help with?",
+                "What does the orthopedics team at functiomed do?"
+            ],
+            DE: [
+                "Was behandelt die Orthopädie-Abteilung bei functiomed?",
+                "Was behandelt die Orthopädie von functiomed?",
+                "Welche Erkrankungen behandelt die Orthopädie von functiomed?",
+                "Wobei kann die Orthopädie von functiomed helfen?",
+                "Was macht das Orthopädie-Team von functiomed?",
+                "Was umfasst die Orthopädie bei functiomed?"
+            ],
+            FR: [
+                "Que traite le département d'orthopédie chez functiomed ?",
+                "Que traite l'orthopédie de functiomed ?",
+                "Quelles conditions l'orthopédie de functiomed traite-t-elle ?",
+                "À quoi peut servir l'orthopédie de functiomed ?",
+                "Que fait l'équipe d'orthopédie de functiomed ?"
+            ]
         },
         answer: {
             EN: "Our orthopedics team helps with conditions that affect the **musculoskeletal system**. This includes problems involving **bones, joints, muscles, and tendons**, whether they are caused by injuries or chronic issues.",
@@ -129,10 +309,35 @@ const HARDCODED_FAQS = {
     },
     osteopathy_suitable: {
         id: "osteopathy_suitable",
-        question: {
-            EN: "For whom is osteopathic treatment suitable for?",
-            DE: "Für wen ist eine osteopathische Behandlung geeignet?",
-            FR: "Pour qui le traitement ostéopathique est-il adapté ?"
+        questions: {
+            EN: [
+                "For whom is osteopathic treatment suitable for?",
+                "Who is osteopathy suitable for?",
+                "Who can benefit from osteopathy?",
+                "Is osteopathy suitable for everyone?",
+                "Who should get osteopathic treatment?",
+                "For what age groups is osteopathy suitable?",
+                "Can anyone get osteopathy?"
+            ],
+            DE: [
+                "Für wen ist eine osteopathische Behandlung geeignet?",
+                "Für wen ist Osteopathie geeignet?",
+                "Wer kann von Osteopathie profitieren?",
+                "Ist Osteopathie für jeden geeignet?",
+                "Wer sollte eine osteopathische Behandlung erhalten?",
+                "Für welche Altersgruppen ist Osteopathie geeignet?",
+                "Kann jeder Osteopathie erhalten?",
+                "Wer kann Osteopathie bekommen?"
+            ],
+            FR: [
+                "Pour qui le traitement ostéopathique est-il adapté ?",
+                "Pour qui l'ostéopathie est-elle adaptée ?",
+                "Qui peut bénéficier de l'ostéopathie ?",
+                "L'ostéopathie est-elle adaptée à tous ?",
+                "Qui devrait recevoir un traitement ostéopathique ?",
+                "Pour quels groupes d'âge l'ostéopathie est-elle adaptée ?",
+                "Tout le monde peut-il recevoir de l'ostéopathie ?"
+            ]
         },
         answer: {
             EN: "Osteopathy is suitable for people of **all ages**, from newborn babies to elderly patients. ",
@@ -143,10 +348,34 @@ const HARDCODED_FAQS = {
     },
     rheumatology: {
         id: "rheumatology",
-        question: {
-            EN: "Which conditions does rheumatology treat?",
-            DE: "Welche Erkrankungen behandelt die Rheumatologie?",
-            FR: "Quelles maladies sont traitées par le service de rhumatologie ?"
+        questions: {
+            EN: [
+                "Which conditions does rheumatology treat?",
+                "What does rheumatology treat?",
+                "What conditions does rheumatology handle?",
+                "What can rheumatology help with?",
+                "What diseases does rheumatology treat?",
+                "What does a rheumatologist treat?",
+                "What problems does rheumatology address?"
+            ],
+            DE: [
+                "Welche Erkrankungen behandelt die Rheumatologie?",
+                "Was behandelt die Rheumatologie?",
+                "Wobei kann die Rheumatologie helfen?",
+                "Welche Krankheiten behandelt die Rheumatologie?",
+                "Was behandelt ein Rheumatologe?",
+                "Welche Probleme behandelt die Rheumatologie?",
+                "Was umfasst die Rheumatologie?"
+            ],
+            FR: [
+                "Quelles maladies sont traitées par le service de rhumatologie ?",
+                "Que traite la rhumatologie ?",
+                "Quelles conditions la rhumatologie traite-t-elle ?",
+                "À quoi peut servir la rhumatologie ?",
+                "Quelles maladies la rhumatologie traite-t-elle ?",
+                "Que traite un rhumatologue ?",
+                "Quels problèmes la rhumatologie traite-t-elle ?"
+            ]
         },
         answer: {
             EN: "Our rheumatology department specializes in the diagnosis and treatment of a wide range of rheumatic conditions.",
@@ -157,10 +386,35 @@ const HARDCODED_FAQS = {
     },
     integrative_medicine: {
         id: "integrative_medicine",
-        question: {
-            EN: "What is integrative medicine?",
-            DE: "Was versteht man unter integrativer Medizin?",
-            FR: "Que signifie la médecine intégrative ?"
+        questions: {
+            EN: [
+                "What is integrative medicine?",
+                "What does integrative medicine mean?",
+                "Tell me about integrative medicine",
+                "What is meant by integrative medicine?",
+                "How does integrative medicine work?",
+                "What is the approach of integrative medicine?",
+                "Explain integrative medicine"
+            ],
+            DE: [
+                "Was versteht man unter integrativer Medizin?",
+                "Was ist integrative Medizin?",
+                "Was bedeutet integrative Medizin?",
+                "Erzählen Sie mir von integrativer Medizin",
+                "Was ist mit integrativer Medizin gemeint?",
+                "Wie funktioniert integrative Medizin?",
+                "Was ist der Ansatz der integrativen Medizin?",
+                "Erklären Sie integrative Medizin"
+            ],
+            FR: [
+                "Que signifie la médecine intégrative ?",
+                "Qu'est-ce que la médecine intégrative ?",
+                "Parlez-moi de la médecine intégrative",
+                "Que signifie la médecine intégrative ?",
+                "Comment fonctionne la médecine intégrative ?",
+                "Quelle est l'approche de la médecine intégrative ?",
+                "Expliquez la médecine intégrative"
+            ]
         },
         answer: {
             EN: "Integrative medicine combines **conventional medical treatments** with **complementary therapies** for a holistic approach.",
@@ -171,10 +425,32 @@ const HARDCODED_FAQS = {
     },
     integrative_medicine_meaning: {
         id: "integrative_medicine_meaning",
-        question: {
-            EN: "What is meant by integrative medicine?",
-            DE: "Was ist mit integrativer Medizin gemeint?",
-            FR: "Que signifie par médecine intégrative ?"
+        questions: {
+            EN: [
+                "What is meant by integrative medicine?",
+                "What does integrative medicine mean?",
+                "What is integrative medicine?",
+                "Explain integrative medicine",
+                "Define integrative medicine",
+                "What is the definition of integrative medicine?"
+            ],
+            DE: [
+                "Was ist mit integrativer Medizin gemeint?",
+                "Was bedeutet integrative Medizin?",
+                "Was ist integrative Medizin?",
+                "Erklären Sie integrative Medizin",
+                "Definieren Sie integrative Medizin",
+                "Was ist die Definition von integrativer Medizin?",
+                "Was versteht man unter integrativer Medizin?"
+            ],
+            FR: [
+                "Que signifie par médecine intégrative ?",
+                "Que signifie la médecine intégrative ?",
+                "Qu'est-ce que la médecine intégrative ?",
+                "Expliquez la médecine intégrative",
+                "Définissez la médecine intégrative",
+                "Quelle est la définition de la médecine intégrative ?"
+            ]
         },
         answer: {
             EN: "Integrative medicine combines **conventional medical treatments** with **complementary therapies** for a holistic approach.",
@@ -185,10 +461,35 @@ const HARDCODED_FAQS = {
     },
     complementary_medicine: {
         id: "complementary_medicine",
-        question: {
-            EN: "What does complementary medicine include?",
-            DE: "Was umfasst die Komplementärmedizin bei functiomed?",
-            FR: "Que comprend la médecine complémentaire chez functiomed ?"
+        questions: {
+            EN: [
+                "What does complementary medicine include?",
+                "What is included in complementary medicine?",
+                "What does complementary medicine consist of?",
+                "What treatments are in complementary medicine?",
+                "What services are part of complementary medicine?",
+                "What does complementary medicine offer?",
+                "What therapies are in complementary medicine?"
+            ],
+            DE: [
+                "Was umfasst die Komplementärmedizin bei functiomed?",
+                "Was ist in der Komplementärmedizin enthalten?",
+                "Woraus besteht die Komplementärmedizin?",
+                "Welche Behandlungen sind in der Komplementärmedizin?",
+                "Welche Dienstleistungen sind Teil der Komplementärmedizin?",
+                "Was bietet die Komplementärmedizin?",
+                "Welche Therapien sind in der Komplementärmedizin?",
+                "Was gehört zur Komplementärmedizin?"
+            ],
+            FR: [
+                "Que comprend la médecine complémentaire chez functiomed ?",
+                "Qu'est-ce qui est inclus dans la médecine complémentaire ?",
+                "En quoi consiste la médecine complémentaire ?",
+                "Quels traitements font partie de la médecine complémentaire ?",
+                "Quels services font partie de la médecine complémentaire ?",
+                "Que propose la médecine complémentaire ?",
+                "Quelles thérapies font partie de la médecine complémentaire ?"
+            ]
         },
         answer: {
             EN: "Our complementary medicine includes **acupuncture**, **homeopathy**, **medical massages**, and other alternative healing methods.",
@@ -199,10 +500,31 @@ const HARDCODED_FAQS = {
     },
     complementary_medicine_functiomed: {
         id: "complementary_medicine_functiomed",
-        question: {
-            EN: "What does complementary medicine at functiomed include?",
-            DE: "Was umfasst die Komplementärmedizin bei functiomed?",
-            FR: "Que comprend la médecine complémentaire chez functiomed ?"
+        questions: {
+            EN: [
+                "What does complementary medicine at functiomed include?",
+                "What is included in functiomed complementary medicine?",
+                "What does functiomed complementary medicine consist of?",
+                "What treatments are in functiomed complementary medicine?",
+                "What services are part of functiomed complementary medicine?"
+            ],
+            DE: [
+                "Was umfasst die Komplementärmedizin bei functiomed?",
+                "Was ist in der Komplementärmedizin enthalten?",
+                "Woraus besteht die Komplementärmedizin?",
+                "Welche Behandlungen sind in der Komplementärmedizin?",
+                "Welche Dienstleistungen sind Teil der Komplementärmedizin?",
+                "Was bietet die Komplementärmedizin?",
+                "Welche Therapien sind in der Komplementärmedizin?",
+                "Was gehört zur Komplementärmedizin?"
+            ],
+            FR: [
+                "Que comprend la médecine complémentaire chez functiomed ?",
+                "Qu'est-ce qui est inclus dans la médecine complémentaire de functiomed ?",
+                "En quoi consiste la médecine complémentaire de functiomed ?",
+                "Quels traitements font partie de la médecine complémentaire de functiomed ?",
+                "Quels services font partie de la médecine complémentaire de functiomed ?"
+            ]
         },
         answer: {
             EN: "Our complementary medicine includes **acupuncture**, **homeopathy**, **medical massages**, and other alternative healing methods.",
@@ -213,10 +535,38 @@ const HARDCODED_FAQS = {
     },
     parking: {
         id: "parking",
-        question: {
-            EN: "Are there parking facilities at functiomed?",
-            DE: "Gibt es Parkmöglichkeiten bei functiomed?",
-            FR: "Y a-t-il des places de parking chez functiomed ?"
+        questions: {
+            EN: [
+                "Are there parking facilities at functiomed?",
+                "Is there parking available?",
+                "Do you have parking?",
+                "Is parking available at functiomed?",
+                "Can I park at functiomed?",
+                "Are there parking spaces?",
+                "Is there free parking?",
+                "Where can I park?"
+            ],
+            DE: [
+                "Gibt es Parkmöglichkeiten bei functiomed?",
+                "Gibt es einen Parkplatz?",
+                "Haben Sie Parkplätze?",
+                "Ist Parken bei functiomed verfügbar?",
+                "Kann ich bei functiomed parken?",
+                "Gibt es Parkplätze?",
+                "Gibt es kostenlose Parkplätze?",
+                "Wo kann ich parken?",
+                "Ist Parken möglich?"
+            ],
+            FR: [
+                "Y a-t-il des places de parking chez functiomed ?",
+                "Y a-t-il un parking disponible ?",
+                "Avez-vous un parking ?",
+                "Le parking est-il disponible chez functiomed ?",
+                "Puis-je me garer chez functiomed ?",
+                "Y a-t-il des places de stationnement ?",
+                "Y a-t-il un parking gratuit ?",
+                "Où puis-je me garer ?"
+            ]
         },
         answer: {
             EN: "**Yes**, you'll find **free parking spaces** right in front of our practice, and there are also public parking options in the nearby area.",
@@ -227,10 +577,38 @@ const HARDCODED_FAQS = {
     },
     languages: {
         id: "languages",
-        question: {
-            EN: "Which languages do the staff speak?",
-            DE: "Welche Sprachen sprechen die Mitarbeitenden?",
-            FR: "Quelles langues le personnel parle-t-il ?"
+        questions: {
+            EN: [
+                "Which languages do the staff speak?",
+                "What languages do you speak?",
+                "What languages are spoken?",
+                "Do you speak English?",
+                "What languages are available?",
+                "Can I speak in English?",
+                "What languages do your staff speak?",
+                "Are there multilingual staff?"
+            ],
+            DE: [
+                "Welche Sprachen sprechen die Mitarbeitenden?",
+                "Welche Sprachen sprechen Sie?",
+                "Welche Sprachen werden gesprochen?",
+                "Sprechen Sie Deutsch?",
+                "Welche Sprachen sind verfügbar?",
+                "Kann ich auf Deutsch sprechen?",
+                "Welche Sprachen spricht Ihr Personal?",
+                "Gibt es mehrsprachiges Personal?",
+                "In welchen Sprachen kann ich kommunizieren?"
+            ],
+            FR: [
+                "Quelles langues le personnel parle-t-il ?",
+                "Quelles langues parlez-vous ?",
+                "Quelles langues sont parlées ?",
+                "Parlez-vous français ?",
+                "Quelles langues sont disponibles ?",
+                "Puis-je parler en français ?",
+                "Quelles langues votre personnel parle-t-il ?",
+                "Y a-t-il du personnel multilingue ?"
+            ]
         },
         answer: {
             EN: "Our team speaks **German, English, French, Italian**, and several other languages. Just let us know your preferred language so we can make your visit as comfortable as possible.",
@@ -241,10 +619,35 @@ const HARDCODED_FAQS = {
     },
     sports_medicine: {
         id: "sports_medicine",
-        question: {
-            EN: "What services does sports medicine offer?",
-            DE: "Welche Leistungen bietet die Sportmedizin?",
-            FR: "Quels services offre la médecine du sport ?"
+        questions: {
+            EN: [
+                "What services does sports medicine offer?",
+                "What does sports medicine offer?",
+                "What services are available in sports medicine?",
+                "What can sports medicine help with?",
+                "What does sports medicine do?",
+                "Tell me about sports medicine",
+                "What treatments does sports medicine provide?"
+            ],
+            DE: [
+                "Welche Leistungen bietet die Sportmedizin?",
+                "Was bietet die Sportmedizin?",
+                "Welche Dienstleistungen sind in der Sportmedizin verfügbar?",
+                "Wobei kann die Sportmedizin helfen?",
+                "Was macht die Sportmedizin?",
+                "Erzählen Sie mir von der Sportmedizin",
+                "Welche Behandlungen bietet die Sportmedizin?",
+                "Was umfasst die Sportmedizin?"
+            ],
+            FR: [
+                "Quels services offre la médecine du sport ?",
+                "Que propose la médecine du sport ?",
+                "Quels services sont disponibles en médecine du sport ?",
+                "À quoi peut servir la médecine du sport ?",
+                "Que fait la médecine du sport ?",
+                "Parlez-moi de la médecine du sport",
+                "Quels traitements la médecine du sport fournit-elle ?"
+            ]
         },
         answer: {
             EN: "We provide comprehensive support for athletes, from **preventing** injuries to **diagnosing** and **treating** sports-related problems. We're here for both **recreational** and **professional** athletes.",
@@ -255,10 +658,38 @@ const HARDCODED_FAQS = {
     },
     referral: {
         id: "referral",
-        question: {
-            EN: "Do I need a referral for an appointment?",
-            DE: "Benötige ich eine Überweisung für einen Termin?",
-            FR: "Ai-je besoin d'une ordonnance pour un rendez-vous ?"
+        questions: {
+            EN: [
+                "Do I need a referral for an appointment?",
+                "Do I need a referral?",
+                "Is a referral required?",
+                "Do I need a doctor's referral?",
+                "Can I book without a referral?",
+                "Is a referral necessary?",
+                "Do you require a referral?",
+                "Can I come without a referral?"
+            ],
+            DE: [
+                "Benötige ich eine Überweisung für einen Termin?",
+                "Brauche ich eine Überweisung?",
+                "Ist eine Überweisung erforderlich?",
+                "Brauche ich eine ärztliche Überweisung?",
+                "Kann ich ohne Überweisung buchen?",
+                "Ist eine Überweisung notwendig?",
+                "Benötigen Sie eine Überweisung?",
+                "Kann ich ohne Überweisung kommen?",
+                "Muss ich eine Überweisung haben?"
+            ],
+            FR: [
+                "Ai-je besoin d'une ordonnance pour un rendez-vous ?",
+                "Ai-je besoin d'une ordonnance ?",
+                "Une ordonnance est-elle requise ?",
+                "Ai-je besoin d'une ordonnance médicale ?",
+                "Puis-je réserver sans ordonnance ?",
+                "Une ordonnance est-elle nécessaire ?",
+                "Exigez-vous une ordonnance ?",
+                "Puis-je venir sans ordonnance ?"
+            ]
         },
         answer: {
             EN: "**Not necessarily**. You can book an appointment directly with us unless you're part of a special insurance model, such as the primary care physician model, which may require a referral.",
@@ -269,10 +700,38 @@ const HARDCODED_FAQS = {
     },
     insurance_coverage: {
         id: "insurance_coverage",
-        question: {
-            EN: "Are the costs covered by health insurance?",
-            DE: "Werden die Kosten von der Krankenkasse übernommen?",
-            FR: "Les coûts sont-ils couverts par l'assurance maladie ?"
+        questions: {
+            EN: [
+                "Are the costs covered by health insurance?",
+                "Is it covered by insurance?",
+                "Does insurance cover the costs?",
+                "Will my insurance pay?",
+                "Is treatment covered by insurance?",
+                "Does health insurance cover this?",
+                "Are services covered by insurance?",
+                "What does insurance cover?"
+            ],
+            DE: [
+                "Werden die Kosten von der Krankenkasse übernommen?",
+                "Ist es von der Versicherung abgedeckt?",
+                "Übernimmt die Versicherung die Kosten?",
+                "Wird meine Versicherung zahlen?",
+                "Ist die Behandlung von der Versicherung abgedeckt?",
+                "Deckt die Krankenversicherung dies ab?",
+                "Sind die Dienstleistungen von der Versicherung abgedeckt?",
+                "Was deckt die Versicherung ab?",
+                "Werden die Kosten übernommen?"
+            ],
+            FR: [
+                "Les coûts sont-ils couverts par l'assurance maladie ?",
+                "Est-ce couvert par l'assurance ?",
+                "L'assurance couvre-t-elle les coûts ?",
+                "Mon assurance paiera-t-elle ?",
+                "Le traitement est-il couvert par l'assurance ?",
+                "L'assurance maladie couvre-t-elle cela ?",
+                "Les services sont-ils couverts par l'assurance ?",
+                "Que couvre l'assurance ?"
+            ]
         },
         answer: {
             EN: "Most orthopedic and traumatology treatments are covered by **basic** health insurance or **accident** insurance. We always recommend checking with your insurance provider in advance to understand exactly what is covered for your specific situation.",
@@ -283,10 +742,35 @@ const HARDCODED_FAQS = {
     },
     osteopathy_sessions: {
         id: "osteopathy_sessions",
-        question: {
-            EN: "How many sessions are necessary?",
-            DE: "Wie viele Sitzungen sind notwendig?",
-            FR: "Combien de séances sont nécessaires ?"
+        questions: {
+            EN: [
+                "How many sessions are necessary?",
+                "How many sessions do I need?",
+                "How many treatments are needed?",
+                "How many sessions will I need?",
+                "How many visits are required?",
+                "How many sessions are typically needed?",
+                "What is the number of sessions needed?"
+            ],
+            DE: [
+                "Wie viele Sitzungen sind notwendig?",
+                "Wie viele Sitzungen brauche ich?",
+                "Wie viele Behandlungen sind nötig?",
+                "Wie viele Sitzungen werde ich brauchen?",
+                "Wie viele Besuche sind erforderlich?",
+                "Wie viele Sitzungen sind normalerweise nötig?",
+                "Wie viele Sitzungen sind erforderlich?",
+                "Wie viele Termine brauche ich?"
+            ],
+            FR: [
+                "Combien de séances sont nécessaires ?",
+                "Combien de séances ai-je besoin ?",
+                "Combien de traitements sont nécessaires ?",
+                "Combien de séances vais-je avoir besoin ?",
+                "Combien de visites sont requises ?",
+                "Combien de séances sont généralement nécessaires ?",
+                "Quel est le nombre de séances nécessaires ?"
+            ]
         },
         answer: {
             EN: "This depends on your individual situation. Many patients benefit from several sessions, but the exact number varies from case to case.",
@@ -297,10 +781,35 @@ const HARDCODED_FAQS = {
     },
     osteopathy_insurance: {
         id: "osteopathy_insurance",
-        question: {
-            EN: "Is osteopathy covered by health insurance?",
-            DE: "Wird Osteopathie von der Krankenkasse bezahlt?",
-            FR: "L'ostéopathie est-elle couverte par l'assurance maladie ?"
+        questions: {
+            EN: [
+                "Is osteopathy covered by health insurance?",
+                "Does insurance cover osteopathy?",
+                "Is osteopathy covered by insurance?",
+                "Will insurance pay for osteopathy?",
+                "Does health insurance cover osteopathy?",
+                "Is osteopathic treatment covered?",
+                "Can I use insurance for osteopathy?"
+            ],
+            DE: [
+                "Wird Osteopathie von der Krankenkasse bezahlt?",
+                "Übernimmt die Versicherung Osteopathie?",
+                "Ist Osteopathie von der Versicherung abgedeckt?",
+                "Wird die Versicherung für Osteopathie zahlen?",
+                "Deckt die Krankenversicherung Osteopathie ab?",
+                "Ist die osteopathische Behandlung abgedeckt?",
+                "Kann ich die Versicherung für Osteopathie nutzen?",
+                "Wird Osteopathie von der Versicherung übernommen?"
+            ],
+            FR: [
+                "L'ostéopathie est-elle couverte par l'assurance maladie ?",
+                "L'assurance couvre-t-elle l'ostéopathie ?",
+                "L'ostéopathie est-elle couverte par l'assurance ?",
+                "L'assurance paiera-t-elle pour l'ostéopathie ?",
+                "L'assurance maladie couvre-t-elle l'ostéopathie ?",
+                "Le traitement ostéopathique est-il couvert ?",
+                "Puis-je utiliser l'assurance pour l'ostéopathie ?"
+            ]
         },
         answer: {
             EN: "**Supplementary insurance** often covers **part of the costs**. It's always best for patients to check their coverage in advance.",
@@ -311,10 +820,35 @@ const HARDCODED_FAQS = {
     },
     internal_medicine: {
         id: "internal_medicine",
-        question: {
-            EN: "What does internal medicine at functiomed include?",
-            DE: "Was umfasst die Innere Medizin bei functiomed?",
-            FR: "Que comprend la médecine interne chez functiomed ?"
+        questions: {
+            EN: [
+                "What does internal medicine at functiomed include?",
+                "What is included in internal medicine?",
+                "What does internal medicine cover?",
+                "What does internal medicine treat?",
+                "What conditions does internal medicine handle?",
+                "What services are in internal medicine?",
+                "Tell me about internal medicine"
+            ],
+            DE: [
+                "Was umfasst die Innere Medizin bei functiomed?",
+                "Was ist in der Inneren Medizin enthalten?",
+                "Was umfasst die Innere Medizin?",
+                "Was behandelt die Innere Medizin?",
+                "Welche Erkrankungen behandelt die Innere Medizin?",
+                "Welche Dienstleistungen sind in der Inneren Medizin?",
+                "Erzählen Sie mir von der Inneren Medizin",
+                "Was gehört zur Inneren Medizin?"
+            ],
+            FR: [
+                "Que comprend la médecine interne chez functiomed ?",
+                "Qu'est-ce qui est inclus dans la médecine interne ?",
+                "Que couvre la médecine interne ?",
+                "Que traite la médecine interne ?",
+                "Quelles conditions la médecine interne traite-t-elle ?",
+                "Quels services sont dans la médecine interne ?",
+                "Parlez-moi de la médecine interne"
+            ]
         },
         answer: {
             EN: "Internal medicine at functiomed focuses on the prevention, diagnosis, and treatment of diseases affecting the body's **internal organs**. This includes conditions related to the **heart, lungs, liver, kidneys**, and other vital systems. Our specialists take a comprehensive approach, considering the overall health of each patient, to provide accurate diagnoses, effective treatment plans, and ongoing care for both acute and chronic medical conditions.",
@@ -325,10 +859,35 @@ const HARDCODED_FAQS = {
     },
     diagnosis: {
         id: "diagnosis",
-        question: {
-            EN: "How is the diagnosis made?",
-            DE: "Wie erfolgt die Diagnosestellung?",
-            FR: "Comment est posée la diagnosis ?"
+        questions: {
+            EN: [
+                "How is the diagnosis made?",
+                "How do you make a diagnosis?",
+                "How is diagnosis done?",
+                "What methods are used for diagnosis?",
+                "How do you diagnose conditions?",
+                "What is the diagnostic process?",
+                "How are diagnoses made?"
+            ],
+            DE: [
+                "Wie erfolgt die Diagnosestellung?",
+                "Wie stellen Sie eine Diagnose?",
+                "Wie wird die Diagnose gestellt?",
+                "Welche Methoden werden für die Diagnose verwendet?",
+                "Wie diagnostizieren Sie Erkrankungen?",
+                "Wie ist der Diagnoseprozess?",
+                "Wie werden Diagnosen gestellt?",
+                "Wie wird diagnostiziert?"
+            ],
+            FR: [
+                "Comment est posée la diagnosis ?",
+                "Comment faites-vous un diagnostic ?",
+                "Comment le diagnostic est-il fait ?",
+                "Quelles méthodes sont utilisées pour le diagnostic ?",
+                "Comment diagnostiquez-vous les conditions ?",
+                "Quel est le processus de diagnostic ?",
+                "Comment les diagnostics sont-ils posés ?"
+            ]
         },
         answer: {
             EN: "We use a combination of **laboratory tests** and modern **imaging techniques** to ensure an accurate diagnosis.",
@@ -339,10 +898,35 @@ const HARDCODED_FAQS = {
     },
     fasting: {
         id: "fasting",
-        question: {
-            EN: "Do I need to fast for a blood test?",
-            DE: "Muss ich nüchtern zur Blutabnahme erscheinen?",
-            FR: "Dois-je jeûner pour une prise de sang ?"
+        questions: {
+            EN: [
+                "Do I need to fast for a blood test?",
+                "Do I need to fast before a blood test?",
+                "Should I fast before blood work?",
+                "Is fasting required for blood tests?",
+                "Do I need to skip meals before a blood test?",
+                "Can I eat before a blood test?",
+                "What are the fasting requirements for blood tests?"
+            ],
+            DE: [
+                "Muss ich nüchtern zur Blutabnahme erscheinen?",
+                "Muss ich vor einer Blutuntersuchung fasten?",
+                "Sollte ich vor der Blutabnahme fasten?",
+                "Ist Fasten für Blutuntersuchungen erforderlich?",
+                "Muss ich vor einer Blutuntersuchung auf Mahlzeiten verzichten?",
+                "Kann ich vor einer Blutuntersuchung essen?",
+                "Was sind die Fastenanforderungen für Blutuntersuchungen?",
+                "Muss ich nüchtern sein?"
+            ],
+            FR: [
+                "Dois-je jeûner pour une prise de sang ?",
+                "Dois-je jeûner avant une prise de sang ?",
+                "Dois-je jeûner avant les analyses sanguines ?",
+                "Le jeûne est-il requis pour les analyses sanguines ?",
+                "Dois-je sauter des repas avant une prise de sang ?",
+                "Puis-je manger avant une prise de sang ?",
+                "Quelles sont les exigences de jeûne pour les analyses sanguines ?"
+            ]
         },
         answer: {
             EN: "For certain blood tests, fasting is required. We will inform you in advance.",
@@ -353,10 +937,38 @@ const HARDCODED_FAQS = {
     },
     therapies: {
         id: "therapies",
-        question: {
-            EN: "Which therapies are offered?",
-            DE: "Welche Therapien werden angeboten?",
-            FR: "Quelles thérapies sont proposées ?"
+        questions: {
+            EN: [
+                "Which therapies are offered?",
+                "What therapies do you offer?",
+                "What therapies are available?",
+                "What treatments are offered?",
+                "What therapy options do you have?",
+                "Tell me about your therapies",
+                "What types of therapy are available?",
+                "What therapies can I get?"
+            ],
+            DE: [
+                "Welche Therapien werden angeboten?",
+                "Welche Therapien bieten Sie an?",
+                "Welche Therapien sind verfügbar?",
+                "Welche Behandlungen werden angeboten?",
+                "Welche Therapieoptionen haben Sie?",
+                "Erzählen Sie mir von Ihren Therapien",
+                "Welche Arten von Therapie sind verfügbar?",
+                "Welche Therapien kann ich erhalten?",
+                "Was für Therapien gibt es?"
+            ],
+            FR: [
+                "Quelles thérapies sont proposées ?",
+                "Quelles thérapies offrez-vous ?",
+                "Quelles thérapies sont disponibles ?",
+                "Quels traitements sont proposés ?",
+                "Quelles options de thérapie avez-vous ?",
+                "Parlez-moi de vos thérapies",
+                "Quels types de thérapie sont disponibles ?",
+                "Quelles thérapies puis-je obtenir ?"
+            ]
         },
         answer: {
             EN: "Within our integrative medicine program, we offer a wide range of therapies designed to complement conventional medical treatments. These include **acupuncture, homeopathy, infusion therapies, colon hydrotherapy, ozone therapy, orthomolecular medicine, nutritional counseling**, and **mental coaching**. Each therapy is carefully selected to support your overall health, promote healing, and enhance your quality of life, with treatment plans tailored to your individual needs.",
@@ -367,10 +979,35 @@ const HARDCODED_FAQS = {
     },
     integrative_science: {
         id: "integrative_science",
-        question: {
-            EN: "Is integrative medicine scientifically recognized?",
-            DE: "Ist integrative Medizin wissenschaftlich anerkannt?",
-            FR: "La médecine intégrative est-elle scientifiquement reconnue ?"
+        questions: {
+            EN: [
+                "Is integrative medicine scientifically recognized?",
+                "Is integrative medicine evidence-based?",
+                "Is integrative medicine scientifically proven?",
+                "Is integrative medicine backed by science?",
+                "Is there scientific evidence for integrative medicine?",
+                "Is integrative medicine scientifically valid?",
+                "Does integrative medicine have scientific support?"
+            ],
+            DE: [
+                "Ist integrative Medizin wissenschaftlich anerkannt?",
+                "Ist integrative Medizin evidenzbasiert?",
+                "Ist integrative Medizin wissenschaftlich bewiesen?",
+                "Wird integrative Medizin von der Wissenschaft unterstützt?",
+                "Gibt es wissenschaftliche Beweise für integrative Medizin?",
+                "Ist integrative Medizin wissenschaftlich gültig?",
+                "Hat integrative Medizin wissenschaftliche Unterstützung?",
+                "Ist integrative Medizin wissenschaftlich fundiert?"
+            ],
+            FR: [
+                "La médecine intégrative est-elle scientifiquement reconnue ?",
+                "La médecine intégrative est-elle basée sur des preuves ?",
+                "La médecine intégrative est-elle scientifiquement prouvée ?",
+                "La médecine intégrative est-elle soutenue par la science ?",
+                "Y a-t-il des preuves scientifiques pour la médecine intégrative ?",
+                "La médecine intégrative est-elle scientifiquement valide ?",
+                "La médecine intégrative a-t-elle un soutien scientifique ?"
+            ]
         },
         answer: {
             EN: "Many of the methods we use have been scientifically examined and work well alongside conventional medicine.",
@@ -381,10 +1018,38 @@ const HARDCODED_FAQS = {
     },
     therapy_selection: {
         id: "therapy_selection",
-        question: {
-            EN: "How do I find the right therapy for me?",
-            DE: "Wie finde ich die passende Therapie für mich?",
-            FR: "Comment trouver la thérapie qui me convient ?"
+        questions: {
+            EN: [
+                "How do I find the right therapy for me?",
+                "How can I choose the right therapy?",
+                "How do I select the best therapy?",
+                "Which therapy is right for me?",
+                "How do I know which therapy to choose?",
+                "What therapy should I get?",
+                "How to choose the right treatment?",
+                "Which treatment is best for me?"
+            ],
+            DE: [
+                "Wie finde ich die passende Therapie für mich?",
+                "Wie kann ich die richtige Therapie wählen?",
+                "Wie wähle ich die beste Therapie?",
+                "Welche Therapie ist die richtige für mich?",
+                "Wie weiß ich, welche Therapie ich wählen soll?",
+                "Welche Therapie sollte ich erhalten?",
+                "Wie wähle ich die richtige Behandlung?",
+                "Welche Behandlung ist die beste für mich?",
+                "Wie finde ich die richtige Behandlung?"
+            ],
+            FR: [
+                "Comment trouver la thérapie qui me convient ?",
+                "Comment puis-je choisir la bonne thérapie ?",
+                "Comment sélectionner la meilleure thérapie ?",
+                "Quelle thérapie me convient ?",
+                "Comment savoir quelle thérapie choisir ?",
+                "Quelle thérapie devrais-je obtenir ?",
+                "Comment choisir le bon traitement ?",
+                "Quel traitement est le meilleur pour moi ?"
+            ]
         },
     answer: {
         EN: "Choosing the right therapy depends on your individual health needs, goals, and preferences. During a **personal consultation**, our specialists will review your medical history, discuss your symptoms, and assess your overall condition. Based on this information, we will recommend the most suitable treatment options and create a tailored plan to help you achieve the best possible results for your health and well-being.",
@@ -395,10 +1060,38 @@ const HARDCODED_FAQS = {
     },
     acupuncture: {
         id: "acupuncture",
-        question: {
-            EN: "How does an acupuncture session work?",
-            DE: "Wie läuft eine Akupunktursitzung ab?",
-            FR: "Comment se déroule une séance d'acupuncture ?"
+        questions: {
+            EN: [
+                "How does an acupuncture session work?",
+                "What happens during acupuncture?",
+                "How is acupuncture performed?",
+                "What does an acupuncture session involve?",
+                "Tell me about acupuncture sessions",
+                "How does acupuncture treatment work?",
+                "What to expect during acupuncture?",
+                "What is an acupuncture session like?"
+            ],
+            DE: [
+                "Wie läuft eine Akupunktursitzung ab?",
+                "Was passiert während der Akupunktur?",
+                "Wie wird Akupunktur durchgeführt?",
+                "Was beinhaltet eine Akupunktursitzung?",
+                "Erzählen Sie mir von Akupunktursitzungen",
+                "Wie funktioniert die Akupunkturbehandlung?",
+                "Was kann ich während der Akupunktur erwarten?",
+                "Wie ist eine Akupunktursitzung?",
+                "Was erwartet mich bei einer Akupunktursitzung?"
+            ],
+            FR: [
+                "Comment se déroule une séance d'acupuncture ?",
+                "Que se passe-t-il pendant l'acupuncture ?",
+                "Comment l'acupuncture est-elle pratiquée ?",
+                "En quoi consiste une séance d'acupuncture ?",
+                "Parlez-moi des séances d'acupuncture",
+                "Comment fonctionne le traitement d'acupuncture ?",
+                "À quoi s'attendre pendant l'acupuncture ?",
+                "À quoi ressemble une séance d'acupuncture ?"
+            ]
         },
     answer: {
         EN: "During an acupuncture session, **very fine needles** are carefully placed at **specific points** on the body to help balance energy flow and support the body’s natural healing processes. \nFor children or anyone who is uncomfortable with needles but still wants to benefit from Far Eastern healing methods, we offer Tuina. **Tuina** is a traditional Chinese massage technique that uses gentle manual movements to **improve energy flow, release blockages**, and promote harmony between body and mind. Each session is tailored to the individual’s needs to ensure a safe and effective treatment.",
@@ -409,10 +1102,38 @@ const HARDCODED_FAQS = {
     },
     homeopathy: {
         id: "homeopathy",
-        question: {
-            EN: "Is homeopathy suitable for children?",
-            DE: "Ist Homöopathie für Kinder geeignet?",
-            FR: "L'homéopathie est-elle adaptée aux enfants ?"
+        questions: {
+            EN: [
+                "Is homeopathy suitable for children?",
+                "Can children use homeopathy?",
+                "Is homeopathy safe for children?",
+                "Can kids get homeopathic treatment?",
+                "Is homeopathy appropriate for children?",
+                "Do you offer homeopathy for children?",
+                "Is homeopathy good for kids?",
+                "Can my child have homeopathy?"
+            ],
+            DE: [
+                "Ist Homöopathie für Kinder geeignet?",
+                "Können Kinder Homöopathie verwenden?",
+                "Ist Homöopathie für Kinder sicher?",
+                "Können Kinder homöopathische Behandlung erhalten?",
+                "Ist Homöopathie für Kinder angemessen?",
+                "Bieten Sie Homöopathie für Kinder an?",
+                "Ist Homöopathie gut für Kinder?",
+                "Kann mein Kind Homöopathie erhalten?",
+                "Ist Homöopathie kindgerecht?"
+            ],
+            FR: [
+                "L'homéopathie est-elle adaptée aux enfants ?",
+                "Les enfants peuvent-ils utiliser l'homéopathie ?",
+                "L'homéopathie est-elle sûre pour les enfants ?",
+                "Les enfants peuvent-ils recevoir un traitement homéopathique ?",
+                "L'homéopathie est-elle appropriée pour les enfants ?",
+                "Offrez-vous l'homéopathie pour les enfants ?",
+                "L'homéopathie est-elle bonne pour les enfants ?",
+                "Mon enfant peut-il avoir de l'homéopathie ?"
+            ]
         },
     answer: {
         EN: "**Yes**, homeopathy is **safe and suitable** for children of all ages. Treatments are completely needle-free and gentle, making them well-tolerated by young patients. Homeopathy can help support a child’s natural healing processes, address common ailments, and improve overall well-being, all while being adapted to the individual needs of each child.",
@@ -423,10 +1144,38 @@ const HARDCODED_FAQS = {
     },
     massage: {
         id: "massage",
-        question: {
-            EN: "Which massage techniques are offered?",
-            DE: "Welche Massagetechniken werden angeboten?",
-            FR: "Quelles techniques de massage sont proposées ?"
+        questions: {
+            EN: [
+                "Which massage techniques are offered?",
+                "What massage types do you offer?",
+                "What massage services are available?",
+                "What kinds of massage do you have?",
+                "Tell me about your massage services",
+                "What massage techniques are available?",
+                "What types of massage can I get?",
+                "Do you offer massages?"
+            ],
+            DE: [
+                "Welche Massagetechniken werden angeboten?",
+                "Welche Massagearten bieten Sie an?",
+                "Welche Massagedienstleistungen sind verfügbar?",
+                "Welche Arten von Massage haben Sie?",
+                "Erzählen Sie mir von Ihren Massagedienstleistungen",
+                "Welche Massagetechniken sind verfügbar?",
+                "Welche Arten von Massage kann ich erhalten?",
+                "Bieten Sie Massagen an?",
+                "Was für Massagen gibt es?"
+            ],
+            FR: [
+                "Quelles techniques de massage sont proposées ?",
+                "Quels types de massage offrez-vous ?",
+                "Quels services de massage sont disponibles ?",
+                "Quels types de massage avez-vous ?",
+                "Parlez-moi de vos services de massage",
+                "Quelles techniques de massage sont disponibles ?",
+                "Quels types de massage puis-je obtenir ?",
+                "Offrez-vous des massages ?"
+            ]
         },
         answer: {
             EN: "We offer **classic** massages, **reflexology**, **hot stone** massages, **Japanese facial** massage, **Lomi Lomi**, **pregnancy** massage, **anti-cellulite** massage, **manual lymphatic drainage**, **Shiatsu**, and **sports** massages.",
@@ -437,10 +1186,38 @@ const HARDCODED_FAQS = {
     },
     hours_practice: {
         id: "hours_practice",
-        question: {
-            EN: "What are the practice opening hours?",
-            DE: "Wie sind die Öffnungszeiten der Praxis?",
-            FR: "Quels sont les horaires d'ouverture de la pratique ?"
+        questions: {
+            EN: [
+                "What are the practice opening hours?",
+                "What are your practice hours?",
+                "What are the clinic hours?",
+                "When is the practice open?",
+                "What are your office hours?",
+                "When can I visit the practice?",
+                "What time does the practice open?",
+                "What are your business hours?"
+            ],
+            DE: [
+                "Wie sind die Öffnungszeiten der Praxis?",
+                "Was sind Ihre Praxiszeiten?",
+                "Was sind die Klinikzeiten?",
+                "Wann ist die Praxis geöffnet?",
+                "Was sind Ihre Bürozeiten?",
+                "Wann kann ich die Praxis besuchen?",
+                "Um wie viel Uhr öffnet die Praxis?",
+                "Was sind Ihre Geschäftszeiten?",
+                "Zu welchen Zeiten haben Sie geöffnet?"
+            ],
+            FR: [
+                "Quels sont les horaires d'ouverture de la pratique ?",
+                "Quels sont vos horaires de pratique ?",
+                "Quels sont les horaires de la clinique ?",
+                "Quand la pratique est-elle ouverte ?",
+                "Quels sont vos horaires de bureau ?",
+                "Quand puis-je visiter la pratique ?",
+                "À quelle heure la pratique ouvre-t-elle ?",
+                "Quels sont vos horaires d'ouverture ?"
+            ]
         },
         answer: {
             EN: "Our regular opening hours are **Monday to Friday, from 08:00 to 18:00**. Appointments outside these hours are possible by arrangement.",
@@ -451,10 +1228,38 @@ const HARDCODED_FAQS = {
     },
     appointment_booking: {
         id: "appointment_booking",
-        question: {
-            EN: "How can I make an appointment?",
-            DE: "Wie kann ich einen Termin vereinbaren?",
-            FR: "Comment puis-je prendre rendez-vous ?"
+        questions: {
+            EN: [
+                "How can I make an appointment?",
+                "How do I book an appointment?",
+                "How to schedule an appointment?",
+                "How can I schedule a visit?",
+                "How do I make a booking?",
+                "I want to make an appointment",
+                "Can I book an appointment?",
+                "How to get an appointment?"
+            ],
+            DE: [
+                "Wie kann ich einen Termin vereinbaren?",
+                "Wie buche ich einen Termin?",
+                "Wie kann ich einen Termin planen?",
+                "Wie kann ich einen Besuch planen?",
+                "Wie mache ich eine Buchung?",
+                "Ich möchte einen Termin vereinbaren",
+                "Kann ich einen Termin buchen?",
+                "Wie bekomme ich einen Termin?",
+                "Wie kann ich einen Termin bekommen?"
+            ],
+            FR: [
+                "Comment puis-je prendre rendez-vous ?",
+                "Comment réserver un rendez-vous ?",
+                "Comment planifier un rendez-vous ?",
+                "Comment puis-je planifier une visite ?",
+                "Comment faire une réservation ?",
+                "Je veux prendre rendez-vous",
+                "Puis-je prendre rendez-vous ?",
+                "Comment obtenir un rendez-vous ?"
+            ]
         },
         answer: {
             EN: "**Booking link:** [Click here to book online](https://functiomed.thefotoloft.ch/pages/online-termin-buchen/)\n\n**Step-by-Step Guide:**\n**1. Select Treatment & Reason:** Choose your specialty and reason for consultation.\n**2. Choose Practitioner:** Pick your preferred doctor or therapist or view all available appointments.\n**3. Select Time Slot:** Browse the calendar and select a suitable date and time.\n**4. Enter Email:** Provide a valid email to continue and confirm booking.\n**5. Medicosearch Registration:** Enter first name, last name, and password to create an account, and accept Privacy Policy and Terms & Conditions.\n**6. Confirm Booking:** Submit email and account details to finalize your appointment.",
@@ -462,40 +1267,6 @@ const HARDCODED_FAQS = {
             FR: "**Lien de réservation :** [Cliquez ici pour réserver en ligne](https://functiomed.thefotoloft.ch/pages/online-termin-buchen/)\n\n**Guide étape par étape :**\n**1. Sélectionner le traitement et le motif :** Choisissez votre spécialité et le motif de la consultation.\n**2. Choisir le praticien :** Sélectionnez votre médecin ou thérapeute préféré ou affichez tous les rendez-vous disponibles.\n**3. Choisir l'horaire :** Parcourez le calendrier et sélectionnez une date et une heure appropriées.\n**4. Saisir l'e-mail :** Fournissez une adresse e-mail valide pour continuer et confirmer la réservation.\n**5. Inscription sur Medicosearch :** Entrez votre prénom, nom et mot de passe pour créer un compte, et acceptez la politique de confidentialité et les conditions générales.\n**6. Confirmer la réservation :** Soumettez vos coordonnées e-mail et de compte pour finaliser votre rendez-vous."
         },
         category: "booking"
-    }
-};
-
-// Language-specific messages
-const MESSAGES = {
-    EN: {
-        initialGreeting: "Hi there! 👋 I'm FUNIA, your friendly assistant at functiomed. I'm here to help you with anything you need - whether it's finding information about our services, doctors, or answering your questions. What can I help you with today?",
-        placeholder: "Type your message...",
-        errorMessage: "Sorry, there was an error. Please try again.",
-        typingIndicator: "Typing...",
-        headerTitle: "FUNIA",
-        headerStatus: "● Online",
-        ttsError: "Could not play audio. Please try again.",
-        demoMessage: "Please click on FAQs below to get instant answers to common questions."
-    },
-    DE: {
-        initialGreeting: "Hallo! 👋 Ich bin FUNIA, Ihre freundliche Assistentin bei functiomed. Ich bin hier, um Ihnen bei allem zu helfen, was Sie brauchen - ob es darum geht, Informationen über unsere Dienstleistungen, Ärzte zu finden oder Ihre Fragen zu beantworten. Womit kann ich Ihnen heute helfen?",
-        placeholder: "Geben Sie Ihre Nachricht ein...",
-        errorMessage: "Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.",
-        typingIndicator: "Tippt...",
-        headerTitle: "FUNIA",
-        headerStatus: "● Online",
-        ttsError: "Audio konnte nicht abgespielt werden. Bitte versuchen Sie es erneut.",
-        demoMessage: "Bitte klicken Sie auf FAQs unten, um sofortige Antworten auf häufig gestellte Fragen zu erhalten."
-    },
-    FR: {
-        initialGreeting: "Bonjour ! 👋 Je suis FUNIA, votre assistante amicale chez functiomed. Je suis là pour vous aider avec tout ce dont vous avez besoin - que ce soit pour trouver des informations sur nos services, nos médecins ou répondre à vos questions. En quoi puis-je vous aider aujourd'hui ?",
-        placeholder: "Tapez votre message...",
-        errorMessage: "Désolé, une erreur s'est produite. Veuillez réessayer.",
-        typingIndicator: "Écrit...",
-        headerTitle: "FUNIA",
-        headerStatus: "● En ligne",
-        ttsError: "Impossible de lire l'audio. Veuillez réessayer.",
-        demoMessage: "Veuillez cliquer sur FAQs ci-dessous pour obtenir des réponses instantanées aux questions fréquentes."
     }
 };
 
